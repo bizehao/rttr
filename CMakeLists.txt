@@ -37,6 +37,9 @@ project ("rttr" LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
+#enforce requiring c++11 compatible compiler
+set(CMAKE_CXX_STANDARD 11)
+
 if (CMAKE_BUILD_TYPE STREQUAL "")
   # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
   # differentiation between debug and release builds.
@@ -70,6 +73,13 @@ if (USE_PCH)
   if (BUILD_STATIC OR BUILD_WITH_STATIC_RUNTIME_LIBS)
     set(USE_PCH FALSE)
   endif()
+endif()
+
+if(NOT BUILD_RTTR_DYNAMIC)
+    message(WARNING "Disabling the dynamic/shared version of RTTR will also disable Benchmarks, Examples, and Unit Tests.")
+    set(BUILD_BENCHMARKS FALSE)
+    set(BUILD_EXAMPLES FALSE)
+    set(BUILD_UNIT_TESTS FALSE)
 endif()
 
 include(config)
