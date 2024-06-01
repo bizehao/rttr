@@ -31,14 +31,14 @@
 #include <rttr/registration>
 
 
-static int some_global_property = 12;
-
-static bool get_prop_as_function() { return true; }
-
-static std::string g_text;
-
-static void set_global_value(const std::string& text) { g_text = std::move(text); }
-static std::string get_global_value() { return g_text; }
+//static int some_global_property = 12;
+//
+//static bool get_prop_as_function() { return true; }
+//
+//static std::string g_text;
+//
+//static void set_global_value(const std::string& text) { g_text = std::move(text); }
+//static std::string get_global_value() { return g_text; }
 
 using namespace rttr;
 
@@ -64,9 +64,9 @@ RTTR_REGISTRATION
 
     registration::method("some_global_method", &some_global_method);
 
-    registration::property("some_global_property", &some_global_property)
+    /*registration::property("some_global_property", &some_global_property)
                  .property("global_setter_getter", &get_global_value, &set_global_value)
-                 .property_readonly("get_prop_as_function", &get_prop_as_function);
+                 .property_readonly("get_prop_as_function", &get_prop_as_function);*/
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
