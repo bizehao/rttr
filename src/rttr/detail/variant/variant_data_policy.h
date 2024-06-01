@@ -514,7 +514,18 @@ struct variant_data_policy_array_big : variant_data_base_policy<T, variant_data_
         delete [] &value;
     }
 
-    static RTTR_INLINE void clone(const T& value, variant_data& dest)
+    template<typename OT = T>
+    static RTTR_INLINE typename std::enable_if<detail::is_bounded_array<OT>::value>::type clone(const T& value, variant_data& dest)
+    {
+        constexpr size_t size = std::extent<T>::value;
+        using Type = typename std::remove_extent<T>::type;
+        reinterpret_cast<array_dest_type&>(dest) = new Type[size];
+
+        COPY_ARRAY_PRE_PROC(value, dest);
+    }
+
+    template<typename OT = T>
+    static RTTR_INLINE typename std::enable_if<!detail::is_bounded_array<OT>::value>::type clone(const T& value, variant_data& dest)
     {
         reinterpret_cast<array_dest_type&>(dest) = new T;
 
@@ -526,8 +537,18 @@ struct variant_data_policy_array_big : variant_data_base_policy<T, variant_data_
         reinterpret_cast<array_dest_type&>(dest) = value;
     }
 
-    template<typename U>
-    static RTTR_INLINE void create(U&& value, variant_data& dest)
+    template<typename U, typename OT = T>
+    static RTTR_INLINE typename std::enable_if<detail::is_bounded_array<OT>::value>::type create(U&& value, variant_data& dest)
+    {
+        constexpr size_t size = std::extent<T>::value;
+        using Type = typename std::remove_extent<T>::type;
+        reinterpret_cast<array_dest_type&>(dest) = new Type[size];
+
+        COPY_ARRAY_PRE_PROC(value, dest);
+    }
+
+    template<typename U, typename OT = T>
+    static RTTR_INLINE typename std::enable_if<!detail::is_bounded_array<OT>::value>::type create(U&& value, variant_data& dest)
     {
         using array_dest_type = decltype(new T);
         reinterpret_cast<array_dest_type&>(dest) = new T;
