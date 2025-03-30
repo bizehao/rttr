@@ -125,8 +125,18 @@ RTTR_INLINE argument::arg_rvalue_t<T>&& argument::get_value() const RTTR_NOEXCEP
 template<typename T>
 RTTR_INLINE argument::is_variant_t<T>& argument::get_value() const RTTR_NOEXCEPT
 {
-    using raw_type = typename std::remove_reference<T>::type;
-    return (*reinterpret_cast<raw_type*>(const_cast<variant *>(m_variant)));
+    if (m_variant)
+    {
+        using raw_type = typename std::remove_reference<T>::type;
+        return (*reinterpret_cast<raw_type*>(const_cast<variant*>(m_variant)));
+    }
+    else
+    {
+        static variant var;
+        var.clear();
+        return var;
+    }
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -134,8 +144,16 @@ RTTR_INLINE argument::is_variant_t<T>& argument::get_value() const RTTR_NOEXCEPT
 template<typename T>
 RTTR_INLINE argument::is_variant_ref_t<T>&& argument::get_value() const RTTR_NOEXCEPT
 {
-    using raw_type = typename std::remove_reference<T>::type;
-    return std::move(*reinterpret_cast<raw_type*>(const_cast<variant *>(m_variant)));
+    if (m_variant)
+    {
+        using raw_type = typename std::remove_reference<T>::type;
+        return std::move(*reinterpret_cast<raw_type*>(const_cast<variant*>(m_variant)));
+    }
+    else
+    {
+        return variant{};
+    }
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

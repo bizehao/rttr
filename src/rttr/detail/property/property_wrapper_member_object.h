@@ -63,12 +63,18 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
             else if (ptr && arg.get_type().has_type_converter(rttr::type::get<A>()))
             {
                 variant v = arg.get_value<variant>();
-                bool r;
-                A rv = v.convert<A>(&r);
-                if (r)
-                    return property_accessor<A>::set_value((ptr->*m_acc), rv);
+                if (v)
+                {
+                    bool r;
+                    A rv = v.convert<A>(&r);
+                    if (r)
+                        return property_accessor<A>::set_value((ptr->*m_acc), rv);
+                    else
+                        return false;
+                }
                 else
                     return false;
+                
             }
             else
                 return false;
