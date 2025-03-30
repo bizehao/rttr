@@ -2,7 +2,7 @@
 #                                                                                  #
 #  Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>                           #
 #                                                                                  #
-#  This file is part of RTTR (Run Time Type Reflection)                            #
+#  This file is part of the examples of RTTR (Run Time Type Reflection)            #
 #  License: MIT License                                                            #
 #                                                                                  #
 #  Permission is hereby granted, free of charge, to any person obtaining           #
@@ -25,19 +25,24 @@
 #                                                                                  #
 ####################################################################################
 
-# for compiling all examples with only one target
-add_custom_target(examples ALL
-                  COMMENT "compile all examples")
-                                    
-set_target_properties(examples PROPERTIES 
-                      FOLDER "Examples")
-                  
-add_subdirectory (json_serialization)
-add_subdirectory (library_loading)
-if (MAX_CXX_STANDARD GREATER_EQUAL 14)
-    add_subdirectory (scripting)
-else()
-    message(WARNING "Cannot generate scripting example, because at least C++14 needed")
-endif()
+project(example_1 LANGUAGES CXX)
 
-add_subdirectory(my_example)
+set(HPP_FILES)
+set(SRC_FILES "example_1.cpp" "other_impl.cpp")
+
+#if (USE_PCH)
+#  activate_precompiled_headers("pch.h" SRC_FILES)
+#endif()
+
+add_executable(example_1 ${SRC_FILES} ${HPP_FILES})
+target_link_libraries(example_1 RTTR::Core)
+target_include_directories(example_1 PUBLIC ${RAPID_JSON_DIR})
+set_target_properties(example_1 PROPERTIES 
+                      DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
+                      FOLDER "Examples"
+                      INSTALL_RPATH "${RTTR_EXECUTABLE_INSTALL_RPATH}"
+                      CXX_STANDARD ${MAX_CXX_STANDARD})
+
+#set_compiler_warnings(example_1)
+
+add_dependencies(examples example_1)

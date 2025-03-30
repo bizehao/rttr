@@ -1104,6 +1104,8 @@ class RTTR_API type
         template<typename T>
         static void register_less_than_comparator();
 
+        bool has_type_converter(const type& target_type);
+
     private:
 
         /*!

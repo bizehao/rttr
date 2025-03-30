@@ -557,6 +557,11 @@ destructor type::get_destructor() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+bool rttr::type::has_type_converter(const type& target_type)
+{
+    return get_type_converter(target_type) != nullptr;
+}
+
 void type::create_wrapped_value(const argument& arg, variant& var) const
 {
     if (m_type_data->create_wrapper)

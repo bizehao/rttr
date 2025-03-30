@@ -60,6 +60,16 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
             C* ptr = object.try_convert<C>();
             if (ptr && arg.is_type<A>())
                 return property_accessor<A>::set_value((ptr->*m_acc), arg.get_value<A>());
+            else if (ptr && arg.get_type().has_type_converter(rttr::type::get<A>()))
+            {
+                variant v = arg.get_value<variant>();
+                bool r;
+                A rv = v.convert<A>(&r);
+                if (r)
+                    return property_accessor<A>::set_value((ptr->*m_acc), rv);
+                else
+                    return false;
+            }
             else
                 return false;
         }
