@@ -60,7 +60,7 @@ if (${BUILD_RTTR_DYNAMIC})
                           
                           
     if(${CMAKE_VERSION} VERSION_GREATER "3.8.0") 
-        target_compile_features(rttr_core PUBLIC cxx_std_11) # at least c++11 is needed to compile RTTR
+        target_compile_features(rttr_core PUBLIC cxx_std_17) # at least c++11 is needed to compile RTTR
     endif()
                          
     target_include_directories(rttr_core PUBLIC

@@ -178,20 +178,15 @@ typename std::enable_if<!is_wrapper<T>::value, raw_addressof_return_type_t<T>>::
 template <typename T, typename Tp = typename std::remove_cv<typename std::remove_reference<T>::type>::type>
 class has_create_wrapper_func_impl
 {
-    using YesType = char[1];
-    using NoType  = char[2];
-
-    template <typename U, typename V, U (*)(const V&)>
-    class check { };
-
+    // Use SFINAE with decltype to detect whether wrapper_mapper<C>::create exists.
     template <typename C>
-    static YesType& f(check<C, wrapper_mapper_t<C>, &wrapper_mapper<C>::create>*);
+    static auto test(int) -> decltype((void)&wrapper_mapper<C>::create, std::true_type());
 
-    template <typename C>
-    static NoType& f(...);
+    template <typename>
+    static std::false_type test(...);
 
 public:
-    static RTTR_CONSTEXPR_OR_CONST bool value = (sizeof(f<Tp>(0)) == sizeof(YesType));
+    static RTTR_CONSTEXPR_OR_CONST bool value = decltype(test<Tp>(0))::value;
 };
 
 template<typename T>
