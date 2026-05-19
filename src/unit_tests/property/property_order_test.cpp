@@ -73,7 +73,7 @@ RTTR_REGISTRATION
 // and gets the value from the property
 std::string rttr_prop_approach1(
         const rttr::instance& vinst,
-        const rttr::string_view& prop_name )
+        const std::string_view& prop_name )
 {
     const auto& inst_t = vinst.get_type();
 
@@ -92,7 +92,7 @@ std::string rttr_prop_approach1(
 // approach 2 gets the property value from rttr::type
 std::string rttr_prop_approach2(
         const rttr::instance& vinst,
-        const rttr::string_view& prop_name )
+        const std::string_view& prop_name )
 {
     const auto& inst_t = vinst.get_type();
 

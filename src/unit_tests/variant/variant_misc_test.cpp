@@ -159,7 +159,7 @@ TEST_CASE("variant - get_wrapped_value", "[variant]")
     CHECK(**var.extract_wrapped_value().get_value<int** const>() == foo);
 
 
-    auto ptr = detail::make_unique<int>(24);
+    auto ptr = std::make_unique<int>(24);
     var = std::ref(ptr);
     CHECK(var.get_type().is_wrapper() == true);
     REQUIRE(var.get_type().get_wrapped_type() == type::get<std::unique_ptr<int>>());

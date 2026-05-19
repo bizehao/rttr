@@ -153,7 +153,7 @@ function(loadFolder FOLDER _HEADER_FILES _SOURCE_FILES)
     else()
       set(FULL_HEADER_PATH ${ABS_PATH_TO_FILES}/${headerFile})
       file(STRINGS ${FULL_HEADER_PATH} var REGEX "Q_OBJECT")
-      if(var)
+      if(var) 
          list(APPEND QT_MOC_HEADERS ${FULL_HEADER_PATH})
       endif()
 

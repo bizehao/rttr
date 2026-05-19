@@ -36,7 +36,8 @@ namespace su
 	{
 	public:
 		property(const T& value = T{}) : _value{ value }
-		{}
+		{
+		}
 
 		const T& get() const override
 		{
@@ -94,39 +95,122 @@ RTTR_REGISTRATION
 	.constructor<int>()
 	.method("print_value", &test_class::print_value)
 	.property("value", &test_class::m_value);
-	//.property("value", &TTget, &TTset);
+//.property("value", &TTget, &TTset);
 
-	type::register_converter_func(convert_property<int>);
+type::register_converter_func(convert_property<int>);
 
-	//variant pp = 100;
-	argument arg = 100;
+//variant pp = 100;
+argument arg = 100;
 
-	arg.get_value<int>();
+arg.get_value<int>();
 
-	//pp.convert<int>();
+//pp.convert<int>();
 
-	//arg.get_type().get_type_converter(rttr::type::get<T>())
-	
-	
+//arg.get_type().get_type_converter(rttr::type::get<T>())
+
+
 }
 
-struct AA{};
+struct Base
+{
+	RTTR_ENABLE()
+};
+
+struct Other
+{
+public:
+	virtual inline ::rttr::type get_type() const
+	{
+		return ::rttr::detail::get_type_from_instance(this);
+	}
+
+	virtual inline void* get_ptr()
+	{
+		return reinterpret_cast<void*>(this);
+	}
+
+	virtual inline ::rttr::detail::derived_info get_derived_info()
+	{
+		return { reinterpret_cast<void*>(this), ::rttr::detail::get_type_from_instance(this) };
+	}
+	using base_class_list = ::rttr::type_list<>;
+private:
+};
+
+struct Derived : Base
+{
+public:
+	virtual inline ::rttr::type get_type() const
+	{
+		return ::rttr::detail::get_type_from_instance(this);
+	}
+
+	virtual inline void* get_ptr()
+	{
+		return reinterpret_cast<void*>(this);
+	}
+
+	virtual inline ::rttr::detail::derived_info get_derived_info()
+	{
+		return { reinterpret_cast<void*>(this), ::rttr::detail::get_type_from_instance(this) };
+	}
+	using base_class_list = ::rttr::type_list<Base>;
+private:
+};
+
+struct MultipleDerived : Base, Other
+{
+public:
+	virtual inline ::rttr::type get_type() const
+	{
+		return ::rttr::detail::get_type_from_instance(this);
+	}
+
+	virtual inline void* get_ptr()
+	{
+		return reinterpret_cast<void*>(this);
+	} 
+	
+	virtual inline ::rttr::detail::derived_info get_derived_info()
+	{
+		return { reinterpret_cast<void*>(this), ::rttr::detail::get_type_from_instance(this) };
+	}
+	using base_class_list = ::rttr::type_list<Base, Other>;
+private:
+};
 
 int main()
 {
+
+	rttr::type t = rttr::type::get<Derived>();
+
+	auto vv = t.create();
+
+	bool vv1 = vv.is_valid();
+
+	auto pp = t.get_base_classes();
+
+	for (auto& it : pp)
+	{
+		std::cout << it.get_name() << std::endl;
+	}
+
+	return 0;
+
+
 	//float m1 = 3.14f;
 	//int k1 = 100;
 	//variant return_value = type::invoke("add", { k1 });
 	//std::cout << std::boolalpha << return_value.is_valid() << std::endl;
 
 
-	test_class obj(20);
-	type class_type = type::get_by_name("test_class");
-	// option 1
-	variant a1 = 50;
-	//int a1 = 50;
-	bool success = class_type.set_property_value("value", obj, a1);
-	std::cout << obj.m_value << std::endl; // prints "50"
+	//test_class obj(20);
+	//type class_type = type::get_by_name("test_class");
+	//// option 1
+	//variant a1 = 50;
+	////int a1 = 50;
+	//bool success = class_type.set_property_value("value", obj, a1);
+	//std::cout << obj.m_value << std::endl; // prints "50"
 
 	//// option 2
 	//property prop = class_type.get_property("value");

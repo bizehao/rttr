@@ -84,6 +84,8 @@ if(NOT BUILD_RTTR_DYNAMIC)
     set(BUILD_UNIT_TESTS FALSE)
 endif()
 
+set(BUILD_EXAMPLES TRUE)
+
 include(config)
 include(3rd_party_libs)
 

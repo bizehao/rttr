@@ -42,6 +42,7 @@
 #include "rttr/detail/type/type_name.h"
 #include "rttr/detail/registration/registration_manager.h"
 #include "rttr/detail/misc/register_wrapper_mapper_conversion.h"
+#include <concepts>
 
 
 namespace rttr
@@ -71,45 +72,45 @@ RTTR_INLINE type& type::operator=(const type& other) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE bool type::operator<(const type& other) const RTTR_NOEXCEPT
-{
-    return (m_type_data < other.m_type_data);
-}
+//RTTR_INLINE bool type::operator<(const type& other) const RTTR_NOEXCEPT
+//{
+//    return (m_type_data < other.m_type_data);
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE bool type::operator>(const type& other) const RTTR_NOEXCEPT
-{
-    return (m_type_data > other.m_type_data);
-}
+//RTTR_INLINE bool type::operator>(const type& other) const RTTR_NOEXCEPT
+//{
+//    return (m_type_data > other.m_type_data);
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE bool type::operator>=(const type& other) const RTTR_NOEXCEPT
-{
-    return (m_type_data >= other.m_type_data);
-}
+//RTTR_INLINE bool type::operator>=(const type& other) const RTTR_NOEXCEPT
+//{
+//    return (m_type_data >= other.m_type_data);
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE bool type::operator<=(const type& other) const RTTR_NOEXCEPT
-{
-    return (m_type_data <= other.m_type_data);
-}
+//RTTR_INLINE bool type::operator<=(const type& other) const RTTR_NOEXCEPT
+//{
+//    return (m_type_data <= other.m_type_data);
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE bool type::operator==(const type& other) const RTTR_NOEXCEPT
-{
-    return (m_type_data == other.m_type_data);
-}
+//RTTR_INLINE bool type::operator==(const type& other) const RTTR_NOEXCEPT
+//{
+//    return (m_type_data == other.m_type_data);
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE bool type::operator!=(const type& other) const RTTR_NOEXCEPT
-{
-    return (m_type_data != other.m_type_data);
-}
+//RTTR_INLINE bool type::operator!=(const type& other) const RTTR_NOEXCEPT
+//{
+//    return (m_type_data != other.m_type_data);
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -155,14 +156,14 @@ RTTR_INLINE type type::get_raw_array_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE string_view type::get_name() const RTTR_NOEXCEPT
+RTTR_INLINE std::string_view type::get_name() const RTTR_NOEXCEPT
 {
     return m_type_data->name;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE string_view type::get_full_name() const RTTR_NOEXCEPT
+RTTR_INLINE std::string_view type::get_full_name() const RTTR_NOEXCEPT
 {
     return m_type_data->type_name;
 }
@@ -291,26 +292,17 @@ RTTR_INLINE type create_type(type_data* data) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////
 template<typename T>
-using is_complete_type = std::integral_constant<bool, !std::is_function<T>::value && !std::is_same<T, void>::value>;
+concept is_complete_type = !std::is_function<T>::value && !std::is_same<T, void>::value;
 
 template<typename T>
-RTTR_LOCAL RTTR_INLINE enable_if_t<is_complete_type<T>::value, type>
-create_or_get_type() RTTR_NOEXCEPT
+RTTR_LOCAL RTTR_INLINE type create_or_get_type() RTTR_NOEXCEPT
 {
-    // when you get an error here, then the type was not completely defined
-    // (a forward declaration is not enough because base_classes will not be found)
-    using type_must_be_complete = char[ sizeof(T) ? 1: -1 ];
-    (void) sizeof(type_must_be_complete);
-    static const type val = create_type(get_registration_manager().add_item(make_type_data<T>()));
-    return val;
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-RTTR_LOCAL RTTR_INLINE enable_if_t<!is_complete_type<T>::value, type>
-create_or_get_type() RTTR_NOEXCEPT
-{
+    if constexpr (is_complete_type<T>)
+    {
+        // when you get an error here, then the type was not completely defined
+        // (a forward declaration is not enough because base_classes will not be found)
+        static_assert(requires { sizeof(T); }, "T is need to be a complete type");
+    }
     static const type val = create_type(get_registration_manager().add_item(make_type_data<T>()));
     return val;
 }
@@ -327,34 +319,6 @@ RTTR_LOCAL RTTR_INLINE type get_type_from_instance(const T*) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, bool>
-struct type_from_instance;
-
-//! Specialization for retrieving the type from the instance directly
-template<typename T>
-struct type_from_instance<T, false> // the typeInfo function is not available
-{
-    static RTTR_INLINE type get(T&&) RTTR_NOEXCEPT
-    {
-        using non_ref_type = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
-        return create_or_get_type<non_ref_type>();
-    }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-//! Specialization for retrieving the type from the instance directly
-template<typename T>
-struct type_from_instance<T, true>
-{
-    static RTTR_INLINE type get(T&& object) RTTR_NOEXCEPT
-    {
-        return object.get_type();
-    }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
 template<typename TargetType, typename SourceType, typename F>
 struct type_converter;
 
@@ -367,8 +331,7 @@ struct type_converter;
 template<typename T>
 RTTR_INLINE type type::get() RTTR_NOEXCEPT
 {
-    using non_ref_type = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
-    return detail::create_or_get_type<non_ref_type>();
+    return detail::create_or_get_type<std::remove_cvref_t<T>>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -384,8 +347,14 @@ RTTR_INLINE type type::get<detail::invalid_type>() RTTR_NOEXCEPT
 template<typename T>
 RTTR_INLINE type type::get(T&& object) RTTR_NOEXCEPT
 {
-    using remove_ref = typename std::remove_reference<T>::type;
-    return detail::type_from_instance<T, detail::has_get_type_func<T>::value && !std::is_pointer<remove_ref>::value>::get(std::forward<T>(object));
+    if constexpr (detail::has_get_type_func<T>::value && !std::is_pointer_v<std::remove_reference_t<T>>)
+    {
+        return object.get_type();
+    }
+    else
+    {
+        return detail::create_or_get_type<std::remove_cvref_t<T>>();
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -412,7 +381,7 @@ RTTR_INLINE void type::register_converter_func(F func)
     using namespace detail;
 
     using target_type_orig = typename function_traits<F>::return_type;
-    using target_type = remove_cv_t<remove_reference_t<target_type_orig>>;
+    using target_type = std::remove_cvref_t<target_type_orig>;
 
     const std::size_t arg_count = function_traits<F>::arg_count;
 
@@ -421,9 +390,9 @@ RTTR_INLINE void type::register_converter_func(F func)
     static_assert(std::is_same<bool&, typename param_types<F, 1>::type>::value, "Second argument type must be a bool reference(bool&).");
 
     using source_type_orig = param_types_t<F, 0>;
-    using source_type = remove_cv_t<remove_reference_t<source_type_orig>>;
+    using source_type = std::remove_cvref_t<source_type_orig>;
 
-    get_registration_manager().add_item(::rttr::detail::make_unique<type_converter<target_type, source_type, F>>(func));
+    get_registration_manager().add_item(std::make_unique<type_converter<target_type, source_type, F>>(func));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -450,7 +419,7 @@ void type::register_equal_comparator()
 {
     static_assert(detail::has_equal_operator<T>::value, "No equal operator for given type found.");
 
-    detail::get_registration_manager().add_equal_cmp(::rttr::detail::make_unique<detail::type_equal_comparator<T>>());
+    detail::get_registration_manager().add_equal_cmp(std::make_unique<detail::type_equal_comparator<T>>());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -460,7 +429,7 @@ void type::register_less_than_comparator()
 {
     static_assert(detail::has_less_than_operator<T>::value, "No less-than operator for given type found.");
 
-    detail::get_registration_manager().add_less_than_cmp(::rttr::detail::make_unique<detail::type_less_than_comparator<T>>());
+    detail::get_registration_manager().add_less_than_cmp(std::make_unique<detail::type_less_than_comparator<T>>());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

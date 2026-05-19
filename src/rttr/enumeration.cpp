@@ -77,7 +77,7 @@ enumeration::operator bool() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-string_view enumeration::get_name() const RTTR_NOEXCEPT
+std::string_view enumeration::get_name() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_type().get_name();
 }
@@ -112,7 +112,7 @@ variant enumeration::get_metadata(const variant& key) const
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<string_view> enumeration::get_names() const RTTR_NOEXCEPT
+array_range<std::string_view> enumeration::get_names() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_names();
 }
@@ -126,14 +126,14 @@ array_range<variant> enumeration::get_values() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-string_view enumeration::value_to_name(argument value) const
+std::string_view enumeration::value_to_name(argument value) const
 {
     return m_wrapper->value_to_name(value);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant enumeration::name_to_value(string_view name) const
+variant enumeration::name_to_value(std::string_view name) const
 {
     return m_wrapper->name_to_value(name);
 }

@@ -117,7 +117,7 @@ struct iterator_wrapper_big
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename Itr, typename Tp = conditional_t<can_place_in_iterator_data<Itr>::value,
+template<typename Itr, typename Tp = std::conditional_t<can_place_in_iterator_data<Itr>::value,
                                                    iterator_wrapper_small<Itr>,
                                                    iterator_wrapper_big<Itr>>>
 struct iterator_wrapper_base : Tp

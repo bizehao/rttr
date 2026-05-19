@@ -47,6 +47,7 @@
 #include "rttr/detail/registration/registration_manager.h"
 
 #include <set>
+#include <iterator>
 
 using namespace std;
 
@@ -145,7 +146,7 @@ bool type_register::unregister_enumeration(enumeration_wrapper_base* enum_data)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void type_register::custom_name(type& t, string_view custom_name)
+void type_register::custom_name(type& t, std::string_view custom_name)
 {
      type_register_private::get_instance().register_custom_name(t, custom_name);
 }
@@ -394,9 +395,9 @@ static void move_pointer_and_ref_to_type(std::string& type_name)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-static std::string normalize_orig_name(string_view name)
+static std::string normalize_orig_name(std::string_view name)
 {
-    std::string normalized_name = name.to_string();
+    std::string normalized_name = std::string{ name };
 
     move_pointer_and_ref_to_type(normalized_name);
     return normalized_name;
@@ -695,7 +696,7 @@ std::string type_register_private::derive_name(const type& t)
         auto custom_name    = t.get_raw_array_type().get_name();
         auto raw_name_orig  = normalize_orig_name( t.get_raw_array_type().get_full_name());
 
-        return derive_name_impl(src_name_orig, raw_name_orig, custom_name.to_string());
+        return derive_name_impl(src_name_orig, raw_name_orig, std::string{ custom_name });
     }
     else if (t != t.get_raw_type())
     {
@@ -703,7 +704,7 @@ std::string type_register_private::derive_name(const type& t)
         auto custom_name    = t.get_raw_type().get_name();
         auto raw_name_orig  = normalize_orig_name( t.get_raw_type().get_full_name());
 
-        return derive_name_impl(src_name_orig, raw_name_orig, custom_name.to_string());
+        return derive_name_impl(src_name_orig, raw_name_orig, std::string{ custom_name });
     }
     else
     {
@@ -713,12 +714,12 @@ std::string type_register_private::derive_name(const type& t)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void type_register_private::register_custom_name(type& t, string_view custom_name)
+void type_register_private::register_custom_name(type& t, std::string_view custom_name)
 {
     if (!t.is_valid())
         return;
 
-    update_custom_name(custom_name.to_string(), t);
+    update_custom_name(std::string{ custom_name }, t);
 
     // we have to make a copy of the list, because we also perform an insertion with 'update_custom_name'
     auto tmp_type_list = m_custom_name_to_id.value_data();
@@ -800,7 +801,7 @@ bool type_register_private::register_global_property(const property_wrapper_base
 
      auto p = detail::create_item<::rttr::property>(prop);
      get_global_properties().emplace_back(p);
-     get_global_property_storage().insert(std::move(name.to_string()), std::move(p));
+     get_global_property_storage().insert(std::move(std::string{ name }), std::move(p));
      return true;
 }
 
@@ -809,7 +810,7 @@ bool type_register_private::register_global_property(const property_wrapper_base
 bool type_register_private::unregister_global_property(const property_wrapper_base* prop)
 {
     auto& g_props   = get_global_property_storage();
-    auto result     = g_props.erase(prop->get_name().to_string());
+    auto result     = g_props.erase(std::string{ prop->get_name() });
 
     auto result2 = remove_container_item(get_global_properties(), create_item<rttr::property>(prop));
     return result && result2;
@@ -846,7 +847,7 @@ bool type_register_private::register_global_method(const method_wrapper_base* me
         return false;
 
     get_global_methods().push_back(m);
-    get_global_method_storage().insert(std::move(name.to_string()), std::move(m));
+    get_global_method_storage().insert(std::move(std::string{ name }), std::move(m));
     return true;
 }
 
@@ -855,7 +856,7 @@ bool type_register_private::register_global_method(const method_wrapper_base* me
 bool type_register_private::unregister_global_method(const method_wrapper_base* meth)
 {
     auto& g_meths   = get_global_method_storage();
-    auto result     = g_meths.erase(meth->get_name().to_string());
+    auto result     = g_meths.erase(std::string{ meth->get_name() });
 
     auto result2 = remove_container_item(get_global_methods(), create_item<rttr::method>(meth));
     return result && result2;
@@ -863,7 +864,7 @@ bool type_register_private::unregister_global_method(const method_wrapper_base* 
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-property type_register_private::get_type_property(const type& t, string_view name)
+property type_register_private::get_type_property(const type& t, std::string_view name)
 {
     for (const auto& prop : get_items_for_type(t, t.m_type_data->m_class_data.m_properties))
     {
@@ -876,7 +877,7 @@ property type_register_private::get_type_property(const type& t, string_view nam
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-method type_register_private::get_type_method(const type& t, string_view name,
+method type_register_private::get_type_method(const type& t, std::string_view name,
                                               const std::vector<type>& type_list)
 {
     for (const auto& meth : get_items_for_type(t, t.m_type_data->m_class_data.m_methods))

@@ -54,6 +54,7 @@
 #include <cstring>
 #include <cctype>
 #include <utility>
+#include <concepts>
 
 using namespace std;
 
@@ -144,7 +145,7 @@ void* type::apply_offset(void* ptr, const type& source_type, const type& target_
 type type::get_derived_type(void* ptr, const type& source_type) RTTR_NOEXCEPT
 {
     if (ptr == nullptr)
-        return type();
+        return type{};
 
     auto& src_raw_type = source_type.m_type_data->raw_type_data;
     const detail::derived_info info = src_raw_type->m_class_data.m_derived_info_func(ptr);
@@ -155,16 +156,16 @@ type type::get_derived_type(void* ptr, const type& source_type) RTTR_NOEXCEPT
 
 array_range<type> type::get_base_classes() const RTTR_NOEXCEPT
 {
-    return array_range<type>(m_type_data->m_class_data.m_base_types.data(),
-                             m_type_data->m_class_data.m_base_types.size());
+    return array_range<type>{m_type_data->m_class_data.m_base_types.data(),
+        m_type_data->m_class_data.m_base_types.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 array_range<type> type::get_derived_classes() const RTTR_NOEXCEPT
 {
-    return array_range<type>(m_type_data->m_class_data.m_derived_types.data(),
-                             m_type_data->m_class_data.m_derived_types.size());
+    return array_range<type>{m_type_data->m_class_data.m_derived_types.data(),
+                             m_type_data->m_class_data.m_derived_types.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -172,15 +173,15 @@ array_range<type> type::get_derived_classes() const RTTR_NOEXCEPT
 array_range<type> type::get_types() RTTR_NOEXCEPT
 {
     auto& type_list = detail::type_register_private::get_instance().get_type_storage();
-    return array_range<type>(&type_list[1], type_list.size() - 1);
+    return array_range<type>{&type_list[1], type_list.size() - 1};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 array_range<type> type::get_template_arguments() const RTTR_NOEXCEPT
 {
-    return array_range<type>(m_type_data->m_class_data.m_nested_types.data(),
-                             m_type_data->m_class_data.m_nested_types.size());
+    return array_range<type>{m_type_data->m_class_data.m_nested_types.data(),
+                             m_type_data->m_class_data.m_nested_types.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -213,7 +214,7 @@ bool type::destroy(variant& obj) const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-property type::get_property(string_view name) const RTTR_NOEXCEPT
+property type::get_property(std::string_view name) const RTTR_NOEXCEPT
 {
     const auto raw_t = get_raw_type();
     const auto& vec = raw_t.m_type_data->m_class_data.m_properties;
@@ -233,14 +234,14 @@ property type::get_property(string_view name) const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant type::get_property_value(string_view name, instance obj) const
+variant type::get_property_value(std::string_view name, instance obj) const
 {
     return get_property(name).get_value(obj);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant type::get_property_value(string_view name)
+variant type::get_property_value(std::string_view name)
 {
     const auto prop = get_global_property(name);
     return prop.get_value(instance());
@@ -248,7 +249,7 @@ variant type::get_property_value(string_view name)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-bool type::set_property_value(string_view name, instance obj, argument arg) const
+bool type::set_property_value(std::string_view name, instance obj, argument arg) const
 {
     const auto prop = get_property(name);
     return prop.set_value(obj, arg);
@@ -256,7 +257,7 @@ bool type::set_property_value(string_view name, instance obj, argument arg) cons
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-bool type::set_property_value(string_view name, argument arg)
+bool type::set_property_value(std::string_view name, argument arg)
 {
     const auto prop = get_global_property(name);
     return prop.set_value(instance(), arg);
@@ -293,7 +294,7 @@ array_range<property> type::get_properties(filter_items filter) const RTTR_NOEXC
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-method type::get_method(string_view name) const RTTR_NOEXCEPT
+method type::get_method(std::string_view name) const RTTR_NOEXCEPT
 {
     const auto raw_t = get_raw_type();
     const auto& vec = raw_t.m_type_data->m_class_data.m_methods;
@@ -313,7 +314,7 @@ method type::get_method(string_view name) const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-method type::get_method(string_view name, const std::vector<type>& type_list) const RTTR_NOEXCEPT
+method type::get_method(std::string_view name, const std::vector<type>& type_list) const RTTR_NOEXCEPT
 {
     const auto raw_t = get_raw_type();
     const auto& methvec = raw_t.m_type_data->m_class_data.m_methods;
@@ -362,7 +363,7 @@ array_range<method> type::get_methods(filter_items filter) const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-property type::get_global_property(string_view name) RTTR_NOEXCEPT
+property type::get_global_property(std::string_view name) RTTR_NOEXCEPT
 {
     auto& prop_list = detail::type_register_private::get_instance().get_global_property_storage();
     const auto ret  = prop_list.find(std::string{name});
@@ -374,7 +375,7 @@ property type::get_global_property(string_view name) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-method type::get_global_method(string_view name) RTTR_NOEXCEPT
+method type::get_global_method(std::string_view name) RTTR_NOEXCEPT
 {
     auto& meth_list = detail::type_register_private::get_instance().get_global_method_storage();
     const auto ret  = meth_list.find(std::string{name});
@@ -386,10 +387,10 @@ method type::get_global_method(string_view name) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-method type::get_global_method(string_view name, const std::vector<type>& type_list) RTTR_NOEXCEPT
+method type::get_global_method(std::string_view name, const std::vector<type>& type_list) RTTR_NOEXCEPT
 {
     auto& meth_list = detail::type_register_private::get_instance().get_global_method_storage();
-    auto itr = meth_list.find(name.to_string());
+    auto itr = meth_list.find(std::string{ name });
     while (itr != meth_list.end())
     {
         const auto& meth = *itr;
@@ -433,7 +434,7 @@ enumeration type::get_enumeration() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant type::invoke(string_view name, instance obj, std::vector<argument> args) const
+variant type::invoke(std::string_view name, instance obj, std::vector<argument> args) const
 {
     const auto raw_t = get_raw_type();
     const auto& methvec = raw_t.m_type_data->m_class_data.m_methods;
@@ -452,10 +453,10 @@ variant type::invoke(string_view name, instance obj, std::vector<argument> args)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant type::invoke(string_view name, std::vector<argument> args)
+variant type::invoke(std::string_view name, std::vector<argument> args)
 {
     auto& meth_list = detail::type_register_private::get_instance().get_global_method_storage();
-    auto itr = meth_list.find(name.to_string());
+    auto itr = meth_list.find(std::string{ name });
     while (itr != meth_list.end())
     {
         const auto& meth = *itr;
@@ -475,7 +476,7 @@ variant type::invoke(string_view name, std::vector<argument> args)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-type type::get_by_name(string_view name) RTTR_NOEXCEPT
+type type::get_by_name(std::string_view name) RTTR_NOEXCEPT
 {
     auto& custom_name_to_id = detail::type_register_private::get_instance().get_custom_name_to_id();
     auto ret = custom_name_to_id.find(name);
@@ -527,11 +528,10 @@ array_range<constructor> type::get_constructors() const RTTR_NOEXCEPT
     auto& ctors = m_type_data->m_class_data.m_ctors;
     if (!ctors.empty())
     {
-        return array_range<constructor>(ctors.data(), ctors.size(),
-                                        detail::default_predicate<constructor>([](const constructor& ctor)
-                                        {
-                                            return (ctor.get_access_level() == access_levels::public_access);
-                                        }) );
+        return array_range<constructor>(ctors.data(), ctors.size(), detail::default_predicate<constructor>{ [](const constructor& ctor)
+            {
+                return (ctor.get_access_level() == access_levels::public_access);
+            } });
     }
 
     return array_range<constructor>();

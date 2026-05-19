@@ -30,7 +30,6 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/std_type_traits.h"
 
 #include <type_traits>
 #include <utility>
@@ -51,28 +50,28 @@ class instance;
 class RTTR_API argument
 {
     template<typename T>
-    using decay_arg_t = detail::enable_if_t<!std::is_same<argument, T>::value, T>;
+    using decay_arg_t = std::enable_if_t<!std::is_same<argument, T>::value, T>;
 
     template<typename T>
-    using is_variant = std::is_same<detail::remove_cv_t<detail::remove_reference_t<T>>, variant>;
+    using is_variant = std::is_same<std::remove_cv_t<std::remove_reference_t<T>>, variant>;
 
     template<typename T>
-    using arg_value_t = detail::enable_if_t<!std::is_rvalue_reference<T>::value && !is_variant<T>::value, T>;
+    using arg_value_t = std::enable_if_t<!std::is_rvalue_reference<T>::value && !is_variant<T>::value, T>;
 
     template<typename T>
-    using arg_rvalue_t = detail::enable_if_t<std::is_rvalue_reference<T>::value && !is_variant<T>::value, detail::remove_reference_t<T> >;
+    using arg_rvalue_t = std::enable_if_t<std::is_rvalue_reference<T>::value && !is_variant<T>::value, std::remove_reference_t<T> >;
 
     template<typename T>
-    using ptr_type = detail::enable_if_t<std::is_pointer<T>::value, bool>;
+    using ptr_type = std::enable_if_t<std::is_pointer<T>::value, bool>;
 
     template<typename T>
-    using non_ptr_type = detail::enable_if_t<!std::is_pointer<T>::value, bool>;
+    using non_ptr_type = std::enable_if_t<!std::is_pointer<T>::value, bool>;
 
     template<typename T>
-    using is_variant_t = detail::enable_if_t<is_variant<T>::value && !std::is_rvalue_reference<T>::value, T>;
+    using is_variant_t = std::enable_if_t<is_variant<T>::value && !std::is_rvalue_reference<T>::value, T>;
 
     template<typename T>
-    using is_variant_ref_t = detail::enable_if_t<is_variant<T>::value && std::is_rvalue_reference<T>::value, detail::remove_reference_t<T>>;
+    using is_variant_ref_t = std::enable_if_t<is_variant<T>::value && std::is_rvalue_reference<T>::value, std::remove_reference_t<T>>;
 
 public:
 

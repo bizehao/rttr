@@ -30,7 +30,6 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/std_type_traits.h"
 
 #include <type_traits>
 #include <functional>
@@ -44,40 +43,22 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////
 
     template<typename T>
-    struct is_function_ptr : std::integral_constant<bool, std::is_pointer<T>::value &&
-                                                          std::is_function<::rttr::detail::remove_pointer_t<T>>::value>
+    struct is_function_ptr : std::integral_constant<bool, std::is_pointer_v<T> &&
+                                                          std::is_function_v<std::remove_pointer_t<T>>>
     {
     };
 
     /////////////////////////////////////////////////////////////////////////////////////
-    // snippet provided by K-ballo
-    struct helper
-    {
-        void operator()(...);
-    };
 
     template <typename T>
-    struct helper_composed: T, helper
-    {};
-
-    template <void (helper::*) (...)>
-    struct member_function_holder
-    {};
-
-    template <typename T, typename Ambiguous = member_function_holder<&helper::operator()> >
-    struct is_functor_impl : std::true_type
-    {};
-
-    template <typename T>
-    struct is_functor_impl<T, member_function_holder<&helper_composed<T>::operator()> > : std::false_type
-    {};
+    using is_functor_impl = std::bool_constant< requires(T t) { t(); } >;
 
     /*!
      * \brief Returns true whether the given type T is a functor.
      *        i.e. func(...); That can be free function, lambdas or function objects.
      */
     template <typename T>
-    struct is_functor : conditional_t<std::is_class<T>::value,
+    struct is_functor : std::conditional_t<std::is_class_v<T>,
                                       is_functor_impl<T>,
                                       std::false_type>
     {};
@@ -217,7 +198,7 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////
 
     template<typename F>
-    struct is_void_func : conditional_t< std::is_same<typename function_traits<F>::return_type, void>::value,
+    struct is_void_func : std::conditional_t< std::is_same_v<typename function_traits<F>::return_type, void>,
                                          std::true_type,
                                          std::false_type
                                        >
@@ -227,8 +208,8 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////
     // returns an std::true_type, when the given type F is a function type; otherwise an std::false_type.
     template<typename F>
-    using is_function = std::integral_constant<bool, std::is_member_function_pointer<F>::value ||
-                                                     std::is_function<F>::value ||
+    using is_function = std::integral_constant<bool, std::is_member_function_pointer_v<F> ||
+                                                     std::is_function_v<F> ||
                                                      is_functor<F>::value
                                               >;
 

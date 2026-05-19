@@ -30,11 +30,11 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/type.h"
-#include "rttr/string_view.h"
 #include "rttr/detail/misc/class_item_mapper.h"
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 namespace rttr
 {
@@ -97,7 +97,7 @@ namespace detail
   if (enum_align)
   {
      E_Alignment enum_value = E_Alignment::AlignLeft;
-     string_view name = enum_align.value_to_name(enum_value);
+     std::string_view name = enum_align.value_to_name(enum_value);
      std::cout << name; // prints "AlignLeft"
 
      variant var = enum_align.name_to_value("AlignJustify");
@@ -131,7 +131,7 @@ class RTTR_API enumeration
          *
          * \return Name of the \ref enumeration.
          */
-        string_view get_name() const RTTR_NOEXCEPT;
+        std::string_view get_name() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns the underlying type (int, unsigned int, etc.) of this \ref enumeration.
@@ -174,7 +174,7 @@ class RTTR_API enumeration
          *
          * \return A range of enumeration names.
          */
-        array_range<string_view> get_names() const RTTR_NOEXCEPT;
+        array_range<std::string_view> get_names() const RTTR_NOEXCEPT;
 
 
          /*!
@@ -192,14 +192,14 @@ class RTTR_API enumeration
          *
          * \return A string_view object, containing the name for the given value.
          */
-        string_view value_to_name(argument value) const;
+        std::string_view value_to_name(argument value) const;
 
         /*!
          * \brief Returns the value of the given enumeration \p name, or an empty variant if the name is not defined.
          *
          * \return A variant object, containing the value for the given \p name.
          */
-        variant name_to_value(string_view name) const;
+        variant name_to_value(std::string_view name) const;
 
         /*!
          * \brief Returns true if this enumeration is the same like the \p other.

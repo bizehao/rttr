@@ -32,7 +32,6 @@
 
 #include "rttr/detail/misc/function_traits.h"
 
-#include "rttr/detail/misc/std_type_traits.h"
 #include "rttr/type_list.h"
 
 #include <type_traits>
@@ -54,20 +53,22 @@ namespace detail
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // This trait will removes cv-qualifiers, pointers and reference from type T.
-    template<typename T, typename Enable = void>
+    template<typename T>
     struct raw_type
     {
-        using type = detail::remove_cv_t<T>;
+        using type = std::remove_cv_t<T>;
     };
 
-    template<typename T> struct raw_type<T, enable_if_t<std::is_pointer<T>::value && !detail::is_function_ptr<T>::value>>
+    template<typename T> requires (std::is_pointer_v<T> && !detail::is_function_ptr<T>::value)
+    struct raw_type<T>
     {
-        using type = typename raw_type< detail::remove_pointer_t<T>>::type;
+        using type = typename raw_type< std::remove_pointer_t<T>>::type;
     };
 
-    template<typename T> struct raw_type<T, enable_if_t<std::is_reference<T>::value> >
+    template<typename T> requires (std::is_reference_v<T>)
+    struct raw_type<T>
     {
-        using type = typename raw_type< remove_reference_t<T> >::type;
+        using type = typename raw_type< std::remove_reference_t<T> >::type;
     };
 
     template<typename T>
@@ -76,12 +77,12 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////////
     // this trait removes all pointers
 
-    template<typename T, typename Enable = void>
-    struct remove_pointers { using type = T; };
     template<typename T>
-    struct remove_pointers<T, enable_if_t<std::is_pointer<T>::value>>
+    struct remove_pointers { using type = T; };
+    template<typename T> requires (std::is_pointer_v<T>)
+    struct remove_pointers<T> 
     {
-        using type = typename remove_pointers<remove_pointer_t<T> >::type;
+        using type = typename remove_pointers<std::remove_pointer_t<T> >::type;
     };
 
     template<typename T>
@@ -90,13 +91,13 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////////
     // this trait removes all pointers except one
 
-    template<typename T, typename Enable = void>
-    struct remove_pointers_except_one { using type = T; };
     template<typename T>
-    struct remove_pointers_except_one<T, enable_if_t<std::is_pointer<T>::value>>
+    struct remove_pointers_except_one { using type = T; };
+	template<typename T> requires (std::is_pointer_v<T>)
+    struct remove_pointers_except_one<T>
     {
-        using type = conditional_t< std::is_pointer< remove_pointer_t<T> >::value,
-                                    typename remove_pointers_except_one<remove_pointer_t<T>>::type,
+        using type = std::conditional_t< std::is_pointer_v< std::remove_pointer_t<T> >,
+                                    typename remove_pointers_except_one<std::remove_pointer_t<T>>::type,
                                     T
                                   >;
     };
@@ -107,7 +108,7 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////////
     // this trait will remove the cv-qualifier, pointer types, reference type and also the array dimension
 
-    template<typename T, typename Enable = void>
+    template<typename T>
     struct raw_array_type { using type = raw_type_t<T>; };
 
     template<typename T>
@@ -116,10 +117,10 @@ namespace detail
     template<typename T, std::size_t N>
     struct raw_array_type_impl<T[N]> { using type = typename raw_array_type<T>::type; };
 
-    template<typename T>
-    struct raw_array_type<T, typename std::enable_if<std::is_array<T>::value>::type>
+	template<typename T> requires (std::is_array_v<T>)
+    struct raw_array_type<T>
     {
-         using type = typename raw_array_type_impl< remove_cv_t<T> >::type;
+         using type = typename raw_array_type_impl< std::remove_cv_t<T> >::type;
     };
 
     template<typename T>
@@ -159,35 +160,17 @@ namespace detail
      * Determine if the given type \a T has the method
      * 'type get_type() const' declared.
      */
-    template <typename T>
-    class has_get_type_func_impl
+    template<typename T>
+    concept has_get_type_func_impl = requires()
     {
-        typedef char YesType[1];
-        typedef char NoType[2];
-
-        template <typename U, rttr::type (U::*)() const>
-        class check { };
-
-        template <typename C>
-        static YesType& f(check<C, &C::get_type>*);
-
-        template <typename C>
-        static NoType& f(...);
-
-    public:
-        static RTTR_CONSTEXPR_OR_CONST bool value = (sizeof(f<typename raw_type<T>::type>(0)) == sizeof(YesType));
+        { &raw_type_t<T>::get_type } -> std::same_as<rttr::type(T::*)() const>;
     };
 
     /*!
      * If T has a member function 'type get_type() const;' then inherits from true_type, otherwise inherits from false_type.
      */
-    template<class T, typename Enable = void>
-    struct has_get_type_func : std::false_type
-    {};
-
-    template<class T>
-    struct has_get_type_func<T, enable_if_t<has_get_type_func_impl<T>::value> > : std::true_type
-    {};
+    template<typename T>
+    using has_get_type_func = std::bool_constant<has_get_type_func_impl<T>>;
 
     /////////////////////////////////////////////////////////////////////////////////
 
@@ -196,34 +179,16 @@ namespace detail
      * 'type get_type() const' declared.
      */
     template <typename T>
-    class has_get_ptr_func_impl
+    concept has_get_ptr_func_impl = requires()
     {
-        typedef char YesType[1];
-        typedef char NoType[2];
-
-        template <typename U, void* (U::*)()>
-        class check { };
-
-        template <typename C>
-        static YesType& f(check<C, &C::get_ptr>*);
-
-        template <typename C>
-        static NoType& f(...);
-
-    public:
-        static RTTR_CONSTEXPR_OR_CONST bool value = (sizeof(f<typename raw_type<T>::type>(0)) == sizeof(YesType));
+        { &raw_type_t<T>::get_ptr } -> std::same_as< void* (raw_type_t<T>::*)()>;
     };
 
     /*!
      * If T has a member function 'type get_type() const;' then inherits from true_type, otherwise inherits from false_type.
      */
-    template<class T, typename Enable = void>
-    struct has_get_ptr_func : std::false_type
-    {};
-
     template<class T>
-    struct has_get_ptr_func<T, enable_if_t<has_get_ptr_func_impl<T>::value> > : std::true_type
-    {};
+    using has_get_ptr_func = std::bool_constant<has_get_ptr_func_impl<T>>;
 
     /////////////////////////////////////////////////////////////////////////////////
 
@@ -232,85 +197,41 @@ namespace detail
      * 'type get_type() const' declared.
      */
     template <typename T>
-    class has_get_derived_info_func_impl
-    {
-        typedef char YesType[1];
-        typedef char NoType[2];
-
-        template <typename U, derived_info (U::*)()>
-        class check { };
-
-        template <typename C>
-        static YesType& f(check<C, &C::get_derived_info>*);
-
-        template <typename C>
-        static NoType& f(...);
-
-    public:
-        static RTTR_CONSTEXPR_OR_CONST bool value = (sizeof(f<typename raw_type<T>::type>(0)) == sizeof(YesType));
-    };
+	concept has_get_derived_info_func_impl = requires()
+	{
+		{ &raw_type_t<T>::get_derived_info } -> std::same_as< derived_info (raw_type_t<T>::*)()>;
+	};
 
     /*!
      * If T has a member function 'type get_type() const;' then inherits from true_type, otherwise inherits from false_type.
      */
-    template<class T, typename Enable = void>
-    struct has_get_derived_info_func : std::false_type
-    {};
-
     template<class T>
-    struct has_get_derived_info_func<T, enable_if_t<has_get_derived_info_func_impl<T>::value> > : std::true_type
-    {};
+    using has_get_derived_info_func = std::bool_constant<has_get_derived_info_func_impl<T>>;
 
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
 
+    // C++20 rewrite: provide overloaded function templates that return a void*
+    // for a value or pointer. Use if constexpr to handle void pointer special
+    // cases and recurse for pointer-to-pointer types.
     template<typename T>
-    struct get_ptr_impl
+    static RTTR_INLINE void* get_void_ptr(T& data) noexcept
     {
-        static RTTR_INLINE void* get(T& data)
-        {
-            return const_cast<void*>(reinterpret_cast<const void*>(&data));
-        }
-    };
-
-    template<typename T>
-    struct get_ptr_impl<T*>
-    {
-        static RTTR_INLINE void* get(T* data)
-        {
-            return get_ptr_impl<T>::get(*data);
-        }
-    };
-
-    template<>
-    struct get_ptr_impl<void*>
-    {
-        static RTTR_INLINE void* get(void* data)
-        {
-            return data;
-        }
-    };
-
-    template<>
-    struct get_ptr_impl<const void*>
-    {
-        static RTTR_INLINE void* get(const void* data)
-        {
-            return const_cast<void*>(data);
-        }
-    };
-
-    template<typename T>
-    static RTTR_INLINE void* get_void_ptr(T* data)
-    {
-        return get_ptr_impl<T*>::get(data);
+        return const_cast<void*>(reinterpret_cast<const void*>(std::addressof(data)));
     }
 
     template<typename T>
-    static RTTR_INLINE void* get_void_ptr(T& data)
+    static RTTR_INLINE void* get_void_ptr(T* data) noexcept
     {
-        return get_ptr_impl<T>::get(data);
+        if constexpr (std::is_same_v<T, void> || std::is_same_v<T, const void>)
+        {
+            return const_cast<void*>(data);
+        }
+        else
+        {
+            return get_void_ptr(*data);
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -448,34 +369,22 @@ namespace detail
 
     /////////////////////////////////////////////////////////////////////////////////////
 
-    template <typename T>
-    struct has_is_valid_alias
-    {
-        typedef char YesType[1];
-        typedef char NoType[2];
+    // C++20: detect whether a type T exposes a nested alias `is_valid`.
+    template<typename T>
+    concept has_is_valid_alias = requires { typename T::is_valid; };
 
-        template <typename U> static YesType& check(typename U::is_valid*);
-        template <typename U> static NoType& check(...);
+    template<typename T, typename Tp = std::remove_cv_t<std::remove_reference_t<T>>>
+    using is_associative_container = std::bool_constant<!has_is_valid_alias<associative_container_mapper<Tp>>>;
 
-
-        static RTTR_CONSTEXPR_OR_CONST bool value = (sizeof(check<T>(0)) == sizeof(YesType));
-    };
-
-    template<typename T, typename Tp = remove_cv_t<remove_reference_t<T>>>
-    using is_associative_container = std::integral_constant<bool, !has_is_valid_alias<associative_container_mapper<Tp>>::value>;
-
-    template<typename T, typename Tp = remove_cv_t<remove_reference_t<T>>>
-    using is_sequential_container = std::integral_constant<bool, !has_is_valid_alias<sequential_container_mapper<Tp>>::value>;
+    template<typename T, typename Tp = std::remove_cv_t<std::remove_reference_t<T>>>
+    using is_sequential_container = std::bool_constant<!has_is_valid_alias<sequential_container_mapper<Tp>>>;
 
     /////////////////////////////////////////////////////////////////////////////////////
 
     template <typename T>
     struct associative_container_value_t
     {
-        template <typename U> static typename U::mapped_type check(typename U::mapped_type*);
-        template <typename U> static void check(...);
-
-        using type = decltype(check<T>(nullptr));
+        using type = std::conditional_t< requires { typename T::mapped_type; }, typename T::mapped_type, std::nullptr_t> //decltype(check<T>(nullptr));
     };
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -488,18 +397,16 @@ namespace detail
     // e.g. pointer_count<char**>::value => 2
     //      pointer_count<char*>::value  => 1
     //      pointer_count<char>::value   => 0
-    template<typename T, typename Enable = void>
+    template<typename T>
     struct pointer_count_impl
     {
         static RTTR_CONSTEXPR_OR_CONST std::size_t size = 0;
     };
 
-    template<typename T>
-    struct pointer_count_impl<T, enable_if_t<std::is_pointer<T>::value &&
-                                             !is_function_ptr<T>::value &&
-                                             !std::is_member_pointer<T>::value>>
+    template<typename T> requires (std::is_pointer_v<T> && !is_function_ptr<T>::value && !std::is_member_pointer_v<T>)
+    struct pointer_count_impl<T>
     {
-        static RTTR_CONSTEXPR_OR_CONST std::size_t size = pointer_count_impl<remove_pointer_t<T> >::size + 1;
+        static RTTR_CONSTEXPR_OR_CONST std::size_t size = pointer_count_impl<std::remove_pointer_t<T> >::size + 1;
     };
 
     template<typename T>
@@ -511,9 +418,9 @@ namespace detail
     //      is_char_array<int[10]>::value => false
     //      is_char_array<char>::value => false
     template<typename T>
-    using is_one_dim_char_array = std::integral_constant<bool, std::is_array<T>::value &&
-                                                               std::is_same<char, raw_array_type_t<T>>::value &&
-                                                               (std::rank<T>::value == 1)>;
+    using is_one_dim_char_array = std::integral_constant<bool, std::is_array_v<T> &&
+                                                               std::is_same_v<char, raw_array_type_t<T>> &&
+                                                               (std::rank_v<T> == 1)>;
 
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -529,7 +436,7 @@ namespace detail
     template<typename T1, typename T2, typename... U>
     struct max_sizeof_list_impl<T1, T2, U...>
     {
-        static RTTR_CONSTEXPR_OR_CONST std::size_t value = max_sizeof_list_impl< conditional_t< sizeof(T1) >= sizeof(T2),
+        static RTTR_CONSTEXPR_OR_CONST std::size_t value = max_sizeof_list_impl< std::conditional_t< sizeof(T1) >= sizeof(T2),
                                                                                               T1,
                                                                                               T2>,
                                                                                  U...>::value;
@@ -565,7 +472,7 @@ namespace detail
     struct max_alignof_list_impl<T1, T2, U...>
     {
         static RTTR_CONSTEXPR_OR_CONST std::size_t value = max_alignof_list_impl<
-                                                                conditional_t<std::alignment_of<T1>::value >= std::alignment_of<T2>::value,
+                                                                std::conditional_t<std::alignment_of<T1>::value >= std::alignment_of<T2>::value,
                                                                               T1, T2>,
                                                                 U...>::value;
     };
@@ -589,7 +496,7 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////
 
     template<typename T>
-    using remove_cv_ref_t = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
+    using remove_cv_ref_t = typename std::remove_cv<std::remove_reference_t<T>>::type;
 
     /*!
      * A slightly different decay than in the standard, the extent of arrays are not removed.
@@ -598,10 +505,10 @@ namespace detail
     template<typename T>
     struct decay_except_array
     {
-        using Tp    = remove_reference_t<T>;
-        using type  = conditional_t< std::is_function<Tp>::value,
-                                     add_pointer_t<Tp>,
-                                     remove_cv_t<Tp>
+        using Tp    = std::remove_reference_t<T>;
+        using type  = std::conditional_t< std::is_function<Tp>::value,
+                                     std::add_pointer_t<Tp>,
+                                     std::remove_cv_t<Tp>
                                    >;
     };
 
@@ -612,26 +519,27 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
     // checks whether the given type T has a less than operator
-    template<typename T, typename = decltype(std::declval<T>() < std::declval<T>() )>
-    std::true_type  supports_less_than_test(const T&);
-    std::false_type supports_less_than_test(...);
+    template<typename T>
+	concept has_less_than_operator_impl = requires(T a)
+	{
+		{ a < a } -> std::convertible_to<bool>;
+	};
 
     template<typename T>
-    struct has_less_than_operator : std::integral_constant<bool, std::is_same<std::true_type,
-                                                                             decltype(supports_less_than_test(std::declval<T>()))>::value> {};
+    struct has_less_than_operator : std::integral_constant<bool, std::is_same<std::true_type, has_less_than_operator_impl<T>> {};
 
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
     // checks whether the given type T has the equal operator
-    template<typename T, typename = decltype(std::declval<T>() == std::declval<T>() )>
-    std::true_type  supports_equal_test(const T&);
-    std::false_type supports_equal_test(...);
-
+    template<typename T>
+    concept supports_equal_test = requires(T a)
+    {
+        { a == a } -> std::convertible_to<bool>;
+    };
 
     template<typename T>
-    struct has_equal_operator : std::integral_constant<bool, std::is_same<std::true_type,
-                                                                          decltype(supports_equal_test(std::declval<T>()))>::value> {};
+    struct has_equal_operator : std::integral_constant<bool, std::is_same<std::true_type, supports_equal_test<T>> {};
 
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
@@ -683,7 +591,7 @@ namespace detail
     template<typename...Rs, typename Types_To_Find, typename T, typename...Tail>
     struct find_types_impl<type_list<Rs...>, Types_To_Find, type_list<T, Tail...>>
     {
-        using type = conditional_t< contains<T, Types_To_Find>::value,
+        using type = std::conditional_t< contains<T, Types_To_Find>::value,
                                     typename find_types_impl<type_list<Rs..., T>, Types_To_Find, type_list<Tail...>>::type,
                                     typename find_types_impl<type_list<Rs...>, Types_To_Find, type_list<Tail...>>::type
                                    >;
@@ -709,7 +617,7 @@ namespace detail
 
     template<typename...Orig_Types, typename T, typename... Tail>
     struct has_double_types_impl<type_list<Orig_Types...>, type_list<T, Tail...>>
-    :   conditional_t< count_type<T, type_list<Orig_Types...>>::value >= 2,
+    : std::conditional_t< count_type<T, type_list<Orig_Types...>>::value >= 2,
                        std::true_type,
                        typename has_double_types_impl<type_list<Orig_Types...>, type_list<Tail...>>::type
                      >
@@ -725,7 +633,7 @@ namespace detail
     // Returns the number of elements in the type list \p T which satisfy the condition \p Condition.
     // e.g. count_if<is_enum_type, type_list<int, enum_data<E>, std::string>>::value => 1
 
-    template<template<class> class Condition, typename T, typename Enable = void>
+    template<template<class> class Condition, typename T>
     struct count_if_impl;
 
     template<template<class> class Condition>
@@ -734,14 +642,14 @@ namespace detail
         static RTTR_CONSTEXPR_OR_CONST std::size_t value = 0;
     };
 
-    template<template<class> class Condition, typename T, typename...TArgs>
-    struct count_if_impl<Condition, type_list<T, TArgs...>, enable_if_t<Condition<T>::value>>
+    template<template<class> class Condition, typename T, typename...TArgs> requires (Condition<T>::value)
+    struct count_if_impl<Condition, type_list<T, TArgs...>>
     {
         static RTTR_CONSTEXPR_OR_CONST std::size_t value = count_if_impl<Condition, type_list<TArgs...>>::value + 1;
     };
 
-    template<template<class> class Condition, typename T, typename...TArgs>
-    struct count_if_impl<Condition, type_list<T, TArgs...>, enable_if_t<!Condition<T>::value>>
+	template<template<class> class Condition, typename T, typename...TArgs> requires (!Condition<T>::value)
+    struct count_if_impl<Condition, type_list<T, TArgs...>>
     {
         static RTTR_CONSTEXPR_OR_CONST std::size_t value = count_if_impl<Condition, type_list<TArgs...>>::value;
     };
@@ -778,7 +686,7 @@ namespace detail
     template<template<class> class Condition, typename T, typename...TArgs>
     struct find_if_impl<Condition, type_list<T, TArgs...>>
     {
-        using type = conditional_t< Condition<T>::value,
+        using type = std::conditional_t< Condition<T>::value,
                                     T,
                                     typename find_if_impl<Condition, type_list<TArgs...>>::type
                                    >;
@@ -824,18 +732,18 @@ namespace detail
     // e.g.:
     // is_same_nullptr<std::tuple<int, bool*>, std::tuple<int, nullptr>>::value => std::true_type
     // is_same_nullptr<std::tuple<int, bool>, std::tuple<int, nullptr>>::value => std::false_type
-    template<typename List1, typename List2, typename Enable = void>
+    template<typename List1, typename List2>
     struct is_same_nullptr_impl;
 
     template<template <class...> class List1, typename T, typename... T1,
              template <class...> class List2, typename U, typename... U1>
-    struct is_same_nullptr_impl< List1<T, T1...>, List2<U, U1...>, void >
+    struct is_same_nullptr_impl< List1<T, T1...>, List2<U, U1...>>
     {
-        using type = conditional_t<std::is_same<T, U>::value,
+        using type = std::conditional_t<std::is_same<T, U>::value,
                                    typename is_same_nullptr_impl<List1<T1...>, List2<U1...>>::type,
-                                   conditional_t< std::is_pointer<T>::value && is_nullptr_t<U>::value,
+                                   std::conditional_t< std::is_pointer_v<T> && is_nullptr_t<U>::value,
                                                   typename is_same_nullptr_impl<List1<T1...>, List2<U1...>>::type,
-                                                  conditional_t< std::is_pointer<U>::value && is_nullptr_t<T>::value,
+                                                  std::conditional_t< std::is_pointer_v<U> && is_nullptr_t<T>::value,
                                                                  typename is_same_nullptr_impl<List1<T1...>, List2<U1...>>::type,
                                                                  std::false_type
                                                                 >
@@ -844,16 +752,15 @@ namespace detail
     };
 
     template<template <class...> class List1, typename ...T,
-             template <class...> class List2, typename ...U>
-    struct is_same_nullptr_impl< List1<T...>, List2<U...>, enable_if_t< is_empty_args<T...>::value && is_empty_args<U...>::value> >
+		template <class...> class List2, typename ...U> requires (is_empty_args<T...>::value&& is_empty_args<U...>::value)
+    struct is_same_nullptr_impl< List1<T...>, List2<U...>>
     {
         using type = std::true_type;
     };
 
     template<template <class...> class List1, typename ...T,
-             template <class...> class List2, typename ...U>
-    struct is_same_nullptr_impl< List1<T...>, List2<U...>, enable_if_t< (!is_empty_args<T...>::value && is_empty_args<U...>::value) ||
-                                                                        (is_empty_args<T...>::value && !is_empty_args<U...>::value)> >
+		template <class...> class List2, typename ...U> requires ((!is_empty_args<T...>::value&& is_empty_args<U...>::value) || (is_empty_args<T...>::value && !is_empty_args<U...>::value))
+    struct is_same_nullptr_impl< List1<T...>, List2<U...>>
     {
         using type = std::false_type;
     };

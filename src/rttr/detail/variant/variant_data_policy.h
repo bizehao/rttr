@@ -80,26 +80,26 @@ using can_place_in_variant = std::integral_constant<bool, Can_Place>;
  * \return The manager class for the type T.
  */
 template<typename T>
-using variant_policy = conditional_t<std::is_same<T, void_variant_type>::value,
+using variant_policy = std::conditional_t<std::is_same<T, void_variant_type>::value,
                                      variant_data_policy_void,
-                                     conditional_t<is_nullptr_t<T>::value,
+                                     std::conditional_t<is_nullptr_t<T>::value,
                                                    variant_data_policy_nullptr_t,
-                                                   conditional_t<std::is_same<T, std::string>::value || is_one_dim_char_array<T>::value,
+                                                   std::conditional_t<std::is_same<T, std::string>::value || is_one_dim_char_array<T>::value,
                                                                  variant_data_policy_string,
-                                                                 conditional_t<can_place_in_variant<T>::value,
-                                                                               conditional_t<std::is_arithmetic<T>::value,
+                                                                 std::conditional_t<can_place_in_variant<T>::value,
+                                                                               std::conditional_t<std::is_arithmetic<T>::value,
                                                                                              variant_data_policy_arithmetic<T>,
-                                                                                             conditional_t<std::is_array<T>::value,
+                                                                                             std::conditional_t<std::is_array<T>::value,
                                                                                                            variant_data_policy_array_small<T>,
-                                                                                                           conditional_t<std::is_enum<T>::value,
+                                                                                                           std::conditional_t<std::is_enum<T>::value,
                                                                                                                          variant_data_policy_small<T, default_type_converter<T, convert_from_enum<T>>>,
                                                                                                                          variant_data_policy_small<T>
                                                                                                                         >
                                                                                                           >
                                                                                             >,
-                                                                                conditional_t<std::is_array<T>::value,
+                                                                                std::conditional_t<std::is_array<T>::value,
                                                                                               variant_data_policy_array_big<T>,
-                                                                                              conditional_t<std::is_enum<T>::value,
+                                                                                              std::conditional_t<std::is_enum<T>::value,
                                                                                                             variant_data_policy_big<T, default_type_converter<T, convert_from_enum<T>>>,
                                                                                                             variant_data_policy_big<T>
                                                                                                            >
@@ -154,7 +154,7 @@ using variant_policy_func = bool (*)(variant_policy_operation, const variant_dat
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-enable_if_t<std::is_pointer<T>::value, bool>
+std::enable_if_t<std::is_pointer<T>::value, bool>
 static RTTR_INLINE is_nullptr(T& val)
 {
     return (val == nullptr);
@@ -163,7 +163,7 @@ static RTTR_INLINE is_nullptr(T& val)
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-enable_if_t<!std::is_pointer<T>::value, bool>
+std::enable_if_t<!std::is_pointer<T>::value, bool>
 static RTTR_INLINE is_nullptr(T& to)
 {
     return false;
@@ -175,17 +175,17 @@ template<typename T>
 using is_copyable = std::is_copy_constructible<T>;
 
 template<typename T, typename Tp = decay_except_array_t<wrapper_mapper_t<T>> >
-enable_if_t<is_copyable<Tp>::value &&
+std::enable_if_t<is_copyable<Tp>::value &&
             is_wrapper<T>::value, variant> get_wrapped_value(T& value)
 {
-    using raw_wrapper_type = remove_cv_t<remove_reference_t<T>>;
+    using raw_wrapper_type = std::remove_cv_t<std::remove_reference_t<T>>;
     return variant(wrapper_mapper<raw_wrapper_type>::get(value));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T, typename Tp = decay_except_array_t<wrapper_mapper_t<T>>>
-enable_if_t<!is_copyable<Tp>::value ||
+std::enable_if_t<!is_copyable<Tp>::value ||
             !is_wrapper<T>::value, variant> get_wrapped_value(T& value)
 {
     return variant();

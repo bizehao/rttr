@@ -30,7 +30,6 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/misc_type_traits.h"
-#include "rttr/detail/misc/std_type_traits.h"
 #include "rttr/associative_mapper.h"
 #include "rttr/wrapper_mapper.h"
 
@@ -49,11 +48,11 @@ using can_create_associative_view = std::integral_constant<bool, is_associative_
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-enable_if_t<can_create_associative_view<T>::value, variant_associative_view_private>
+std::enable_if_t<can_create_associative_view<T>::value, variant_associative_view_private>
 create_variant_associative_view(T&& value);
 
 template<typename T>
-enable_if_t<!can_create_associative_view<T>::value, variant_associative_view_private>
+std::enable_if_t<!can_create_associative_view<T>::value, variant_associative_view_private>
 create_variant_associative_view(T&& value);
 
 /////////////////////////////////////////////////////////////////////////////////////////

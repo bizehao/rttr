@@ -145,8 +145,8 @@ static void write_array(const variant_sequential_view& view, PrettyWriter<String
 
 static void write_associative_container(const variant_associative_view& view, PrettyWriter<StringBuffer>& writer)
 {
-    static const string_view key_name("key");
-    static const string_view value_name("value");
+    static const std::string_view key_name("key");
+    static const std::string_view value_name("value");
 
     writer.StartArray();
 

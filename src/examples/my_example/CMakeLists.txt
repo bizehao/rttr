@@ -35,7 +35,7 @@ set(SRC_FILES "example_1.cpp" "other_impl.cpp")
 #endif()
 
 add_executable(example_1 ${SRC_FILES} ${HPP_FILES})
-target_link_libraries(example_1 RTTR::Core)
+target_link_libraries(example_1 rttr_core_lib)
 target_include_directories(example_1 PUBLIC ${RAPID_JSON_DIR})
 set_target_properties(example_1 PROPERTIES 
                       DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}

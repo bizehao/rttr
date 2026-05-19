@@ -39,6 +39,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <string>
+#include <concepts>
 
 namespace rttr
 {
@@ -68,7 +69,7 @@ namespace detail
     enum class variant_policy_operation : uint8_t;
 
     template<typename T, typename Decayed = decay_except_array_t<T>>
-    using decay_variant_t = enable_if_t<!std::is_same<Decayed, variant>::value, Decayed>;
+    using decay_variant_t = std::enable_if_t<!std::is_same<Decayed, variant>::value, Decayed>;
 
     using variant_policy_func = bool (*)(variant_policy_operation, const variant_data&, argument_wrapper);
 }
@@ -969,14 +970,14 @@ class RTTR_API variant
         RTTR_INLINE void* get_raw_ptr() const;
 
         //! Helper function to initialize all arithmetic types
-        template<typename T>
-        detail::enable_if_t<std::is_arithmetic<T>::value, T> convert_impl(bool* ok = nullptr) const;
+		template<typename T> requires (std::is_arithmetic_v<T>)
+        T convert_impl(bool* ok = nullptr) const;
 
-        template<typename T>
-        detail::enable_if_t<!std::is_arithmetic<T>::value && !std::is_enum<T>::value, T> convert_impl(bool* ok = nullptr) const;
+		template<typename T> requires (!std::is_arithmetic_v<T> && !std::is_enum_v<T>)
+        T convert_impl(bool* ok = nullptr) const;
 
-        template<typename T>
-        detail::enable_if_t<std::is_enum<T>::value, T> convert_impl(bool* ok = nullptr) const;
+		template<typename T> requires (std::is_enum_v<T>)
+        T convert_impl(bool* ok = nullptr) const;
 
         /*!
          * \brief Returns a pointer to the underlying object pointer wrapped in a smart_ptr.
@@ -1002,18 +1003,16 @@ class RTTR_API variant
          *
          * \return `True`, when the conversion was successful, otherwise `false`.
          */
-        template<typename T>
-        typename std::enable_if<detail::pointer_count<T>::value == 1, bool>::type
-        try_pointer_conversion(T& to, const type& source_type, const type& target_type) const;
+		template<typename T> requires (detail::pointer_count<T>::value == 1)
+        bool try_pointer_conversion(T& to, const type& source_type, const type& target_type) const;
 
         /*!
          * \brief A dummy method which does in fact always return `falsev.
          *
          * \return `False`.
          */
-        template<typename T>
-        typename std::enable_if<detail::pointer_count<T>::value != 1, bool>::type
-        try_pointer_conversion(T& to, const type& source_type, const type& target_type) const;
+		template<typename T> requires (detail::pointer_count<T>::value != 1)
+        bool try_pointer_conversion(T& to, const type& source_type, const type& target_type) const;
 
         /*!
          * \brief Compares the containing and the given variant \p other for equality.

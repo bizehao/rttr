@@ -29,7 +29,6 @@
 #define RTTR_CLASS_ITEM_MAPPER_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/std_type_traits.h"
 
 #include <vector>
 #include <type_traits>
@@ -53,15 +52,15 @@ class destructor_wrapper_base;
 class enumeration_wrapper_base;
 
 template<typename T>
-using class_item_to_wrapper_t = conditional_t< std::is_same<T, property>::value,
+using class_item_to_wrapper_t = std::conditional_t< std::is_same<T, property>::value,
                                                property_wrapper_base,
-                                               conditional_t< std::is_same<T, method>::value,
+                                               std::conditional_t< std::is_same<T, method>::value,
                                                               method_wrapper_base,
-                                                              conditional_t< std::is_same<T, constructor>::value,
+                                                              std::conditional_t< std::is_same<T, constructor>::value,
                                                                              constructor_wrapper_base,
-                                                                             conditional_t< std::is_same<T, destructor>::value,
+                                                                             std::conditional_t< std::is_same<T, destructor>::value,
                                                                                             destructor_wrapper_base,
-                                                                                            conditional_t< std::is_same<T, enumeration>::value,
+                                                                                            std::conditional_t< std::is_same<T, enumeration>::value,
                                                                                                             enumeration_wrapper_base,
                                                                                                             void>
                                                                                             >

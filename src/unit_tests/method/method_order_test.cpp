@@ -73,7 +73,7 @@ RTTR_REGISTRATION
 // then invokes the function
 std::string rttr_invoke_approach1(
         const rttr::instance& vinst,
-        const rttr::string_view& meth_name) {
+        const std::string_view& meth_name) {
 
     const auto& inst_t = vinst.get_type();
 
@@ -93,7 +93,7 @@ std::string rttr_invoke_approach1(
 // different rttr code - range based for loop
 std::string rttr_invoke_approach2(
         const rttr::instance& vinst,
-        const rttr::string_view& meth_name) {
+        const std::string_view& meth_name) {
 
     const auto& inst_t = vinst.get_type();
 

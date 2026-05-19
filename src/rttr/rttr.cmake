@@ -45,7 +45,6 @@ set(HEADER_FILES access_levels.h
                  registration.h
                  registration_friend.h
                  sequential_mapper.h
-                 string_view.h
                  rttr_cast.h
                  rttr_enable.h
                  type
@@ -90,7 +89,6 @@ set(HEADER_FILES access_levels.h
                  detail/impl/instance_impl.h
                  detail/impl/rttr_cast_impl.h
                  detail/impl/sequential_mapper_impl.h
-                 detail/impl/string_view_impl.h
                  detail/impl/wrapper_mapper_impl.h
                  detail/library/library_p.h
                  detail/metadata/metadata.h
@@ -110,7 +108,6 @@ set(HEADER_FILES access_levels.h
                  detail/misc/misc_type_traits.h
                  detail/misc/register_wrapper_mapper_conversion.h
                  detail/misc/sequential_container_type_traits.h
-                 detail/misc/std_type_traits.h
                  detail/misc/template_type_trait.h
                  detail/misc/template_type_trait_impl.h
                  detail/misc/utility.h

@@ -67,7 +67,7 @@ struct invoke_defaults_helper
 private:
     template<std::size_t... Def_Idx, typename... Def_Types, typename... TArgs>
     static RTTR_INLINE variant
-    invoke_with_defaults_helper(const F& func_ptr, const instance& obj, index_sequence<Def_Idx...>,
+    invoke_with_defaults_helper(const F& func_ptr, const instance& obj, std::index_sequence<Def_Idx...>,
                                 const std::tuple<Def_Types...>& def_args, const TArgs&...args)
     {
         return Invoker_Class::invoke(func_ptr, obj, args..., argument(std::get<Def_Idx>(def_args))...);
@@ -84,7 +84,7 @@ public:
         // here we calculate the integer sequence for retrieving the data from the tuple,
         // this depends on the number of arguments provided by the caller
         static RTTR_CONSTEXPR_OR_CONST std::size_t start_index = sizeof...(TArgs) + sizeof...(Def_Types) - arg_count;
-        using idx_seq = typename erase_sequence_till<index_sequence_for<Def_Types...>, start_index>::type;
+        using idx_seq = typename erase_sequence_till<std::index_sequence_for<Def_Types...>, start_index>::type;
         return invoke_with_defaults_helper(func_ptr, obj, idx_seq(), def_args, args...);
     }
 
@@ -111,7 +111,7 @@ struct invoke_defaults_helper<Invoker_Class, type_list<Ctor_Args...>>
 private:
     template<std::size_t... Def_Idx, typename... Def_Types, typename... TArgs>
     static RTTR_INLINE variant
-    invoke_with_defaults_extract(index_sequence<Def_Idx...>, const std::tuple<Def_Types...>& def_args, const TArgs&...args)
+    invoke_with_defaults_extract(std::index_sequence<Def_Idx...>, const std::tuple<Def_Types...>& def_args, const TArgs&...args)
     {
         return Invoker_Class::invoke(args..., argument(std::get<Def_Idx>(def_args))...);
     }
@@ -126,7 +126,7 @@ public:
         // here we calculate the integer sequence for retrieving the data from the tuple,
         // this depends on the number of arguments provided by the caller
         static RTTR_CONSTEXPR_OR_CONST std::size_t start_index = sizeof...(TArgs) + sizeof...(Def_Types) - arg_count;
-        using idx_seq = typename erase_sequence_till<index_sequence_for<Def_Types...>, start_index>::type;
+        using idx_seq = typename erase_sequence_till<std::index_sequence_for<Def_Types...>, start_index>::type;
         return invoke_with_defaults_extract(idx_seq(), def_args, args...);
     }
 
@@ -151,7 +151,7 @@ struct invoke_variadic_helper;
  * with the correct argument list 'size()'; this can only be decided at runtime.
  */
 template<typename Invoker_Class, std::size_t... Arg_Idx>
-struct invoke_variadic_helper<Invoker_Class, index_sequence<Arg_Idx...>>
+struct invoke_variadic_helper<Invoker_Class, std::index_sequence<Arg_Idx...>>
 {
     template<typename... Args>
     static RTTR_INLINE variant invoke(std::vector<argument>& arg_list, Args&&...args)
@@ -160,12 +160,12 @@ struct invoke_variadic_helper<Invoker_Class, index_sequence<Arg_Idx...>>
         if (arg_list.size() == Arg_Count)
             return Invoker_Class::invoke(args..., arg_list[Arg_Idx]...);
         else
-            return invoke_variadic_helper<Invoker_Class, make_index_sequence<Arg_Count - 1>>::invoke(arg_list, args...);
+            return invoke_variadic_helper<Invoker_Class, std::make_index_sequence<Arg_Count - 1>>::invoke(arg_list, args...);
     }
 };
 
 template<typename Invoker_Class>
-struct invoke_variadic_helper<Invoker_Class, index_sequence<>>
+struct invoke_variadic_helper<Invoker_Class, std::index_sequence<>>
 {
     template<typename...Args>
     static RTTR_INLINE variant invoke(std::vector<argument>& arg_list, Args&&...args)

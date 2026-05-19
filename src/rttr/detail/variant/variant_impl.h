@@ -42,7 +42,7 @@ namespace rttr
 namespace detail
 {
 template<typename T>
-using variant_t = remove_cv_t<remove_reference_t<T>>;
+using variant_t = std::remove_cv_t<std::remove_reference_t<T>>;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ RTTR_INLINE const T& variant::get_wrapped_value() const
 {
     detail::data_address_container result{detail::get_invalid_type(), detail::get_invalid_type(), nullptr, nullptr};
     m_policy(detail::variant_policy_operation::GET_ADDRESS_CONTAINER, m_data, result);
-    using nonRef = detail::remove_cv_t<T>;
+    using nonRef = std::remove_cv_t<T>;
     return *reinterpret_cast<const nonRef*>(result.m_data_address_wrapped_type);
 }
 
@@ -229,9 +229,8 @@ RTTR_INLINE bool variant::try_basic_type_conversion(T& to) const
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-typename std::enable_if<detail::pointer_count<T>::value == 1, bool>::type
-RTTR_INLINE variant::try_pointer_conversion(T& to, const type& source_type, const type& target_type) const
+template<typename T> requires (detail::pointer_count<T>::value == 1)
+RTTR_INLINE bool variant::try_pointer_conversion(T& to, const type& source_type, const type& target_type) const
 {
     if (!source_type.is_pointer())
         return false;
@@ -261,9 +260,8 @@ RTTR_INLINE variant::try_pointer_conversion(T& to, const type& source_type, cons
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-typename std::enable_if<detail::pointer_count<T>::value != 1, bool>::type
-RTTR_INLINE variant::try_pointer_conversion(T& to, const type& source_type, const type& target_type) const
+template<typename T> requires (detail::pointer_count<T>::value != 1)
+RTTR_INLINE bool variant::try_pointer_conversion(T& to, const type& source_type, const type& target_type) const
 {
     return false;
 }
@@ -344,8 +342,8 @@ RTTR_INLINE bool variant::convert(T& value) const
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE detail::enable_if_t<std::is_arithmetic<T>::value, T> variant::convert_impl(bool* ok) const
+template<typename T> requires (std::is_arithmetic_v<T>)
+RTTR_INLINE T variant::convert_impl(bool* ok) const
 {
     T result = 0;
     const bool could_convert = convert<T>(result);
@@ -357,8 +355,8 @@ RTTR_INLINE detail::enable_if_t<std::is_arithmetic<T>::value, T> variant::conver
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE detail::enable_if_t<!std::is_arithmetic<T>::value && !std::is_enum<T>::value, T> variant::convert_impl(bool* ok) const
+template<typename T> requires (!std::is_arithmetic_v<T> && !std::is_enum_v<T>)
+RTTR_INLINE T variant::convert_impl(bool* ok) const
 {
     static_assert(std::is_default_constructible<T>::value, "The given type T has no default constructor."
                                                            "You can only convert to a type, with a default constructor.");
@@ -372,8 +370,8 @@ RTTR_INLINE detail::enable_if_t<!std::is_arithmetic<T>::value && !std::is_enum<T
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE detail::enable_if_t<std::is_enum<T>::value, T> variant::convert_impl(bool* ok) const
+template<typename T> requires (std::is_enum_v<T>)
+RTTR_INLINE T variant::convert_impl(bool* ok) const
 {
     const auto target_type = type::get<T>();
     if (get_type() == target_type)
@@ -443,7 +441,7 @@ RTTR_INLINE T variant_cast(const variant& operand)
 
     auto result = unsafe_variant_cast<variant_t<T>>(&operand);
 
-    using ref_type = conditional_t<std::is_reference<T>::value, T, add_lvalue_reference_t<T>>;
+    using ref_type = std::conditional_t<std::is_reference<T>::value, T, std::add_lvalue_reference_t<T>>;
     return static_cast<ref_type>(*result);
 }
 
@@ -458,7 +456,7 @@ RTTR_INLINE T variant_cast(variant& operand)
 
     auto result = unsafe_variant_cast<variant_t<T>>(&operand);
 
-    using ref_type = conditional_t<std::is_reference<T>::value, T, add_lvalue_reference_t<T>>;
+    using ref_type = std::conditional_t<std::is_reference<T>::value, T, std::add_lvalue_reference_t<T>>;
     return static_cast<ref_type>(*result);
 }
 

@@ -33,7 +33,8 @@
 #include "rttr/type.h"
 #include "rttr/variant.h"
 #include "rttr/access_levels.h"
-#include "rttr/string_view.h"
+
+#include <string_view>
 
 namespace rttr
 {
@@ -54,13 +55,13 @@ namespace detail
 class RTTR_API property_wrapper_base
 {
     public:
-        property_wrapper_base(string_view name, type declaring_type) RTTR_NOEXCEPT;
+        property_wrapper_base(std::string_view name, type declaring_type) RTTR_NOEXCEPT;
 
         virtual ~property_wrapper_base();
 
         type get_declaring_type() const RTTR_NOEXCEPT;
 
-        string_view get_name() const RTTR_NOEXCEPT;
+        std::string_view get_name() const RTTR_NOEXCEPT;
 
         virtual bool is_valid() const RTTR_NOEXCEPT;
 

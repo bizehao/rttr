@@ -45,22 +45,16 @@ namespace detail
  * Determine if the given type \a T has a wrapper_mapper method called `convert`.
  */
 template <typename T>
-class has_conversion_function_impl
+concept has_conversion_function_impl = requires()
 {
-    typedef char YesType[1];
-    typedef char NoType[2];
-
-    template <typename U> static YesType& check(decltype(&wrapper_mapper<U>::convert));
-    template <typename U> static NoType&  check(...);
-public:
-    static RTTR_CONSTEXPR_OR_CONST bool value = (sizeof(check<raw_type_t<T>>(0)) != sizeof(YesType));
+    &wrapper_mapper<raw_type_t<T>>::convert;
 };
 
 /*!
  * If \a T has a wrapper_mapper function `convert` then is the same like `std::true_type`, otherwise inherits from `std::false_type`.
  */
 template<typename T>
-using has_wrapper_conv_func = std::integral_constant<bool, has_conversion_function_impl<T>::value>;
+using has_wrapper_conv_func = std::integral_constant<bool, has_conversion_function_impl<T>>;
 
 /////////////////////////////////////////////////////////////////////////////////////
 

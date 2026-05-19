@@ -72,7 +72,7 @@ class RTTR_LOCAL variant_associative_view_private
         variant_associative_view_private(const T& container) RTTR_NOEXCEPT
         :   m_type(type::get<RawType>()),
             m_key_type(type::get<typename associative_container_mapper<RawType>::key_t>()),
-            m_value_type(type::get<conditional_t<std::is_void<typename associative_container_mapper<RawType>::value_t>::value,
+            m_value_type(type::get<std::conditional_t<std::is_void<typename associative_container_mapper<RawType>::value_t>::value,
                                                 invalid_type,
                                                 typename associative_container_mapper<RawType>::value_t>>()),
             m_container(as_void_ptr(container)),

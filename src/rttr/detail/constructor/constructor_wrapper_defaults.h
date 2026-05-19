@@ -63,7 +63,7 @@ template<typename Class_Type, access_levels Acc_Level, typename Policy, std::siz
 class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy, Metadata_Count, default_args<Def_Args...>, parameter_infos<Param_Args...>, Visitor_List, Ctor_Args...>
 :   public constructor_wrapper_base, public metadata_handler<Metadata_Count>
 {
-        using invoker_class = constructor_invoker<ctor_type, Policy, type_list<Class_Type, Ctor_Args...>, index_sequence_for<Ctor_Args...>>;
+        using invoker_class = constructor_invoker<ctor_type, Policy, type_list<Class_Type, Ctor_Args...>, std::index_sequence_for<Ctor_Args...>>;
         using instanciated_type = typename invoker_class::return_type;
         using invoke_with_defaults = invoke_defaults_helper<invoker_class, type_list<Ctor_Args...>>;
 
@@ -130,7 +130,7 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy, Metadata_Co
         variant invoke_variadic(std::vector<argument>& args) const
         {
             if (args.size() <= sizeof...(Ctor_Args))
-                return invoke_variadic_helper<invoke_with_defaults, index_sequence_for<Ctor_Args...>>::invoke(args, m_def_args.m_args);
+                return invoke_variadic_helper<invoke_with_defaults, std::index_sequence_for<Ctor_Args...>>::invoke(args, m_def_args.m_args);
             else
                 return variant();
         }
@@ -157,7 +157,7 @@ class constructor_wrapper<Class_Type, return_func, Acc_Level, Policy,
 {
     using instanciated_type = typename function_traits<F>::return_type;
     using method_type = typename detail::method_type<F>::type;
-    using arg_index_sequence = make_index_sequence< function_traits<F>::arg_count >;
+    using arg_index_sequence = std::make_index_sequence< function_traits<F>::arg_count >;
     using invoker_class = method_invoker<F, Policy, method_type, arg_index_sequence>;
     using invoke_with_defaults = invoke_defaults_helper<invoker_class, F>;
 
@@ -242,7 +242,7 @@ template<typename Class_Type, access_levels Acc_Level, typename Policy, std::siz
 class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy, Metadata_Count, default_args<Def_Args...>, parameter_infos<>, Visitor_List, Ctor_Args...>
 :   public constructor_wrapper_base, public metadata_handler<Metadata_Count>
 {
-        using invoker_class = constructor_invoker<ctor_type, Policy, type_list<Class_Type, Ctor_Args...>, index_sequence_for<Ctor_Args...>>;
+        using invoker_class = constructor_invoker<ctor_type, Policy, type_list<Class_Type, Ctor_Args...>, std::index_sequence_for<Ctor_Args...>>;
         using instanciated_type = typename invoker_class::return_type;
         using invoke_with_defaults = invoke_defaults_helper<invoker_class, type_list<Ctor_Args...>>;
 
@@ -306,7 +306,7 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy, Metadata_Co
         variant invoke_variadic(std::vector<argument>& args) const
         {
             if (args.size() <= sizeof...(Ctor_Args))
-                return invoke_variadic_helper<invoke_with_defaults, index_sequence_for<Ctor_Args...>>::invoke(args, m_def_args.m_args);
+                return invoke_variadic_helper<invoke_with_defaults, std::index_sequence_for<Ctor_Args...>>::invoke(args, m_def_args.m_args);
             else
                 return variant();
         }
@@ -331,7 +331,7 @@ class constructor_wrapper<Class_Type, return_func, Acc_Level, Policy,
 {
     using instanciated_type = typename function_traits<F>::return_type;
     using method_type = typename detail::method_type<F>::type;
-    using arg_index_sequence = make_index_sequence< function_traits<F>::arg_count >;
+    using arg_index_sequence = std::make_index_sequence< function_traits<F>::arg_count >;
     using invoker_class = method_invoker<F, Policy, method_type, arg_index_sequence>;
     using invoke_with_defaults = invoke_defaults_helper<invoker_class, F>;
 

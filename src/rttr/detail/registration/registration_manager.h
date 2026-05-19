@@ -221,7 +221,7 @@ template<typename T>
 using is_global_item = std::integral_constant<bool, std::is_same<T, invalid_type>::value>;
 
 template<typename T, typename Item>
-RTTR_LOCAL RTTR_FORCE_INLINE enable_if_t<is_global_item<T>::value, void>
+RTTR_LOCAL RTTR_FORCE_INLINE std::enable_if_t<is_global_item<T>::value, void>
 store_item(Item item)
 {
     auto& obj = get_registration_manager();
@@ -229,7 +229,7 @@ store_item(Item item)
 }
 
 template<typename T, typename Item>
-RTTR_LOCAL RTTR_FORCE_INLINE enable_if_t<!is_global_item<T>::value, void>
+RTTR_LOCAL RTTR_FORCE_INLINE std::enable_if_t<!is_global_item<T>::value, void>
 store_item(Item item)
 {
     auto& obj = get_registration_manager();

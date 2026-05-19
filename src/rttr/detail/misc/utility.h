@@ -30,7 +30,6 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 
-#include "rttr/detail/misc/std_type_traits.h"
 #include "rttr/detail/misc/misc_type_traits.h"
 
 #include <cstddef>
@@ -51,60 +50,25 @@ namespace detail
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-// This will add the c++14 integer sequence to c++11
-
-    template <class T, T... I>
-    struct integer_sequence
-    {
-        template <T N> using append = integer_sequence<T, I..., N>;
-        static std::size_t size() { return sizeof...(I); }
-        using next = append<sizeof...(I)>;
-        using type = T;
-    };
-
-    template <class T, T Index, std::size_t N>
-    struct sequence_generator
-    {
-        using type = typename sequence_generator<T, Index - 1, N - 1>::type::next;
-    };
-
-    template <class T, T Index>
-    struct sequence_generator<T, Index, 0ul> { using type = integer_sequence<T>; };
-
-    template <std::size_t... I>
-    using index_sequence = integer_sequence<std::size_t, I...>;
-
-    template <class T, T N>
-    using make_integer_sequence = typename sequence_generator<T, N, N>::type;
-
-    template <std::size_t N>
-    using make_index_sequence = make_integer_sequence<std::size_t, N>;
-
-    template<class... T>
-    using index_sequence_for = make_index_sequence<sizeof...(T)>;
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 // will remove all numbers of the given index sequence till the given \p Index.
-// typename erase_sequence_till<index_sequence<0, 1, 2, 3, 4>, 3>::type =>   index_sequence<3, 4>
+// typename erase_sequence_till<std::index_sequence<0, 1, 2, 3, 4>, 3>::type =>   std::index_sequence<3, 4>
 
-template<typename Index_Sequence, std::size_t Index>
+template<typename index_sequence, std::size_t Index>
 struct erase_sequence_till;
 
 template<std::size_t Index, std::size_t Idx, std::size_t... I>
-struct erase_sequence_till<index_sequence<Idx, I...>, Index>
+struct erase_sequence_till<std::index_sequence<Idx, I...>, Index>
 {
-    using type = conditional_t< Idx == Index,
-                                index_sequence<Idx, I...>,
-                                typename erase_sequence_till<index_sequence<I...>, Index>::type>;
+    using type = std::conditional_t< Idx == Index,
+                                std::index_sequence<Idx, I...>,
+                                typename erase_sequence_till<std::index_sequence<I...>, Index>::type>;
 };
 
 template<std::size_t Index>
-struct erase_sequence_till<index_sequence<>, Index>
+struct erase_sequence_till<std::index_sequence<>, Index>
 {
-    using type = index_sequence<>;
+    using type = std::index_sequence<>;
 };
 
 
@@ -115,13 +79,13 @@ struct erase_sequence_till<index_sequence<>, Index>
 template<typename T>
 struct remove_first_index_impl
 {
-    using type = index_sequence<>;
+    using type = std::index_sequence<>;
 };
 
 template<std::size_t First, std::size_t... I>
-struct remove_first_index_impl<detail::index_sequence<First, I...>>
+struct remove_first_index_impl<std::index_sequence<First, I...>>
 {
-    using type = detail::index_sequence<I...>;
+    using type = std::index_sequence<I...>;
 };
 
 template<typename T>
@@ -134,9 +98,9 @@ template<typename, typename>
 struct concat_index_sequence { };
 
 template<std::size_t... Ts, std::size_t... Us>
-struct concat_index_sequence<index_sequence<Ts...>, index_sequence<Us...>>
+struct concat_index_sequence<std::index_sequence<Ts...>, std::index_sequence<Us...>>
 {
-    using type = index_sequence<Ts..., Us...>;
+    using type = std::index_sequence<Ts..., Us...>;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -145,17 +109,17 @@ template <class T>
 struct remove_last_index_impl;
 
 template <size_t Last>
-struct remove_last_index_impl<index_sequence<Last>>
+struct remove_last_index_impl<std::index_sequence<Last>>
 {
-    using type = index_sequence<>;
+    using type = std::index_sequence<>;
 };
 
 template<std::size_t First, std::size_t... I>
-struct remove_last_index_impl<index_sequence<First, I...>>
+struct remove_last_index_impl<std::index_sequence<First, I...>>
 {
     using type = typename concat_index_sequence<
-                                                 index_sequence<First>,
-                                                 typename remove_last_index_impl<index_sequence<I...>>::type
+                                                 std::index_sequence<First>,
+                                                 typename remove_last_index_impl<std::index_sequence<I...>>::type
                                                 >::type;
 };
 
@@ -175,11 +139,11 @@ struct type_identity
     using type = T;
 };
 
-template<typename T, std::size_t N, typename Indices = make_index_sequence<N>>
+template<typename T, std::size_t N, typename Indices = std::make_index_sequence<N>>
 struct create_type_list;
 
 template<typename T, std::size_t N, std::size_t... Indices>
-struct create_type_list<T, N, index_sequence<Indices...>>
+struct create_type_list<T, N, std::index_sequence<Indices...>>
 {
     using type = type_list<typename type_identity<T, Indices>::type...>;
 };
@@ -233,48 +197,10 @@ auto copy_array(const ElementType (&in)[Count], ElementType (&out)[Count])
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-// make_unqiue implementation for C++11
-
-template<class T> struct _Unique_if
-{
-    using _Single_object = std::unique_ptr<T>;
-};
-
-template<class T> struct _Unique_if<T[]>
-{
-    using _Unknown_bound = std::unique_ptr<T[]>;
-};
-
-template<class T, size_t N> struct _Unique_if<T[N]>
-{
-    using _Known_bound = void;
-};
-
-template<class T, class... Args>
-typename _Unique_if<T>::_Single_object
-make_unique(Args&&... args)
-{
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
-
-template<class T>
-typename _Unique_if<T>::_Unknown_bound
-make_unique(size_t n)
-{
-    using U = typename std::remove_extent<T>::type;
-    return std::unique_ptr<T>(new U[n]());
-}
-
-template<class T, class... Args>
-typename _Unique_if<T>::_Known_bound
-make_unique(Args&&...) = delete;
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
-RTTR_CONSTEXPR RTTR_INLINE add_const_t<T>& as_const(T& value) RTTR_NOEXCEPT
+RTTR_CONSTEXPR RTTR_INLINE std::add_const_t<T>& as_const(T& value) RTTR_NOEXCEPT
 {
     return value;
 }
@@ -283,15 +209,15 @@ RTTR_CONSTEXPR RTTR_INLINE add_const_t<T>& as_const(T& value) RTTR_NOEXCEPT
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_FORCE_INLINE typename std::enable_if<std::is_pointer<T>::value, void*>::type as_void_ptr(const T& obj)
+template<typename T> requires (std::is_pointer_v<T>)
+RTTR_FORCE_INLINE void* as_void_ptr(const T& obj)
 {
     return const_cast<void*>(reinterpret_cast<const volatile void*>(obj));
 }
 
 
-template<typename T>
-RTTR_FORCE_INLINE typename std::enable_if<!std::is_pointer<T>::value, void*>::type as_void_ptr(const T& obj)
+template<typename T> requires (!std::is_pointer_v<T>)
+RTTR_FORCE_INLINE void* as_void_ptr(const T& obj)
 {
     return const_cast<void*>(reinterpret_cast<const volatile void*>(&obj));
 }
@@ -351,51 +277,22 @@ auto reverse(T&& container) -> typename std::conditional< std::is_lvalue_referen
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using return_type_normal = add_pointer_t< remove_pointers_t<T> >;
+using return_type_normal = std::add_pointer_t< remove_pointers_t<T> >;
 
-template<typename T, typename Tp = remove_reference_t<T>>
+template<typename T, typename Tp = std::remove_reference_t<T>>
 using raw_addressof_return_type = std::conditional< is_function_ptr< remove_pointers_except_one_t<Tp> >::value,
-                                                    add_pointer_t< remove_pointers_except_one_t<Tp> >,
+                                                    std::add_pointer_t< remove_pointers_except_one_t<Tp> >,
                                                     return_type_normal<Tp> >;
 
 
 template<typename T>
 using raw_addressof_return_type_t = typename raw_addressof_return_type<T>::type;
 
-template<typename T, typename Enable = void>
-struct raw_addressof_impl
-{
-    static RTTR_INLINE raw_addressof_return_type_t<T> get(T& data)
-    {
-        return std::addressof(data);
-    }
-};
-
 template<typename T>
-using is_raw_void_pointer = std::is_same<void*, add_pointer_t< raw_type_t<T> > >;
+using is_raw_void_pointer = std::is_same<void*, std::add_pointer_t< raw_type_t<T> > >;
 
 template<typename T>
 using is_void_pointer = std::integral_constant<bool, std::is_pointer<T>::value && is_raw_void_pointer<T>::value && pointer_count<T>::value == 1>;
-
-template<typename T>
-struct raw_addressof_impl<T, enable_if_t<(std::is_pointer<T>::value && pointer_count<T>::value >= 1 && !is_void_pointer<T>::value) ||
-                                         (pointer_count<T>::value == 1 && std::is_member_pointer<remove_pointer_t<T> >::value)
-                                         > >
-{
-    static RTTR_INLINE raw_addressof_return_type_t<T> get(T& data)
-    {
-        return raw_addressof_impl< remove_pointer_t<T> >::get(*data);
-    }
-};
-
-template<typename T>
-struct raw_addressof_impl<T, enable_if_t<is_void_pointer<T>::value> >
-{
-    static RTTR_INLINE raw_addressof_return_type_t<T> get(T& data)
-    {
-        return data; // void pointer cannot be dereferenced to type "void"
-    }
-};
 
 /*!
  * \brief This function will return from its raw type \p T
@@ -408,6 +305,19 @@ struct raw_addressof_impl<T, enable_if_t<is_void_pointer<T>::value> >
 template<typename T>
 static RTTR_INLINE raw_addressof_return_type_t<T> raw_addressof(T& data)
 {
+    if constexpr (is_void_pointer<T>::value)
+    {
+		return data; // void pointer cannot be dereferenced to type "void"
+    }
+    else if constexpr ((std::is_pointer<T>::value && pointer_count<T>::value >= 1 && !is_void_pointer<T>::value) ||
+        (pointer_count<T>::value == 1 && std::is_member_pointer<std::remove_pointer_t<T> >::value))
+    {
+        return raw_addressof(*data);
+    }
+    else
+    {
+        std::addressof(data);
+    }
     return raw_addressof_impl<T>::get(data);
 }
 
@@ -485,7 +395,7 @@ RTTR_INLINE static std::size_t generate_hash(const char* text, std::size_t lengt
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// custom has functor, to make sure that "std::string" and "rttr::string_view" uses the same hashing algorithm
+// custom has functor, to make sure that "std::string" and "std::string_view" uses the same hashing algorithm
 template <typename T>
 struct hash;
 
@@ -499,18 +409,26 @@ public:
     }
 };
 
+template <>
+struct hash<std::string_view>
+{
+public:
+    size_t operator()(const std::string_view& text) const
+    {
+        return generate_hash(text.data(), text.length());
+    }
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-inline enable_if_t<std::is_same<T, std::string>::value || std::is_same<T, std::wstring>::value, bool>
-starts_with(const T& big_str, const T& small_str)
+template<typename T> requires (std::is_same<T, std::string>::value || std::is_same<T, std::wstring>::value)
+inline  bool starts_with(const T& big_str, const T& small_str)
 {
     return (big_str.compare(0, small_str.size(), small_str) == 0);
 }
 
-template<typename T>
-inline enable_if_t<std::is_same<T, std::string>::value || std::is_same<T, std::wstring>::value, bool>
-ends_with(const T& big_str, const T& small_str)
+template<typename T> requires (std::is_same<T, std::string>::value || std::is_same<T, std::wstring>::value)
+inline bool ends_with(const T& big_str, const T& small_str)
 {
     return (big_str.size() >= small_str.size() &&
             big_str.compare(big_str.size() - small_str.size(), small_str.size(), small_str) == 0);

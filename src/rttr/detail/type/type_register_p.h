@@ -35,12 +35,11 @@
 #include "rttr/variant.h"
 #include "rttr/detail/metadata/metadata.h"
 
-#include "rttr/string_view.h"
-
 #include <memory>
 #include <string>
 #include <vector>
 #include <mutex>
+#include <string_view>
 
 namespace rttr
 {
@@ -87,7 +86,7 @@ public:
     bool register_global_method(const method_wrapper_base* meth);
     bool unregister_global_method(const method_wrapper_base* meth);
 
-    void register_custom_name(type& t, string_view custom_name);
+    void register_custom_name(type& t, std::string_view custom_name);
 
     /////////////////////////////////////////////////////////////////////////////////////
     flat_multimap<std::string, ::rttr::property>& get_global_property_storage();
@@ -176,8 +175,8 @@ private:
     static const type_comparator_base* get_type_comparator_impl(const type& t,
                                                                 const std::vector<data_container<const type_comparator_base*>>& comparator_list);
 
-    static ::rttr::property get_type_property(const type& t, string_view name);
-    static ::rttr::method get_type_method(const type& t, string_view name,
+    static ::rttr::property get_type_property(const type& t, std::string_view name);
+    static ::rttr::method get_type_method(const type& t, std::string_view name,
                                           const std::vector<type>& type_list);
 
     template<typename T>

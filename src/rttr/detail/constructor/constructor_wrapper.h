@@ -76,7 +76,7 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
                           Metadata_Count, default_args<>, parameter_infos<Param_Args...>, Visitor_List, Ctor_Args...>
 :   public constructor_wrapper_base, public metadata_handler<Metadata_Count>
 {
-    using invoker_class = constructor_invoker<ctor_type, Policy, type_list<Class_Type, Ctor_Args...>, index_sequence_for<Ctor_Args...>>;
+    using invoker_class = constructor_invoker<ctor_type, Policy, type_list<Class_Type, Ctor_Args...>, std::index_sequence_for<Ctor_Args...>>;
     using instanciated_type = typename invoker_class::return_type;
 
     public:
@@ -154,7 +154,7 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
         }
 
         template<std::size_t ...I>
-        static RTTR_INLINE variant invoke_variadic_impl(const std::vector<argument>& arg_list, index_sequence<I...>)
+        static RTTR_INLINE variant invoke_variadic_impl(const std::vector<argument>& arg_list, std::index_sequence<I...>)
         {
             if (arg_list.size() == sizeof...(I))
                 return invoker_class::invoke(arg_list[I]...);
@@ -164,7 +164,7 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
 
         variant invoke_variadic(std::vector<argument>& arg_list) const
         {
-            return invoke_variadic_impl(arg_list, make_index_sequence<sizeof...(Ctor_Args)>());
+            return invoke_variadic_impl(arg_list, std::make_index_sequence<sizeof...(Ctor_Args)>());
         }
 
         void visit(visitor& visitor, const constructor& ctor) const RTTR_NOEXCEPT
@@ -268,7 +268,7 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
                           Metadata_Count, default_args<>, parameter_infos<>, Visitor_List, Ctor_Args...>
 :   public constructor_wrapper_base, public metadata_handler<Metadata_Count>
 {
-    using invoker_class = constructor_invoker<ctor_type, Policy, type_list<Class_Type, Ctor_Args...>, index_sequence_for<Ctor_Args...>>;
+    using invoker_class = constructor_invoker<ctor_type, Policy, type_list<Class_Type, Ctor_Args...>, std::index_sequence_for<Ctor_Args...>>;
     using instanciated_type = typename invoker_class::return_type;
 
     public:
@@ -343,7 +343,7 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
         }
 
         template<std::size_t ...I>
-        static RTTR_INLINE variant invoke_variadic_impl(const std::vector<argument>& arg_list, index_sequence<I...>)
+        static RTTR_INLINE variant invoke_variadic_impl(const std::vector<argument>& arg_list, std::index_sequence<I...>)
         {
             if (arg_list.size() == sizeof...(I))
                 return invoker_class::invoke(arg_list[I]...);
@@ -353,7 +353,7 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
 
         variant invoke_variadic(std::vector<argument>& arg_list) const
         {
-            return invoke_variadic_impl(arg_list, make_index_sequence<sizeof...(Ctor_Args)>());
+            return invoke_variadic_impl(arg_list, std::make_index_sequence<sizeof...(Ctor_Args)>());
         }
 
         void visit(visitor& visitor, const constructor& ctor) const RTTR_NOEXCEPT

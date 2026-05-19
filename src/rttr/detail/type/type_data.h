@@ -173,7 +173,7 @@ struct RTTR_LOCAL get_size_of
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-struct RTTR_LOCAL get_size_of<T, enable_if_t<std::is_same<T, void>::value || std::is_function<T>::value>>
+struct RTTR_LOCAL get_size_of<T, std::enable_if_t<std::is_same<T, void>::value || std::is_function<T>::value>>
 {
     RTTR_INLINE RTTR_CONSTEXPR static std::size_t value()
     {
@@ -243,7 +243,7 @@ RTTR_LOCAL RTTR_INLINE void create_wrapper(const argument& arg, variant& var)
 
 template<typename Wrapper, typename Tp = wrapper_mapper_t<Wrapper>>
 RTTR_LOCAL RTTR_INLINE
-enable_if_t<is_wrapper<Wrapper>::value &&
+std::enable_if_t<is_wrapper<Wrapper>::value &&
             ::rttr::detail::is_copy_constructible<Wrapper>::value &&
             std::is_default_constructible<Wrapper>::value &&
             has_create_wrapper_func<Wrapper>::value, impl::create_wrapper_func>
@@ -255,7 +255,7 @@ get_create_wrapper_func()
 
 template<typename Wrapper, typename Tp = wrapper_mapper_t<Wrapper>>
 RTTR_LOCAL RTTR_INLINE
-enable_if_t<!is_wrapper<Wrapper>::value ||
+std::enable_if_t<!is_wrapper<Wrapper>::value ||
             !::rttr::detail::is_copy_constructible<Wrapper>::value ||
             !std::is_default_constructible<Wrapper>::value ||
             !has_create_wrapper_func<Wrapper>::value, impl::create_wrapper_func>
@@ -269,7 +269,7 @@ get_create_wrapper_func()
 template<typename T>
 RTTR_LOCAL RTTR_INLINE std::vector<metadata>& get_metadata_func_impl()
 {
-    static std::unique_ptr<std::vector<metadata>> obj = make_unique<std::vector<metadata>>();
+    static std::unique_ptr<std::vector<metadata>> obj = std::make_unique<std::vector<metadata>>();
     return (*obj.get());
 }
 
@@ -304,8 +304,8 @@ RTTR_LOCAL std::unique_ptr<type_data> make_type_data()
                             raw_type_info<T>::get_type().m_type_data, wrapper_type_info<T>::get_type().m_type_data,
                             array_raw_type<T>::get_type().m_type_data,
 
-                            ::rttr::detail::get_type_name<T>().to_string(),
-                            ::rttr::detail::get_type_name<T>().to_string(),
+                            std::string{::rttr::detail::get_type_name<T>()},
+                            std::string{::rttr::detail::get_type_name<T>()},
 
                             get_size_of<T>::value(),
                             pointer_count<T>::value,

@@ -29,7 +29,6 @@
 #define RTTR_WRAPPER_MAPPER_IMPL_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/std_type_traits.h"
 #include "rttr/detail/misc/utility.h"
 #include <type_traits>
 
@@ -147,7 +146,7 @@ using is_wrapper = std::integral_constant<bool, !std::is_same<invalid_wrapper_ty
 //////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using wrapper_address_return_type_t = conditional_t<is_wrapper<T>::value,
+using wrapper_address_return_type_t = std::conditional_t<is_wrapper<T>::value,
                                                     raw_addressof_return_type_t< wrapper_mapper_t< T > >,
                                                     raw_addressof_return_type_t<T>>;
 
@@ -156,7 +155,7 @@ using wrapper_address_return_type_t = conditional_t<is_wrapper<T>::value,
 template<typename T>
 typename std::enable_if<is_wrapper<T>::value, raw_addressof_return_type_t< wrapper_mapper_t<T>> >::type wrapped_raw_addressof(T& obj)
 {
-    using raw_wrapper_type = remove_cv_t<remove_reference_t<T>>;
+    using raw_wrapper_type = std::remove_cvref_t<T>;;
     wrapper_mapper_t<T> value = wrapper_mapper<raw_wrapper_type>::get(obj);
     return raw_addressof(value);
 }

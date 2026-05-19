@@ -31,7 +31,6 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/misc_type_traits.h"
 #include "rttr/detail/type/base_classes.h"
-#include "rttr/detail/misc/std_type_traits.h"
 
 namespace rttr
 {
@@ -47,14 +46,14 @@ namespace detail
 
 template<typename T, typename Visitor_List>
 RTTR_INLINE
-enable_if_t<has_base_class_list<T>::value, void>
+std::enable_if_t<has_base_class_list<T>::value, void>
 visit_type(type_of_visit visit_type, visitor& vi, const type& t);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T, typename Visitor_List>
 RTTR_INLINE
-enable_if_t<!has_base_class_list<T>::value, void>
+std::enable_if_t<!has_base_class_list<T>::value, void>
 visit_type(type_of_visit visit_type, visitor& vi, const type& t);
 
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -63,7 +63,7 @@ template<typename F, typename Declaring_Type, access_levels Acc_Level, typename 
 class method_wrapper<F, Declaring_Type, Acc_Level, Policy, default_args<>, parameter_infos<Param_Args...>, Metadata_Count, Visitor_List> : public method_wrapper_base, public metadata_handler<Metadata_Count>
 {
     public:
-        method_wrapper(string_view name,
+        method_wrapper(std::string_view name,
                        F func_acc,
                        std::array<metadata, Metadata_Count> metadata_list,
                        parameter_infos<Param_Args...> param_infos) RTTR_NOEXCEPT
@@ -138,12 +138,12 @@ template<typename F, typename Declaring_Type, access_levels Acc_Level, typename 
 class method_wrapper<F, Declaring_Type, Acc_Level, Policy, default_args<Default_Args...>, parameter_infos<Param_Args...>, Metadata_Count, Visitor_List> : public method_wrapper_base, public metadata_handler<Metadata_Count>
 {
     using method_type = typename detail::method_type<F>::type;
-    using arg_index_sequence = make_index_sequence<function_traits<F>::arg_count>;
+    using arg_index_sequence = std::make_index_sequence<function_traits<F>::arg_count>;
     using invoker_class = method_invoker<F, Policy, method_type, arg_index_sequence>;
     using invoke_with_defaults = invoke_defaults_helper<invoker_class, F>;
 
     public:
-        method_wrapper(string_view name,
+        method_wrapper(std::string_view name,
                        F func_acc,
                        std::array<metadata, Metadata_Count> metadata_list,
                        default_args<Default_Args...> default_args,
@@ -225,7 +225,7 @@ template<typename F, typename Declaring_Type, access_levels Acc_Level, typename 
 class method_wrapper<F, Declaring_Type, Acc_Level, Policy, default_args<>, parameter_infos<>, Metadata_Count, Visitor_List> : public method_wrapper_base, public metadata_handler<Metadata_Count>
 {
     public:
-        method_wrapper(string_view name,
+        method_wrapper(std::string_view name,
                        F func_acc,
                        std::array<metadata, Metadata_Count> metadata_list,
                        parameter_infos<> param_infos) RTTR_NOEXCEPT
@@ -295,12 +295,12 @@ template<typename F, typename Declaring_Type, access_levels Acc_Level, typename 
 class method_wrapper<F, Declaring_Type, Acc_Level, Policy, default_args<Default_Args...>, parameter_infos<>, Metadata_Count, Visitor_List> : public method_wrapper_base, public metadata_handler<Metadata_Count>
 {
     using method_type = typename detail::method_type<F>::type;
-    using arg_index_sequence = make_index_sequence<function_traits<F>::arg_count>;
+    using arg_index_sequence = std::make_index_sequence<function_traits<F>::arg_count>;
     using invoker_class = method_invoker<F, Policy, method_type, arg_index_sequence>;
     using invoke_with_defaults = invoke_defaults_helper<invoker_class, F>;
 
     public:
-        method_wrapper(string_view name,
+        method_wrapper(std::string_view name,
                        F func_acc,
                        std::array<metadata, Metadata_Count> metadata_list,
                        default_args<Default_Args...> default_args,

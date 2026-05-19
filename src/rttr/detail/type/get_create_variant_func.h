@@ -74,7 +74,7 @@ struct RTTR_LOCAL create_invalid_variant_policy
  *         we might get infinite recursion for pointer types.
  */
 template<typename T>
-using create_variant_func = conditional_t<detail::pointer_count<T>::value == 1,
+using create_variant_func = std::conditional_t<detail::pointer_count<T>::value == 1,
                                           create_variant_policy<T>,
                                           create_invalid_variant_policy>;
 

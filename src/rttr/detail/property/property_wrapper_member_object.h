@@ -38,7 +38,7 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
 {
     using accessor = A (C::*);
     public:
-        property_wrapper(string_view name,
+        property_wrapper(std::string_view name,
                          accessor acc, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
         :   property_wrapper_base(name, type::get<Declaring_Typ>()),
             metadata_handler<Metadata_Count>(std::move(metadata_list)),
@@ -109,7 +109,7 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
 {
     using accessor = A (C::*);
     public:
-        property_wrapper(string_view name,
+        property_wrapper(std::string_view name,
                          accessor acc, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
         :   property_wrapper_base(name, type::get<Declaring_Typ>()),
             metadata_handler<Metadata_Count>(std::move(metadata_list)),
@@ -159,7 +159,7 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
 {
     using accessor = A (C::*);
     public:
-        property_wrapper(string_view name,
+        property_wrapper(std::string_view name,
                          accessor acc, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
         :   property_wrapper_base(name, type::get<Declaring_Typ>()),
             metadata_handler<Metadata_Count>(std::move(metadata_list)),
@@ -219,7 +219,7 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
 {
     using accessor = A (C::*);
     public:
-        property_wrapper(string_view name,
+        property_wrapper(std::string_view name,
                          accessor acc, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
         :   property_wrapper_base(name, type::get<Declaring_Typ>()),
             metadata_handler<Metadata_Count>(std::move(metadata_list)), m_acc(acc)
@@ -270,7 +270,7 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
 {
     using accessor = A (C::*);
     public:
-        property_wrapper(string_view name,
+        property_wrapper(std::string_view name,
                          accessor acc, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
         :   property_wrapper_base(name, type::get<Declaring_Typ>()),
             metadata_handler<Metadata_Count>(std::move(metadata_list)),
@@ -326,7 +326,7 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
 {
     using accessor = A (C::*);
     public:
-        property_wrapper(string_view name,
+        property_wrapper(std::string_view name,
                          accessor acc, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
         :   property_wrapper_base(name, type::get<Declaring_Typ>()),
             metadata_handler<Metadata_Count>(std::move(metadata_list)), m_acc(acc)

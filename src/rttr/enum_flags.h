@@ -29,7 +29,6 @@
 #define RTTR_ENUM_FLAGS_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/misc/std_type_traits.h"
 
 #include <type_traits>
 #include <cstdint>
@@ -89,7 +88,7 @@ class enum_flags
                                                    "Please use an enum which fits into an 'int32_t'." );
     public:
         using type = Enum;
-        using enum_type = detail::conditional_t<std::is_signed<typename std::underlying_type<Enum>::type>::value,
+        using enum_type = std::conditional_t<std::is_signed<typename std::underlying_type<Enum>::type>::value,
                                                 int32_t,
                                                 uint32_t>;
         using zero = enum_type*;

@@ -43,7 +43,7 @@ template<typename F, typename IndexSequence, typename B>
 struct method_accessor_impl;
 
 template<typename F, std::size_t... ArgCount>
-struct method_accessor_impl<F, index_sequence<ArgCount...>, std::true_type>
+struct method_accessor_impl<F, std::index_sequence<ArgCount...>, std::true_type>
 {
     static std::vector<bool> get_is_reference() RTTR_NOEXCEPT
     {
@@ -59,7 +59,7 @@ struct method_accessor_impl<F, index_sequence<ArgCount...>, std::true_type>
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename F, std::size_t... ArgCount>
-struct method_accessor_impl<F, index_sequence<ArgCount...>, std::false_type>
+struct method_accessor_impl<F, std::index_sequence<ArgCount...>, std::false_type>
 {
     static std::vector<bool> get_is_reference() RTTR_NOEXCEPT
     {
@@ -127,7 +127,7 @@ struct method_accessor
 {
     static RTTR_CONSTEXPR_OR_CONST std::size_t arg_count = function_traits<F>::arg_count;
     using method_type = typename detail::method_type<F>::type;
-    using arg_index_sequence = make_index_sequence< arg_count >;
+    using arg_index_sequence = std::make_index_sequence< arg_count >;
     using invoker_class = method_invoker<F, Policy, method_type, arg_index_sequence>;
 
     static bool is_static() RTTR_NOEXCEPT
@@ -148,7 +148,7 @@ struct method_accessor
     static std::vector<bool> get_is_reference() RTTR_NOEXCEPT
     {
         using has_arguments         = typename std::integral_constant<bool, arg_count != 0>::type;
-        return method_accessor_impl<F, make_index_sequence<arg_count>, has_arguments>::get_is_reference();
+        return method_accessor_impl<F, std::make_index_sequence<arg_count>, has_arguments>::get_is_reference();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +156,7 @@ struct method_accessor
     static std::vector<bool> get_is_const() RTTR_NOEXCEPT
     {
         using has_arguments         = typename std::integral_constant<bool, arg_count != 0>::type;
-        return method_accessor_impl<F, make_index_sequence<arg_count>, has_arguments>::get_is_const();
+        return method_accessor_impl<F, std::make_index_sequence<arg_count>, has_arguments>::get_is_const();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ struct method_accessor
     /////////////////////////////////////////////////////////////////////////////////////
 
     template<std::size_t... Arg_Idx>
-    static RTTR_INLINE variant invoke_variadic_impl(const F& func_ptr, const instance& obj, index_sequence<Arg_Idx...>, const std::vector<argument>& arg_list)
+    static RTTR_INLINE variant invoke_variadic_impl(const F& func_ptr, const instance& obj, std::index_sequence<Arg_Idx...>, const std::vector<argument>& arg_list)
     {
         return invoker_class::invoke(func_ptr, obj, arg_list[Arg_Idx]...);
     }
@@ -192,7 +192,7 @@ struct method_accessor
     static RTTR_INLINE variant invoke_variadic(const F& func_ptr, const instance& obj, const std::vector<argument>& arg_list)
     {
         if (arg_list.size() == arg_count)
-            return invoke_variadic_impl(func_ptr, obj, make_index_sequence<arg_count>(), arg_list);
+            return invoke_variadic_impl(func_ptr, obj, std::make_index_sequence<arg_count>(), arg_list);
         else
             return variant();
     }

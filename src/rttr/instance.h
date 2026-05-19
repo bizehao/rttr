@@ -46,8 +46,8 @@ class argument;
  */
 class RTTR_API instance
 {
-    template<typename T, typename Tp = detail::decay_t<T>>
-    using decay_instance_t = detail::enable_if_t<!std::is_same<instance, Tp>::value &&
+    template<typename T, typename Tp = std::decay_t<T>>
+    using decay_instance_t = std::enable_if_t<!std::is_same<instance, Tp>::value &&
                                                  !std::is_same<variant, Tp>::value, T>;
 
 public:

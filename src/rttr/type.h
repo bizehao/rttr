@@ -29,7 +29,6 @@
 #define RTTR_TYPE_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/string_view.h"
 #include "rttr/array_range.h"
 #include "rttr/filter_item.h"
 
@@ -38,6 +37,8 @@
 #include <string>
 #include <memory>
 #include <cstdint>
+#include <string_view>
+#include <compare>
 
 namespace rttr
 {
@@ -177,7 +178,7 @@ RTTR_LOCAL RTTR_INLINE type get_type_from_instance(const T*) RTTR_NOEXCEPT;
 class RTTR_API type
 {
     public:
-        typedef uintptr_t type_id;
+        using type_id = uintptr_t ;
 
         /*!
          * \brief Assigns a type to another one.
@@ -197,28 +198,28 @@ class RTTR_API type
          *
          * \return True if this type is less than the \a other.
          */
-        RTTR_INLINE bool operator<(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator<(const type& other) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Comparison operator for sorting the type data according to some internal criterion.
          *
          * \return True if this type is greater than the \a other.
          */
-        RTTR_INLINE bool operator>(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator>(const type& other) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Comparison operator for sorting the type data according to some internal criterion.
          *
          * \return True if this type is greater than or equal to \a other.
          */
-        RTTR_INLINE bool operator>=(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator>=(const type& other) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Comparison operator for sorting the type data according to some internal criterion.
          *
          * \return True if this type is less than or equal to \a other.
          */
-        RTTR_INLINE bool operator<=(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator<=(const type& other) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Compares this type with the \a other type and returns true
@@ -226,7 +227,7 @@ class RTTR_API type
          *
          * \return True if both type are equal, otherwise false.
          */
-        RTTR_INLINE bool operator==(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator==(const type& other) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Compares this type with the \a other type and returns true
@@ -234,7 +235,9 @@ class RTTR_API type
          *
          * \return True if both type are \b not equal, otherwise false.
          */
-        RTTR_INLINE bool operator!=(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator!=(const type& other) const RTTR_NOEXCEPT;
+
+        std::strong_ordering operator<=>(const type& other) const RTTR_NOEXCEPT = default;
 
         /*!
          * \brief Returns the id of this type.
@@ -253,7 +256,7 @@ class RTTR_API type
          *
          * \return The type name.
          */
-        RTTR_INLINE string_view get_name() const RTTR_NOEXCEPT;
+        RTTR_INLINE std::string_view get_name() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns true if this type is valid, that means the type holds valid data to a type.
@@ -332,11 +335,11 @@ class RTTR_API type
          *
          * \return \ref type object with the name \p name.
          */
-        static type get_by_name(string_view name) RTTR_NOEXCEPT;
+        static type get_by_name(std::string_view name) RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a range of all registered type objects.
-         *
+         *  
          * \remark The order of the type object is unspecified.
          *
          * \return A range of type objects.
@@ -709,7 +712,7 @@ class RTTR_API type
          *
          * \return A property with name \p name.
          */
-        property get_property(string_view name) const RTTR_NOEXCEPT;
+        property get_property(std::string_view name) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a range of all registered *public* properties for this type and
@@ -785,7 +788,7 @@ class RTTR_API type
          *
          * \return A property with name \p name.
          */
-        static property get_global_property(string_view name) RTTR_NOEXCEPT;
+        static property get_global_property(std::string_view name) RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a range of all registered global properties.
@@ -806,14 +809,14 @@ class RTTR_API type
          *
          * \return A variant containing the value of the property.
          */
-        variant get_property_value(string_view name, instance obj) const;
+        variant get_property_value(std::string_view name, instance obj) const;
 
         /*!
          * \brief Returns the property value of property named \p name.
          *
          * \return A variant containing the value of the property.
          */
-        static variant get_property_value(string_view name);
+        static variant get_property_value(std::string_view name);
 
         /*!
          * \brief This function will set the given value \p arg to a property named \p name to the instance \p obj.
@@ -822,14 +825,14 @@ class RTTR_API type
          *
          * \return A bool value, which is true, when the value could be set, otherwise false.
          */
-        bool set_property_value(string_view name, instance obj, argument arg) const;
+        bool set_property_value(std::string_view name, instance obj, argument arg) const;
 
         /*!
          * \brief This function will set the given value \p arg to a property named \p name.
          *
          * \return A bool value, which is true, when the value could be set, otherwise false.
          */
-        static bool set_property_value(string_view name, argument arg);
+        static bool set_property_value(std::string_view name, argument arg);
 
 
         /*!
@@ -839,7 +842,7 @@ class RTTR_API type
          *
          * \return A method with name \p name.
          */
-        method get_method(string_view name) const RTTR_NOEXCEPT;
+        method get_method(std::string_view name) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a method with the name \p name which match the given parameter type list \p type_list.
@@ -849,7 +852,7 @@ class RTTR_API type
          *
          * \return A method with name \p name.
          */
-        method get_method(string_view name, const std::vector<type>& type_list) const RTTR_NOEXCEPT;
+        method get_method(std::string_view name, const std::vector<type>& type_list) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a range of all registered *public* methods for this type and
@@ -925,7 +928,7 @@ class RTTR_API type
          *
          * \return A method with name \p name.
          */
-        static method get_global_method(string_view name) RTTR_NOEXCEPT;
+        static method get_global_method(std::string_view name) RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a global method with the name \p name which match the given parameter list \p params.
@@ -935,7 +938,7 @@ class RTTR_API type
          *
          * \return A method with name \p name and parameter signature \p params.
          */
-        static method get_global_method(string_view name, const std::vector<type>& params) RTTR_NOEXCEPT;
+        static method get_global_method(std::string_view name, const std::vector<type>& params) RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a range of all registered global methods.
@@ -960,7 +963,7 @@ class RTTR_API type
          * \return A variant object containing the possible return value,
          *         otherwise when it is a void function an empty but valid variant object.
          */
-        variant invoke(string_view name, instance obj, std::vector<argument> args) const;
+        variant invoke(std::string_view name, instance obj, std::vector<argument> args) const;
 
         /*!
          * \brief Invokes a global method named \p name with the specified argument \p args.
@@ -969,7 +972,7 @@ class RTTR_API type
          *         otherwise when it is a void function an empty but valid variant object.
          *         Methods with registered \ref default_arguments will be honored.
          */
-        static variant invoke(string_view name, std::vector<argument> args);
+        static variant invoke(std::string_view name, std::vector<argument> args);
 
         /*!
          * \brief Register a converter func `F`, which will be used internally by the
@@ -1186,7 +1189,7 @@ class RTTR_API type
          *
          * \return The full type name.
          */
-        RTTR_INLINE string_view get_full_name() const RTTR_NOEXCEPT;
+        RTTR_INLINE std::string_view get_full_name() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Creates a wrapped value from the given argument \p arg and moves it into the

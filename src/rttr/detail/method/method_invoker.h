@@ -42,7 +42,7 @@ template<typename F, typename Policy, typename Method_Type, typename IndexSequen
 struct method_invoker;
 
 template<typename F, std::size_t... ArgCount>
-struct method_invoker<F, default_invoke, void_member_func, index_sequence<ArgCount...>>
+struct method_invoker<F, default_invoke, void_member_func, std::index_sequence<ArgCount...>>
 {
     template<typename... TArgs>
     RTTR_INLINE static variant invoke(const F& func_ptr, const instance& obj, const TArgs&...args)
@@ -62,7 +62,7 @@ struct method_invoker<F, default_invoke, void_member_func, index_sequence<ArgCou
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename F, std::size_t... ArgCount>
-struct method_invoker<F, default_invoke, void_func, index_sequence<ArgCount...>>
+struct method_invoker<F, default_invoke, void_func, std::index_sequence<ArgCount...>>
 {
     template<typename... TArgs>
     RTTR_INLINE static variant invoke(const F& func, const instance& obj, const TArgs&...args)
@@ -80,7 +80,7 @@ struct method_invoker<F, default_invoke, void_func, index_sequence<ArgCount...>>
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename F, std::size_t... ArgCount>
-struct method_invoker<F, default_invoke, return_member_func, index_sequence<ArgCount...>>
+struct method_invoker<F, default_invoke, return_member_func, std::index_sequence<ArgCount...>>
 {
     template<typename... TArgs>
     RTTR_INLINE static variant invoke(const F& func_ptr, const instance& obj, const TArgs&...args)
@@ -97,7 +97,7 @@ struct method_invoker<F, default_invoke, return_member_func, index_sequence<ArgC
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename F, std::size_t... ArgCount>
-struct method_invoker<F, default_invoke, return_func, index_sequence<ArgCount...>>
+struct method_invoker<F, default_invoke, return_func, std::index_sequence<ArgCount...>>
 {
     template<typename... TArgs>
     RTTR_INLINE static variant invoke(const F& func, const instance& obj, const TArgs&...args)
@@ -112,7 +112,7 @@ struct method_invoker<F, default_invoke, return_func, index_sequence<ArgCount...
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename F, std::size_t... ArgCount>
-struct method_invoker<F, discard_return, return_member_func, index_sequence<ArgCount...>>
+struct method_invoker<F, discard_return, return_member_func, std::index_sequence<ArgCount...>>
 {
     template<typename... TArgs>
     RTTR_INLINE static variant invoke(const F& func_ptr, const instance& obj, const TArgs&...args)
@@ -132,7 +132,7 @@ struct method_invoker<F, discard_return, return_member_func, index_sequence<ArgC
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename F, std::size_t... ArgCount>
-struct method_invoker<F, discard_return, return_func, index_sequence<ArgCount...>>
+struct method_invoker<F, discard_return, return_func, std::index_sequence<ArgCount...>>
 {
     template<typename... TArgs>
     RTTR_INLINE static variant invoke(const F& func, const instance& obj, const TArgs&...args)
@@ -150,7 +150,7 @@ struct method_invoker<F, discard_return, return_func, index_sequence<ArgCount...
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename F, std::size_t... ArgCount>
-struct method_invoker<F, return_as_ptr, return_member_func, index_sequence<ArgCount...>>
+struct method_invoker<F, return_as_ptr, return_member_func, std::index_sequence<ArgCount...>>
 {
     template<typename... TArgs>
     RTTR_INLINE static variant invoke(const F& func_ptr, const instance& obj, const TArgs&...args)
@@ -169,7 +169,7 @@ struct method_invoker<F, return_as_ptr, return_member_func, index_sequence<ArgCo
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename F, std::size_t... ArgCount>
-struct method_invoker<F, return_as_ptr, return_func, index_sequence<ArgCount...>>
+struct method_invoker<F, return_as_ptr, return_func, std::index_sequence<ArgCount...>>
 {
     template<typename... TArgs>
     RTTR_INLINE static variant invoke(const F& func, const instance& obj, const TArgs&...args)
