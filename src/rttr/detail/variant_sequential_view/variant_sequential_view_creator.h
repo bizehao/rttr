@@ -47,12 +47,7 @@ using can_create_sequential_view = std::integral_constant<bool, is_sequential_co
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-std::enable_if_t<can_create_sequential_view<T>::value, variant_sequential_view_private>
-create_variant_sequential_view(T&& value);
-
-template<typename T>
-std::enable_if_t<!can_create_sequential_view<T>::value, variant_sequential_view_private>
-create_variant_sequential_view(T&& value);
+variant_sequential_view_private create_variant_sequential_view(T&& value);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 

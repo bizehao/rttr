@@ -218,22 +218,21 @@ RTTR_LOCAL RTTR_INLINE registration_manager& get_registration_manager() RTTR_NOE
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using is_global_item = std::integral_constant<bool, std::is_same<T, invalid_type>::value>;
+using is_global_item = std::integral_constant<bool, std::is_same_v<T, invalid_type>>;
 
 template<typename T, typename Item>
-RTTR_LOCAL RTTR_FORCE_INLINE std::enable_if_t<is_global_item<T>::value, void>
-store_item(Item item)
+RTTR_LOCAL RTTR_FORCE_INLINE void store_item(Item item)
 {
-    auto& obj = get_registration_manager();
-    obj.add_global_item(std::move(item));
-}
-
-template<typename T, typename Item>
-RTTR_LOCAL RTTR_FORCE_INLINE std::enable_if_t<!is_global_item<T>::value, void>
-store_item(Item item)
-{
-    auto& obj = get_registration_manager();
-    obj.add_item(std::move(item));
+    if constexpr (is_global_item<T>::value)
+    {
+        auto& obj = get_registration_manager();
+        obj.add_global_item(std::move(item));
+    }
+    else
+    {
+        auto& obj = get_registration_manager();
+        obj.add_item(std::move(item));
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

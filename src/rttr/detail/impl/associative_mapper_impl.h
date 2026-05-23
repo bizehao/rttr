@@ -49,7 +49,7 @@ namespace detail
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename ConstType, typename Tp = conditional_t<std::is_const<ConstType>::value,
+template<typename T, typename ConstType, typename Tp = std::conditional_t<std::is_const_v<ConstType>,
                                                                      typename associative_container_mapper<T>::const_itr_t,
                                                                      typename associative_container_mapper<T>::itr_t>>
 struct associative_container_mapper_wrapper : iterator_wrapper_base<Tp>
@@ -72,19 +72,17 @@ struct associative_container_mapper_wrapper : iterator_wrapper_base<Tp>
         return variant(std::ref(base_class::get_key(it)));
     }
 
-    template<typename..., typename V = value_t, std::enable_if_t<!std::is_void<V>::value, int> = 0>
-    static variant
-    get_value(const iterator_data& itr)
+    static variant get_value(const iterator_data& itr)
     {
-        auto& it = itr_wrapper::get_iterator(itr);
-        return variant(std::ref(base_class::get_value(it)));
-    }
-
-    template<typename..., typename V = value_t, std::enable_if_t<std::is_void<V>::value, int> = 0>
-    static variant
-    get_value(const iterator_data& itr)
-    {
-        return variant();
+        if constexpr (std::is_void_v<value_t>)
+        {
+            return variant();
+        }
+        else
+        {
+            auto& it = itr_wrapper::get_iterator(itr);
+            return variant(std::ref(base_class::get_value(it)));
+        }
     }
 
     static void begin(void* container, iterator_data& itr)
@@ -116,17 +114,16 @@ struct associative_container_mapper_wrapper : iterator_wrapper_base<Tp>
     }
 
     /////////////////////////////////////////////////////////////////////////
-
-    template<typename..., typename C = ConstType, std::enable_if_t<!std::is_const<C>::value, int> = 0>
     static void clear(void* container)
     {
-        base_class::clear(get_container(container));
-    }
-
-    template<typename..., typename C = ConstType, std::enable_if_t<std::is_const<C>::value, int> = 0>
-    static void clear(void* container)
-    {
-        // cannot clear a const container...
+        if constexpr (!std::is_const<ConstType>::value)
+        {
+            base_class::clear(get_container(container));
+        }
+        else
+        {
+            // cannot clear a const container...
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -149,12 +146,18 @@ struct associative_container_mapper_wrapper : iterator_wrapper_base<Tp>
 
     /////////////////////////////////////////////////////////////////////////
 
-    template<typename..., typename C = ConstType, std::enable_if_t<!std::is_const<C>::value, int> = 0>
     static std::size_t erase(void* container, argument& key)
     {
-        if (key.get_type() == ::rttr::type::get<key_t>())
+        if constexpr (!std::is_const_v<ConstType>)
         {
-            return base_class::erase(get_container(container), key.get_value<key_t>());
+            if (key.get_type() == ::rttr::type::get<key_t>())
+            {
+                return base_class::erase(get_container(container), key.get_value<key_t>());
+            }
+            else
+            {
+                return 0;
+            }
         }
         else
         {
@@ -162,22 +165,23 @@ struct associative_container_mapper_wrapper : iterator_wrapper_base<Tp>
         }
     }
 
-    template<typename..., typename C = ConstType, std::enable_if_t<std::is_const<C>::value, int> = 0>
-    static std::size_t erase(void* container, argument& key)
-    {
-        return 0;
-    }
-
     /////////////////////////////////////////////////////////////////////////
 
-    template<typename..., typename V = value_t, std::enable_if_t<std::is_void<V>::value && !std::is_const<ConstType>::value, int> = 0>
     static bool insert_key(void* container, argument& key, iterator_data& itr)
     {
-        if (key.get_type() == ::rttr::type::get<key_t>())
+        if constexpr (std::is_void_v<value_t> && !std::is_const_v<ConstType>)
         {
-            auto ret = base_class::insert_key(get_container(container), key.get_value<key_t>());
-            itr_wrapper::create(itr, ret.first);
-            return ret.second;
+            if (key.get_type() == ::rttr::type::get<key_t>())
+            {
+                auto ret = base_class::insert_key(get_container(container), key.get_value<key_t>());
+                itr_wrapper::create(itr, ret.first);
+                return ret.second;
+            }
+            else
+            {
+                end(container, itr);
+                return false;
+            }
         }
         else
         {
@@ -186,39 +190,33 @@ struct associative_container_mapper_wrapper : iterator_wrapper_base<Tp>
         }
     }
 
-    template<typename..., typename V = value_t, std::enable_if_t<!std::is_void<V>::value || std::is_const<ConstType>::value, int> = 0>
-    static bool insert_key(void* container, argument& key, iterator_data& itr)
-    {
-        end(container, itr);
-        return false;
-    }
 
     /////////////////////////////////////////////////////////////////////////
 
-    template<typename..., typename V = value_t, std::enable_if_t<!std::is_void<V>::value && !std::is_const<ConstType>::value, int> = 0>
     static bool insert_key_value(void* container, argument& key, argument& value, iterator_data& itr)
     {
-        if (key.get_type() == ::rttr::type::get<key_t>() &&
-            value.get_type() == ::rttr::type::get<value_t>())
+        if constexpr (!std::is_void_v<value_t> && !std::is_const_v<ConstType>)
         {
-            auto ret = base_class::insert_key_value(get_container(container), key.get_value<key_t>(), value.get_value<value_t>());
-            itr_wrapper::create(itr, ret.first);
-            return ret.second;
+            if (key.get_type() == ::rttr::type::get<key_t>() &&
+                value.get_type() == ::rttr::type::get<value_t>())
+            {
+                auto ret = base_class::insert_key_value(get_container(container), key.get_value<key_t>(), value.get_value<value_t>());
+                itr_wrapper::create(itr, ret.first);
+                return ret.second;
+            }
+            else
+            {
+                end(container, itr);
+                return false;
+            }
         }
         else
         {
-            end(container, itr);
-            return false;
+			end(container, itr);
+			return false;
         }
+        
     }
-
-    template<typename..., typename V = value_t, std::enable_if_t<std::is_void<V>::value || std::is_const<ConstType>::value, int> = 0>
-    static bool insert_key_value(void* container, argument& key, argument& value, iterator_data& itr)
-    {
-        end(container, itr);
-        return false;
-    }
-
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

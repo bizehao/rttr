@@ -69,7 +69,7 @@ class RTTR_LOCAL variant_sequential_view_private
         {
         }
 
-        template<typename T, typename RawType = raw_type_t<T>, typename ConstType = remove_pointer_t<T>>
+        template<typename T, typename RawType = raw_type_t<T>, typename ConstType = std::remove_pointer_t<T>>
         variant_sequential_view_private(const T& container) RTTR_NOEXCEPT
             :   m_type(type::get<RawType>()),
             m_value_type(type::get<typename sequential_container_mapper<RawType>::value_t>()),

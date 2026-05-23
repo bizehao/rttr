@@ -51,7 +51,7 @@ struct constructor_invoker;
 template<typename Class_Type, typename...Ctor_Args, std::size_t... Arg_Count>
 struct constructor_invoker<ctor_type, as_raw_pointer, type_list<Class_Type, Ctor_Args...>, std::index_sequence<Arg_Count...>>
 {
-    using return_type = add_pointer_t<Class_Type>;
+    using return_type = std::add_pointer_t<Class_Type>;
 
     template<typename... TArgs>
     static RTTR_INLINE variant invoke(TArgs&&...args)

@@ -161,7 +161,7 @@ struct RTTR_LOCAL type_data
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Enable = void>
+template<typename T>
 struct RTTR_LOCAL get_size_of
 {
     RTTR_INLINE RTTR_CONSTEXPR static std::size_t value()
@@ -172,8 +172,8 @@ struct RTTR_LOCAL get_size_of
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-struct RTTR_LOCAL get_size_of<T, std::enable_if_t<std::is_same<T, void>::value || std::is_function<T>::value>>
+template<typename T> requires (std::is_same_v<T, void> || std::is_function_v<T>)
+struct RTTR_LOCAL get_size_of<T>
 {
     RTTR_INLINE RTTR_CONSTEXPR static std::size_t value()
     {
@@ -183,8 +183,16 @@ struct RTTR_LOCAL get_size_of<T, std::enable_if_t<std::is_same<T, void>::value |
 
 /////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, bool = std::is_same<T, typename raw_type<T>::type >::value>
+template<typename T>
 struct RTTR_LOCAL raw_type_info
+{
+    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return type::get<typename raw_type<T>::type>(); }
+};
+
+/////////////////////////////////////////////////////////////////////////////////
+
+template<typename T> requires (std::is_same_v<T, typename raw_type<T>::type >)
+struct RTTR_LOCAL raw_type_info<T>
 {
     static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return get_invalid_type(); } // we have to return an empty type, so we can stop the recursion
 };
@@ -192,15 +200,15 @@ struct RTTR_LOCAL raw_type_info
 /////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-struct RTTR_LOCAL raw_type_info<T, false>
+struct RTTR_LOCAL array_raw_type
 {
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return type::get<typename raw_type<T>::type>(); }
+    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return get_invalid_type(); } // we have to return an empty type, so we can stop the recursion
 };
 
 /////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, bool = std::is_array<T>::value>
-struct RTTR_LOCAL array_raw_type
+template<typename T> requires (std::is_array_v<T>)
+struct RTTR_LOCAL array_raw_type<T>
 {
     static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return type::get<raw_array_type_t<T>>(); }
 };
@@ -208,25 +216,17 @@ struct RTTR_LOCAL array_raw_type
 /////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-struct RTTR_LOCAL array_raw_type<T, false>
+struct RTTR_LOCAL wrapper_type_info
 {
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return get_invalid_type(); } // we have to return an empty type, so we can stop the recursion
+    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return get_invalid_type(); }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, bool = is_wrapper<T>::value>
-struct RTTR_LOCAL wrapper_type_info
+template<typename T> requires (is_wrapper<T>::value)
+struct RTTR_LOCAL wrapper_type_info<T>
 {
     static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return type::get<wrapper_mapper_t<T>>(); }
-};
-
-/////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-struct RTTR_LOCAL wrapper_type_info<T, false>
-{
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return get_invalid_type(); }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -241,27 +241,22 @@ RTTR_LOCAL RTTR_INLINE void create_wrapper(const argument& arg, variant& var)
     var = wrapper_mapper<Wrapper>::create(wrapped_type);
 }
 
-template<typename Wrapper, typename Tp = wrapper_mapper_t<Wrapper>>
-RTTR_LOCAL RTTR_INLINE
-std::enable_if_t<is_wrapper<Wrapper>::value &&
-            ::rttr::detail::is_copy_constructible<Wrapper>::value &&
-            std::is_default_constructible<Wrapper>::value &&
-            has_create_wrapper_func<Wrapper>::value, impl::create_wrapper_func>
-get_create_wrapper_func()
+template<typename Wrapper>
+RTTR_LOCAL RTTR_INLINE impl::create_wrapper_func get_create_wrapper_func()
 {
-    return &create_wrapper<Wrapper, Tp>;
-}
+    using Tp = wrapper_mapper_t<Wrapper>;
 
-
-template<typename Wrapper, typename Tp = wrapper_mapper_t<Wrapper>>
-RTTR_LOCAL RTTR_INLINE
-std::enable_if_t<!is_wrapper<Wrapper>::value ||
-            !::rttr::detail::is_copy_constructible<Wrapper>::value ||
-            !std::is_default_constructible<Wrapper>::value ||
-            !has_create_wrapper_func<Wrapper>::value, impl::create_wrapper_func>
-get_create_wrapper_func()
-{
-    return nullptr;
+    if constexpr (is_wrapper<Wrapper>::value &&
+        ::rttr::detail::is_copy_constructible<Wrapper>::value &&
+        std::is_default_constructible<Wrapper>::value &&
+        has_create_wrapper_func<Wrapper>::value)
+    {
+        return &create_wrapper<Wrapper, Tp>;
+    }
+    else
+    {
+        return nullptr;
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

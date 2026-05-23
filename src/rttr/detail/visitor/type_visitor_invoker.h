@@ -59,21 +59,21 @@ public:
     }
 
     template<typename U, typename V>
-    enable_if_t<has_base_class_list<typename visitor::type_info<U>::declaring_type>::value, void>
-    call_impl(V& visitor) const
+    void call_impl(V& visitor) const
     {
-        using declaring_type_t = typename visitor::type_info<U>::declaring_type;
-        call_with_base_classes(visitor, typename declaring_type_t::base_class_list{});
-    }
-
-    template<typename U, typename V>
-    enable_if_t<!has_base_class_list<typename visitor::type_info<U>::declaring_type>::value, void>
-    call_impl(V& visitor) const
-    {
-        if (m_visit_type == type_of_visit::begin_visit_type)
-            visitor.visit_type_begin(m_info);
+        if constexpr (has_base_class_list<typename visitor::type_info<U>::declaring_type>::value)
+        {
+            using declaring_type_t = typename visitor::type_info<U>::declaring_type;
+            call_with_base_classes(visitor, typename declaring_type_t::base_class_list{});
+        }
         else
-            visitor.visit_type_end(m_info);
+        {
+            if (m_visit_type == type_of_visit::begin_visit_type)
+                visitor.visit_type_begin(m_info);
+            else
+                visitor.visit_type_end(m_info);
+        }
+        
     }
 
 

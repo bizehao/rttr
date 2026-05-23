@@ -94,7 +94,7 @@ struct create_wrapper_conversion<DerivedClass, type_list<BaseClassList...>> : cr
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Enable = void>
+template<typename T>
 struct reg_wrapper_converter_for_base_classes
 {
     reg_wrapper_converter_for_base_classes()
@@ -102,8 +102,8 @@ struct reg_wrapper_converter_for_base_classes
     }
 };
 
-template<typename T>
-struct reg_wrapper_converter_for_base_classes<T, typename std::enable_if<is_wrapper<T>::value && has_base_class_list<raw_type_t<wrapper_mapper_t<T>>>::value>::type>
+template<typename T> requires (is_wrapper<T>::value && has_base_class_list<raw_type_t<wrapper_mapper_t<T>>>::value)
+struct reg_wrapper_converter_for_base_classes<T>
 {
     reg_wrapper_converter_for_base_classes()
     {

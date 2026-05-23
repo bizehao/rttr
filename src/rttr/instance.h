@@ -46,9 +46,6 @@ class argument;
  */
 class RTTR_API instance
 {
-    template<typename T, typename Tp = std::decay_t<T>>
-    using decay_instance_t = std::enable_if_t<!std::is_same<instance, Tp>::value &&
-                                                 !std::is_same<variant, Tp>::value, T>;
 
 public:
     /*!
@@ -73,7 +70,7 @@ public:
      *
      * \remark Internally, the instance class will hold a reference to the address of the given object \p data.
      */
-    template<typename T, typename Tp = decay_instance_t<T>>
+    template<typename T> requires (!std::is_same_v<instance, std::decay_t<T>> && !std::is_same_v<variant, std::decay_t<T>>)
     RTTR_INLINE instance(T& data) RTTR_NOEXCEPT;
 
     /*!

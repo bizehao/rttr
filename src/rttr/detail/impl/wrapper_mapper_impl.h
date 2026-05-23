@@ -135,13 +135,12 @@ namespace detail
 //////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using wrapper_mapper_t = typename wrapper_mapper<typename std::remove_cv<typename std::remove_reference<T>::type
-                                                                   >::type>::wrapped_type;
+using wrapper_mapper_t = typename wrapper_mapper<std::remove_cv_t<std::remove_reference_t<T>>>::wrapped_type;
 
 //////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using is_wrapper = std::integral_constant<bool, !std::is_same<invalid_wrapper_type, wrapper_mapper_t<T>>::value >;
+using is_wrapper = std::integral_constant<bool, !std::is_same_v<invalid_wrapper_type, wrapper_mapper_t<T>> >;
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -152,8 +151,8 @@ using wrapper_address_return_type_t = std::conditional_t<is_wrapper<T>::value,
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-typename std::enable_if<is_wrapper<T>::value, raw_addressof_return_type_t< wrapper_mapper_t<T>> >::type wrapped_raw_addressof(T& obj)
+template<typename T> requires (is_wrapper<T>::value)
+raw_addressof_return_type_t< wrapper_mapper_t<T>> wrapped_raw_addressof(T& obj)
 {
     using raw_wrapper_type = std::remove_cvref_t<T>;;
     wrapper_mapper_t<T> value = wrapper_mapper<raw_wrapper_type>::get(obj);
@@ -162,8 +161,8 @@ typename std::enable_if<is_wrapper<T>::value, raw_addressof_return_type_t< wrapp
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-typename std::enable_if<!is_wrapper<T>::value, raw_addressof_return_type_t<T>>::type wrapped_raw_addressof(T& obj)
+template<typename T> requires (!is_wrapper<T>::value)
+raw_addressof_return_type_t<T> wrapped_raw_addressof(T& obj)
 {
     return raw_addressof(obj);
 }
@@ -174,22 +173,14 @@ typename std::enable_if<!is_wrapper<T>::value, raw_addressof_return_type_t<T>>::
  * Determine if the given type \a T is a wrapper and has the member method
  * 'wrapper create(const wrapper_type&)' declared.
  */
-template <typename T, typename Tp = typename std::remove_cv<typename std::remove_reference<T>::type>::type>
-class has_create_wrapper_func_impl
+template <typename T>
+concept has_create_wrapper_func_impl = requires
 {
-    // Use SFINAE with decltype to detect whether wrapper_mapper<C>::create exists.
-    template <typename C>
-    static auto test(int) -> decltype((void)&wrapper_mapper<C>::create, std::true_type());
-
-    template <typename>
-    static std::false_type test(...);
-
-public:
-    static RTTR_CONSTEXPR_OR_CONST bool value = decltype(test<Tp>(0))::value;
+    &wrapper_mapper<std::remove_cvref_t<T>>::create;
 };
 
 template<typename T>
-using has_create_wrapper_func = std::integral_constant<bool, has_create_wrapper_func_impl<T>::value>;
+using has_create_wrapper_func = std::integral_constant<bool, has_create_wrapper_func_impl<T>>;
 
 //////////////////////////////////////////////////////////////////////////////////////
 

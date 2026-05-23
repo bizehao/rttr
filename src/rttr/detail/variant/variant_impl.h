@@ -54,11 +54,12 @@ RTTR_INLINE variant::variant()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Tp>
+template<detail::decay_variant_t T>
 RTTR_INLINE variant::variant(T&& val)
-:   m_policy(&detail::variant_policy<Tp>::invoke)
+:   m_policy(&detail::variant_policy<detail::decay_except_array_t<T>>::invoke)
 {
-    static_assert(std::is_copy_constructible<Tp>::value || std::is_array<Tp>::value,
+    using Tp = detail::decay_except_array_t<T>;
+    static_assert(std::is_copy_constructible_v<Tp> || std::is_array_v<Tp>,
                   "The given value is not copy constructible, try to add a copy constructor to the class.");
 
     detail::variant_policy<Tp>::create(std::forward<T>(val), m_data);
@@ -73,7 +74,7 @@ RTTR_INLINE variant::~variant()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Tp>
+template<detail::decay_variant_t T>
 RTTR_INLINE variant& variant::operator=(T&& other)
 {
     *this = variant(std::forward<T>(other));
@@ -229,41 +230,41 @@ RTTR_INLINE bool variant::try_basic_type_conversion(T& to) const
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T> requires (detail::pointer_count<T>::value == 1)
+template<typename T>
 RTTR_INLINE bool variant::try_pointer_conversion(T& to, const type& source_type, const type& target_type) const
 {
-    if (!source_type.is_pointer())
+    if constexpr (detail::pointer_count<T>::value == 1)
+    {
+        if (!source_type.is_pointer())
+            return false;
+
+        auto ptr = get_raw_ptr();
+
+        if (ptr)
+        {
+            if ((ptr = type::apply_offset(ptr, source_type, target_type)) != nullptr)
+            {
+                to = reinterpret_cast<T>(ptr);
+                return true;
+            }
+        }
+        else // a nullptr
+        {
+            // check if a down cast is possible
+            if (source_type.is_derived_from(target_type))
+            {
+                to = reinterpret_cast<T>(ptr);
+                return true;
+            }
+        }
+
         return false;
-
-    auto ptr = get_raw_ptr();
-
-    if (ptr)
-    {
-        if ((ptr = type::apply_offset(ptr, source_type, target_type)) != nullptr)
-        {
-            to = reinterpret_cast<T>(ptr);
-            return true;
-        }
     }
-    else // a nullptr
+    else
     {
-        // check if a down cast is possible
-        if (source_type.is_derived_from(target_type))
-        {
-            to = reinterpret_cast<T>(ptr);
-            return true;
-        }
+        return false;
     }
-
-    return false;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T> requires (detail::pointer_count<T>::value != 1)
-RTTR_INLINE bool variant::try_pointer_conversion(T& to, const type& source_type, const type& target_type) const
-{
-    return false;
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -276,20 +277,18 @@ RTTR_INLINE bool variant::is_nullptr() const
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-typename std::enable_if<detail::is_nullptr_t<T>::value, bool>::type
-static RTTR_INLINE ptr_to_nullptr(T& to)
+static RTTR_INLINE bool ptr_to_nullptr(T& to)
 {
-    to = nullptr;
-    return true;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-typename std::enable_if<!detail::is_nullptr_t<T>::value, bool>::type
-static RTTR_INLINE ptr_to_nullptr(T& to)
-{
-    return false;
+    if constexpr (detail::is_nullptr_t<T>::value)
+    {
+        to = nullptr;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -436,12 +435,12 @@ template<class T>
 RTTR_INLINE T variant_cast(const variant& operand)
 {
     using namespace detail;
-    static_assert(std::is_constructible<T, const variant_t<T>&>::value,
+    static_assert(std::is_constructible_v<T, const variant_t<T>&>,
                   "variant_cast<T>(variant&) requires T to be constructible from const remove_cv_t<remove_reference_t<T>>&");
 
     auto result = unsafe_variant_cast<variant_t<T>>(&operand);
 
-    using ref_type = std::conditional_t<std::is_reference<T>::value, T, std::add_lvalue_reference_t<T>>;
+    using ref_type = std::conditional_t<std::is_reference_v<T>, T, std::add_lvalue_reference_t<T>>;
     return static_cast<ref_type>(*result);
 }
 
@@ -451,12 +450,12 @@ template<class T>
 RTTR_INLINE T variant_cast(variant& operand)
 {
     using namespace detail;
-    static_assert(std::is_constructible<T, variant_t<T>&>::value,
+    static_assert(std::is_constructible_v<T, variant_t<T>&>,
                   "variant_cast<T>(variant&) requires T to be constructible from remove_cv_t<remove_reference_t<T>>&");
 
     auto result = unsafe_variant_cast<variant_t<T>>(&operand);
 
-    using ref_type = std::conditional_t<std::is_reference<T>::value, T, std::add_lvalue_reference_t<T>>;
+    using ref_type = std::conditional_t<std::is_reference_v<T>, T, std::add_lvalue_reference_t<T>>;
     return static_cast<ref_type>(*result);
 }
 
@@ -466,7 +465,7 @@ template<class T>
 RTTR_INLINE T variant_cast(variant&& operand)
 {
     using namespace detail;
-    static_assert(std::is_constructible<T, variant_t<T>>::value,
+    static_assert(std::is_constructible_v<T, variant_t<T>>,
                   "variant_cast<T>(variant&&) requires T to be constructible from remove_cv_t<remove_reference_t<T>>");
     auto result = unsafe_variant_cast<variant_t<T>>(&operand);
     return std::move(*result);

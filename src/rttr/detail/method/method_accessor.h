@@ -162,29 +162,16 @@ struct method_accessor
     /////////////////////////////////////////////////////////////////////////////////////
 
     template<typename... TArgs>
-    static RTTR_INLINE
-    enable_if_t< does_argument_count_match<F, TArgs...>::value, variant>
-    invoke(const F& func_ptr, const instance& obj, const TArgs&...args)
+    static RTTR_INLINE variant invoke(const F& func_ptr, const instance& obj, const TArgs&...args)
     {
-        return invoker_class::invoke(func_ptr, obj, args...);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    template<typename... TArgs>
-    static RTTR_INLINE
-    enable_if_t< !does_argument_count_match<F, TArgs...>::value, variant>
-    invoke(const F& func_ptr, const instance& obj, const TArgs&...args)
-    {
-        return variant();
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    template<std::size_t... Arg_Idx>
-    static RTTR_INLINE variant invoke_variadic_impl(const F& func_ptr, const instance& obj, std::index_sequence<Arg_Idx...>, const std::vector<argument>& arg_list)
-    {
-        return invoker_class::invoke(func_ptr, obj, arg_list[Arg_Idx]...);
+        if constexpr (does_argument_count_match<F, TArgs...>::value)
+        {
+            return invoker_class::invoke(func_ptr, obj, args...);
+        }
+        else
+        {
+            return variant();
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -192,7 +179,11 @@ struct method_accessor
     static RTTR_INLINE variant invoke_variadic(const F& func_ptr, const instance& obj, const std::vector<argument>& arg_list)
     {
         if (arg_list.size() == arg_count)
-            return invoke_variadic_impl(func_ptr, obj, std::make_index_sequence<arg_count>(), arg_list);
+        {
+            return []<std::size_t... Arg_Idx>(const F & func_ptr, const instance & obj, std::index_sequence<Arg_Idx...>, const std::vector<argument>&arg_list) {
+                return invoker_class::invoke(func_ptr, obj, arg_list[Arg_Idx]...);
+            }(func_ptr, obj, std::make_index_sequence<arg_count>(), arg_list);
+        }
         else
             return variant();
     }

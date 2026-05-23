@@ -159,7 +159,7 @@ public:
              *
              * \return A \ref bind object, in order to chain more calls.
              */
-            template<typename... Args, typename acc_level = detail::public_access, typename Tp = typename std::enable_if<detail::contains<acc_level, detail::access_levels_list>::value>::type>
+            template<typename... Args, typename acc_level = detail::public_access> requires (detail::contains<acc_level, detail::access_levels_list>::value)
             bind<detail::ctor, Class_Type, acc_level, Visitor_List, Args...> constructor(acc_level level = acc_level());
 
             /*!
@@ -174,7 +174,7 @@ public:
              *
              * \return A \ref bind object, in order to chain more calls.
              */
-            template<typename F, typename acc_level = detail::public_access, typename Tp = typename std::enable_if<!detail::contains<F, detail::access_levels_list>::value>::type>
+            template<typename F, typename acc_level = detail::public_access> requires (!detail::contains<F, detail::access_levels_list>::value)
             bind<detail::ctor_func, Class_Type, F, acc_level, Visitor_List> constructor(F func, acc_level level = acc_level());
 
 
@@ -192,7 +192,7 @@ public:
              *
              * \return A \ref bind object, in order to chain more calls.
              */
-            template<typename A, typename acc_level = detail::public_access, typename Tp = typename std::enable_if<detail::contains<acc_level, detail::access_levels_list>::value>::type>
+            template<typename A, typename acc_level = detail::public_access> requires (detail::contains<acc_level, detail::access_levels_list>::value)
             bind<detail::prop, Class_Type, A, acc_level, Visitor_List> property(std::string_view name, A acc, acc_level level = acc_level());
 
             /*!
@@ -210,7 +210,7 @@ public:
              *
              * \return A \ref bind object, in order to chain more calls.
              */
-            template<typename A, typename acc_level = detail::public_access, typename Tp = typename std::enable_if<detail::contains<acc_level, detail::access_levels_list>::value>::type>
+            template<typename A, typename acc_level = detail::public_access> requires (detail::contains<acc_level, detail::access_levels_list>::value)
             bind<detail::prop_readonly, Class_Type, A, acc_level, Visitor_List> property_readonly(std::string_view name, A acc, acc_level level = acc_level());
 
             /*!
@@ -230,7 +230,7 @@ public:
              *
              * \return A \ref bind object, in order to chain more calls.
              */
-            template<typename A1, typename A2, typename acc_level = detail::public_access, typename Tp = typename std::enable_if<!detail::contains<A2, detail::access_levels_list>::value>::type>
+            template<typename A1, typename A2, typename acc_level = detail::public_access> requires (!detail::contains<A2, detail::access_levels_list>::value)
             bind<detail::prop, Class_Type, A1, A2, acc_level, Visitor_List> property(std::string_view name, A1 getter, A2 setter, acc_level level = acc_level());
 
 
@@ -716,7 +716,7 @@ RTTR_INLINE detail::default_args<TArgs...> default_arguments(TArgs&&...args);
  *
  */
 template<typename...TArgs>
-RTTR_INLINE detail::parameter_names<detail::decay_t<TArgs>...> parameter_names(TArgs&&...args);
+RTTR_INLINE detail::parameter_names<std::decay_t<TArgs>...> parameter_names(TArgs&&...args);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////

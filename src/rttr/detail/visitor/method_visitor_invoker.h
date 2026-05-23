@@ -56,17 +56,16 @@ private:
     using is_global_method = std::is_same<U, invalid_type>;
 
     template<typename V, typename U>
-    enable_if_t<is_global_method<V>::value, void>
-    call_impl(U& visitor) const
+    void call_impl(U& visitor) const
     {
-        visitor.visit_global_method(m_info);
-    }
-
-    template<typename V, typename U>
-    enable_if_t<!is_global_method<V>::value, void>
-    call_impl(U& visitor) const
-    {
-        visitor.visit_method(m_info);
+        if constexpr (is_global_method<V>::value)
+        {
+            visitor.visit_global_method(m_info);
+        }
+        else
+        {
+            visitor.visit_method(m_info);
+        }   
     }
 
 public:

@@ -188,7 +188,7 @@ class property_wrapper<member_func_ptr, Declaring_Typ, Getter, Setter, Acc_Level
 
         bool set_value(instance& object, argument& arg) const
         {
-            using arg_type_t = remove_reference_t<arg_type>;
+            using arg_type_t = std::remove_reference_t<arg_type>;
             class_type* ptr = object.try_convert<class_type>();
             if (ptr && arg.is_type<arg_type_t*>())
             {
@@ -228,7 +228,7 @@ class property_wrapper<member_func_ptr, Declaring_Typ, Getter, void, Acc_Level, 
 {
     using return_type   = typename function_traits<Getter>::return_type;
     using class_type    = typename function_traits<Getter>::class_type;
-    using policy_type   = add_pointer_t<add_const_t<remove_reference_t<return_type>>>;
+    using policy_type   = std::add_pointer_t<std::add_const_t<std::remove_reference_t<return_type>>>;
 
     public:
         property_wrapper(std::string_view name,
@@ -310,13 +310,13 @@ class property_wrapper<member_func_ptr, Declaring_Typ, Getter, Setter, Acc_Level
         bool is_valid()     const RTTR_NOEXCEPT                 { return true;  }
         bool is_readonly()  const RTTR_NOEXCEPT                 { return false; }
         bool is_static()    const RTTR_NOEXCEPT                 { return false; }
-        type get_type()     const RTTR_NOEXCEPT                 { return type::get< std::reference_wrapper<remove_reference_t<return_type>> >(); }
+        type get_type()     const RTTR_NOEXCEPT                 { return type::get< std::reference_wrapper<std::remove_reference_t<return_type>> >(); }
 
         variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
 
         bool set_value(instance& object, argument& arg) const
         {
-            using arg_type_t = remove_reference_t<arg_type>;
+            using arg_type_t = std::remove_reference_t<arg_type>;
             class_type* ptr = object.try_convert<class_type>();
             if (ptr && arg.is_type<std::reference_wrapper<arg_type_t>>())
             {
@@ -356,7 +356,7 @@ class property_wrapper<member_func_ptr, Declaring_Typ, Getter, void, Acc_Level, 
 {
     using return_type   = typename function_traits<Getter>::return_type;
     using class_type    = typename function_traits<Getter>::class_type;
-    using policy_type   = std::reference_wrapper<add_const_t<remove_reference_t<return_type>>>;
+    using policy_type   = std::reference_wrapper<std::add_const_t<std::remove_reference_t<return_type>>>;
 
     public:
         property_wrapper(std::string_view name,

@@ -76,26 +76,22 @@ private:
 
 public:
     template<typename... Def_Types, typename... TArgs>
-    static RTTR_INLINE
-    enable_if_t< are_args_and_defaults_in_valid_range<F, type_list<TArgs...>, type_list<Def_Types...>>::value, variant>
-    invoke(const F& func_ptr, const instance& obj, const std::tuple<Def_Types...>& def_args, const TArgs&...args)
+    static RTTR_INLINE variant invoke(const F& func_ptr, const instance& obj, const std::tuple<Def_Types...>& def_args, const TArgs&...args)
     {
-        static RTTR_CONSTEXPR_OR_CONST std::size_t arg_count = function_traits<F>::arg_count;
-        // here we calculate the integer sequence for retrieving the data from the tuple,
-        // this depends on the number of arguments provided by the caller
-        static RTTR_CONSTEXPR_OR_CONST std::size_t start_index = sizeof...(TArgs) + sizeof...(Def_Types) - arg_count;
-        using idx_seq = typename erase_sequence_till<std::index_sequence_for<Def_Types...>, start_index>::type;
-        return invoke_with_defaults_helper(func_ptr, obj, idx_seq(), def_args, args...);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    template<typename... Def_Types, typename... TArgs>
-    static RTTR_INLINE
-    enable_if_t< !are_args_and_defaults_in_valid_range<F, type_list<TArgs...>, type_list<Def_Types...>>::value, variant>
-    invoke(const F& func_ptr, const instance& obj, const std::tuple<Def_Types...>& def_args, const TArgs&...args)
-    {
-        return variant();
+        if constexpr (are_args_and_defaults_in_valid_range<F, type_list<TArgs...>, type_list<Def_Types...>>::value)
+        {
+            static RTTR_CONSTEXPR_OR_CONST std::size_t arg_count = function_traits<F>::arg_count;
+            // here we calculate the integer sequence for retrieving the data from the tuple,
+            // this depends on the number of arguments provided by the caller
+            static RTTR_CONSTEXPR_OR_CONST std::size_t start_index = sizeof...(TArgs) + sizeof...(Def_Types) - arg_count;
+            using idx_seq = typename erase_sequence_till<std::index_sequence_for<Def_Types...>, start_index>::type;
+            return invoke_with_defaults_helper(func_ptr, obj, idx_seq(), def_args, args...);
+        }
+        else
+        {
+            return variant();
+        }
+        
     }
 };
 
@@ -118,26 +114,21 @@ private:
 
 public:
     template<typename... Def_Types, typename... TArgs>
-    static RTTR_INLINE
-    enable_if_t< are_args_and_defaults_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>, type_list<Def_Types...>>::value, variant>
-    invoke(const std::tuple<Def_Types...>& def_args, const TArgs&...args)
+    static RTTR_INLINE variant invoke(const std::tuple<Def_Types...>& def_args, const TArgs&...args)
     {
-        static RTTR_CONSTEXPR_OR_CONST std::size_t arg_count = sizeof...(Ctor_Args);
-        // here we calculate the integer sequence for retrieving the data from the tuple,
-        // this depends on the number of arguments provided by the caller
-        static RTTR_CONSTEXPR_OR_CONST std::size_t start_index = sizeof...(TArgs) + sizeof...(Def_Types) - arg_count;
-        using idx_seq = typename erase_sequence_till<std::index_sequence_for<Def_Types...>, start_index>::type;
-        return invoke_with_defaults_extract(idx_seq(), def_args, args...);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    template<typename... Def_Types, typename... TArgs>
-    static RTTR_INLINE
-    enable_if_t< !are_args_and_defaults_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>, type_list<Def_Types...>>::value, variant>
-    invoke(const std::tuple<Def_Types...>& def_args, const TArgs&...args)
-    {
-        return variant();
+        if constexpr (are_args_and_defaults_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>, type_list<Def_Types...>>::value)
+        {
+            static RTTR_CONSTEXPR_OR_CONST std::size_t arg_count = sizeof...(Ctor_Args);
+            // here we calculate the integer sequence for retrieving the data from the tuple,
+            // this depends on the number of arguments provided by the caller
+            static RTTR_CONSTEXPR_OR_CONST std::size_t start_index = sizeof...(TArgs) + sizeof...(Def_Types) - arg_count;
+            using idx_seq = typename erase_sequence_till<std::index_sequence_for<Def_Types...>, start_index>::type;
+            return invoke_with_defaults_extract(idx_seq(), def_args, args...);
+        }
+        else
+        {
+            return variant();
+        }   
     }
 };
 

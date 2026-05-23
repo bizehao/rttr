@@ -292,7 +292,7 @@ RTTR_INLINE type create_type(type_data* data) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////
 template<typename T>
-concept is_complete_type = !std::is_function<T>::value && !std::is_same<T, void>::value;
+concept is_complete_type = !std::is_function_v<T> && !std::is_same_v<T, void>;
 
 template<typename T>
 RTTR_LOCAL RTTR_INLINE type create_or_get_type() RTTR_NOEXCEPT

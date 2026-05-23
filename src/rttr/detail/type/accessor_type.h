@@ -61,13 +61,13 @@ namespace detail
     };
 
     template<typename T>
-    struct property_type : conditional_t< std::is_member_function_pointer<T>::value,
+    struct property_type : std::conditional_t< std::is_member_function_pointer_v<T>,
                                           member_func_ptr,
-                                          conditional_t< std::is_member_object_pointer<T>::value,
+                                          std::conditional_t< std::is_member_object_pointer_v<T>,
                                                          member_object_ptr,
-                                                         conditional_t< is_functor<T>::value,
+                                                         std::conditional_t< is_functor<T>::value,
                                                                         function_ptr,
-                                                                        conditional_t< std::is_pointer<T>::value,
+                                                                        std::conditional_t< std::is_pointer_v<T>,
                                                                                        object_ptr,
                                                                                        void
                                                                                      >
@@ -102,13 +102,13 @@ namespace detail
     };
 
     template<typename T>
-    struct method_type : conditional_t<std::is_member_function_pointer<T>::value,
-                                       conditional_t< is_void_func<T>::value,
+    struct method_type : std::conditional_t<std::is_member_function_pointer_v<T>,
+                                       std::conditional_t< is_void_func<T>::value,
                                                       void_member_func,
                                                       return_member_func
                                                      >,
-                                       conditional_t< is_functor<T>::value,
-                                                      conditional_t< is_void_func<T>::value,
+                                       std::conditional_t< is_functor<T>::value,
+                                                      std::conditional_t< is_void_func<T>::value,
                                                                      void_func,
                                                                      return_func
                                                                    >,

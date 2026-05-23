@@ -42,26 +42,21 @@ namespace detail
  * \brief Identity function
  *
  */
-template<typename F, typename T>
-typename std::enable_if<std::is_same<F, T>::value, bool>::type
-convert_to(const F& from, T& to)
+template<typename F, typename T> requires (std::is_same_v<F, T>)
+bool convert_to(const F& from, T& to)
 {
     to = from;
     return true;
 }
 
 template<typename F, typename T>
-using is_integer = std::integral_constant<bool, !std::is_same<F, T>::value &&
-                                                std::is_integral<F>::value && std::is_integral<T>::value>;
+using is_integer = std::integral_constant<bool, !std::is_same_v<F, T> &&
+                                                std::is_integral_v<F> && std::is_integral_v<T>>;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename F, typename T>
-typename std::enable_if<is_integer<F, T>::value &&
-                        std::numeric_limits<F>::is_signed &&
-                        !std::numeric_limits<T>::is_signed,
-                        bool>::type
-convert_to(const F& from, T& to)
+template<typename F, typename T> requires (is_integer<F, T>::value && std::numeric_limits<F>::is_signed && !std::numeric_limits<T>::is_signed)
+bool convert_to(const F& from, T& to)
 {
     if (from < 0)
         return false; // value too small
@@ -75,12 +70,8 @@ convert_to(const F& from, T& to)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename F, typename T>
-typename std::enable_if<is_integer<F, T>::value &&
-                        !std::numeric_limits<F>::is_signed &&
-                        std::numeric_limits<T>::is_signed,
-                        bool>::type
-convert_to(const F& from, T& to)
+template<typename F, typename T> requires (is_integer<F, T>::value && !std::numeric_limits<F>::is_signed && std::numeric_limits<T>::is_signed)
+bool convert_to(const F& from, T& to)
 {
     if (from > static_cast<typename std::make_unsigned<T>::type>(std::numeric_limits<T>::max()))
         return false; // value too large
@@ -91,12 +82,8 @@ convert_to(const F& from, T& to)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename F, typename T>
-typename std::enable_if<is_integer<F, T>::value &&
-                        std::numeric_limits<F>::is_signed &&
-                        std::numeric_limits<T>::is_signed,
-                        bool>::type
-convert_to(const F& from, T& to)
+template<typename F, typename T> requires (is_integer<F, T>::value&& std::numeric_limits<F>::is_signed && std::numeric_limits<T>::is_signed)
+bool convert_to(const F& from, T& to)
 {
     if (from > std::numeric_limits<T>::max())
         return false; // value too large
@@ -109,12 +96,8 @@ convert_to(const F& from, T& to)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename F, typename T>
-typename std::enable_if<is_integer<F, T>::value &&
-                        !std::numeric_limits<F>::is_signed &&
-                        !std::numeric_limits<T>::is_signed,
-                        bool>::type
-convert_to(const F& from, T& to)
+template<typename F, typename T> requires (is_integer<F, T>::value && !std::numeric_limits<F>::is_signed && !std::numeric_limits<T>::is_signed)
+bool convert_to(const F& from, T& to)
 {
     if (from > std::numeric_limits<T>::max())
         return false; // value too large
@@ -128,11 +111,8 @@ convert_to(const F& from, T& to)
 /////////////////////////////////////////////////////////////////////////////////////////
 // floating point conversion
 
-template<typename F, typename T>
-typename std::enable_if<std::is_floating_point<F>::value &&
-                        std::is_integral<T>::value && std::numeric_limits<T>::is_signed,
-                        bool>::type
-convert_to(const F& from, T& to)
+template<typename F, typename T> requires (std::is_floating_point_v<F> && std::is_integral_v<T> && std::numeric_limits<T>::is_signed)
+bool convert_to(const F& from, T& to)
 {
     if (from > std::numeric_limits<T>::max())
         return false; // value too large
@@ -145,11 +125,8 @@ convert_to(const F& from, T& to)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename F, typename T>
-typename std::enable_if<std::is_floating_point<F>::value &&
-                        std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
-                        bool>::type
-convert_to(const F& from, T& to)
+template<typename F, typename T> requires (std::is_floating_point_v<F> && std::is_integral_v<T> && !std::numeric_limits<T>::is_signed)
+bool convert_to(const F& from, T& to)
 {
     if (from < 0 || from > std::numeric_limits<T>::max())
         return false; // value too large
@@ -163,10 +140,8 @@ convert_to(const F& from, T& to)
 /////////////////////////////////////////////////////////////////////////////////////////
 // string conversion
 
-template<typename F, typename T>
-typename std::enable_if<std::is_same<T, std::string>::value,
-                        bool>::type
-convert_to(const F& from, T& to)
+template<typename F, typename T> requires (std::is_same_v<T, std::string>)
+bool convert_to(const F& from, T& to)
 {
     bool ok = false;
     to = to_string(from, &ok);

@@ -56,7 +56,7 @@ RTTR_INLINE argument::argument(const variant& var) RTTR_NOEXCEPT : m_data(var.ge
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Tp>
+template<decay_arg_t T>
 argument::argument(const T& data) RTTR_NOEXCEPT
 :   m_data(reinterpret_cast<const void*>(std::addressof(data))),
     m_variant(nullptr),
@@ -67,7 +67,7 @@ argument::argument(const T& data) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Tp>
+template<decay_arg_t T>
 argument::argument(T& data) RTTR_NOEXCEPT
 :   m_data(reinterpret_cast<const void*>(std::addressof(data))),
     m_variant(nullptr),
@@ -78,8 +78,8 @@ argument::argument(T& data) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE argument::ptr_type<T> argument::is_type() const RTTR_NOEXCEPT
+template<ptr_type T>
+RTTR_INLINE bool argument::is_type() const RTTR_NOEXCEPT
 {
     return ((rttr::type::get<T>() == m_type) ||
              m_type == type::get<std::nullptr_t>() ||
@@ -88,8 +88,8 @@ RTTR_INLINE argument::ptr_type<T> argument::is_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE argument::non_ptr_type<T> argument::is_type() const RTTR_NOEXCEPT
+template<non_ptr_type T>
+RTTR_INLINE bool argument::is_type() const RTTR_NOEXCEPT
 {
     return (rttr::type::get<T>() == m_type ||
             (m_variant && type::get<variant>() == type::get<T>()));
@@ -104,8 +104,8 @@ RTTR_INLINE type argument::get_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE argument::arg_value_t<T>& argument::get_value() const RTTR_NOEXCEPT
+template<arg_value_t T>
+RTTR_INLINE T& argument::get_value() const RTTR_NOEXCEPT
 {
     using raw_type = typename std::remove_reference<T>::type;
     return (*reinterpret_cast<raw_type*>(const_cast<void *>(m_data)));
@@ -113,8 +113,8 @@ RTTR_INLINE argument::arg_value_t<T>& argument::get_value() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE argument::arg_rvalue_t<T>&& argument::get_value() const RTTR_NOEXCEPT
+template<arg_rvalue_t T>
+RTTR_INLINE std::remove_reference_t<T>&& argument::get_value() const RTTR_NOEXCEPT
 {
     using raw_type = typename std::remove_reference<T>::type;
     return std::move(*reinterpret_cast<raw_type*>(const_cast<void *>(m_data)));
@@ -122,8 +122,8 @@ RTTR_INLINE argument::arg_rvalue_t<T>&& argument::get_value() const RTTR_NOEXCEP
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE argument::is_variant_t<T>& argument::get_value() const RTTR_NOEXCEPT
+template<is_variant_t T>
+RTTR_INLINE T& argument::get_value() const RTTR_NOEXCEPT
 {
     if (m_variant)
     {
@@ -141,8 +141,8 @@ RTTR_INLINE argument::is_variant_t<T>& argument::get_value() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE argument::is_variant_ref_t<T>&& argument::get_value() const RTTR_NOEXCEPT
+template<is_variant_ref_t T>
+RTTR_INLINE std::remove_reference_t<T>&& argument::get_value() const RTTR_NOEXCEPT
 {
     if (m_variant)
     {

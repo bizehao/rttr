@@ -38,19 +38,17 @@ namespace detail
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-std::enable_if_t<can_create_sequential_view<T>::value, variant_sequential_view_private>
-create_variant_sequential_view(T&& value)
+variant_sequential_view_private create_variant_sequential_view(T&& value)
 {
-    return variant_sequential_view_private(wrapped_raw_addressof(value));
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-std::enable_if_t<!can_create_sequential_view<T>::value, variant_sequential_view_private>
-create_variant_sequential_view(T&& value)
-{
-    return variant_sequential_view_private();
+    if constexpr (can_create_sequential_view<T>::value)
+    {
+        return variant_sequential_view_private{ wrapped_raw_addressof(value) };
+    }
+    else
+    {
+        return variant_sequential_view_private{};
+    }
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

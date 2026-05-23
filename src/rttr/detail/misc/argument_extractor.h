@@ -72,20 +72,16 @@ private:
 
     /////////////////////////////////////////////////////////////////////////////////////
 
-    template<typename container_type, typename U, typename... Args>
-    static
-    enable_if_t< !std::is_same<T, raw_type_t<U>>::value, void >
-    extract_types_recursively(container_type& container, U&& value, Args &&... tail)
+    template<typename container_type, typename U, typename... Args> requires (!std::is_same_v<T, raw_type_t<U>>)
+    static void extract_types_recursively(container_type& container, U&& value, Args &&... tail)
     {
         extract_types_recursively(container, std::forward< Args >(tail)...);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
 
-    template<typename container_type, typename U, typename... Args>
-    static
-    enable_if_t< std::is_same<T, raw_type_t<U>>::value, void >
-    extract_types_recursively(container_type& container, U&& value, Args &&... tail)
+	template<typename container_type, typename U, typename... Args> requires (std::is_same_v<T, raw_type_t<U>>)
+    static void extract_types_recursively(container_type& container, U&& value, Args &&... tail)
     {
         RTTR_STATIC_CONSTEXPR auto index = count_type<T, type_list<OrigArgs...>>::value - count_type<T, type_list<Args...>>::value - 1;
         container[index] = std::forward<U>(value);
@@ -94,10 +90,8 @@ private:
 
     /////////////////////////////////////////////////////////////////////////////////////
 
-    template<typename U, typename... Args>
-    static
-    enable_if_t< std::is_same<T, raw_type_t<U>>::value, void >
-    extract_types_recursively(std::vector<T>& container, U&& value, Args &&... tail)
+	template<typename U, typename... Args> requires (std::is_same_v<T, raw_type_t<U>>)
+    static void extract_types_recursively(std::vector<T>& container, U&& value, Args &&... tail)
     {
         container.emplace_back(std::forward<U>(value));
         extract_types_recursively(container, std::forward< Args >(tail)...);

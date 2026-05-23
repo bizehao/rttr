@@ -51,7 +51,7 @@ namespace detail
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename ConstType, typename Tp = conditional_t<std::is_const<ConstType>::value,
+template<typename T, typename ConstType, typename Tp = std::conditional_t<std::is_const_v<ConstType>,
                                                                      typename sequential_container_mapper<T>::const_itr_t,
                                                                      typename sequential_container_mapper<T>::itr_t>>
 struct sequential_container_mapper_wrapper : iterator_wrapper_base<Tp>
@@ -67,28 +67,27 @@ struct sequential_container_mapper_wrapper : iterator_wrapper_base<Tp>
         return *reinterpret_cast<ConstType*>(container);
     }
 
-    template<typename..., typename ReturnType = decltype(base_class::get_data(std::declval<itr_t>())),
-             std::enable_if_t<std::is_reference<ReturnType>::value && !std::is_array<std::remove_reference_t<ReturnType>>::value, int> = 0>
     static variant get_data(const iterator_data& itr)
     {
-        auto& it = itr_wrapper::get_iterator(itr);
-        return variant(std::ref(base_class::get_data(it)));
-    }
-
-    template<typename..., typename ReturnType = decltype(base_class::get_data(std::declval<itr_t>())),
-             std::enable_if_t<std::is_reference<ReturnType>::value && std::is_array<std::remove_reference_t<ReturnType>>::value, int> = 0>
-    static variant get_data(const iterator_data& itr)
-    {
-        auto& it = itr_wrapper::get_iterator(itr);
-        return variant(std::ref(base_class::get_data(it)));
-    }
-
-    template<typename..., typename ReturnType = decltype(base_class::get_data(std::declval<itr_t>())),
-             std::enable_if_t<!std::is_reference<ReturnType>::value, int> = 0>
-    static variant get_data(const iterator_data& itr)
-    {
-        auto& it = itr_wrapper::get_iterator(itr);
-        return variant(base_class::get_data(it));
+        using ReturnType = decltype(base_class::get_data(std::declval<itr_t>()));
+        if constexpr (std::is_reference_v<ReturnType>)
+        {
+            if constexpr (std::is_array_v<std::remove_reference_t<ReturnType>>)
+            {
+                auto& it = itr_wrapper::get_iterator(itr);
+                return variant(std::ref(base_class::get_data(it)));
+            }
+            else
+            {
+                auto& it = itr_wrapper::get_iterator(itr);
+                return variant(std::ref(base_class::get_data(it)));
+            }
+        }
+        else
+        {
+            auto& it = itr_wrapper::get_iterator(itr);
+            return variant(base_class::get_data(it));
+        }
     }
 
     static void begin(void* container, iterator_data& itr)
@@ -130,59 +129,64 @@ struct sequential_container_mapper_wrapper : iterator_wrapper_base<Tp>
     }
 
     /////////////////////////////////////////////////////////////////////////
-
-    template<typename..., typename C = ConstType, std::enable_if_t<!std::is_const<C>::value, int> = 0>
     static bool set_size(void* container, std::size_t size)
     {
-        return base_class::set_size(get_container(container), size);
-    }
-
-    template<typename..., typename C = ConstType, std::enable_if_t<std::is_const<C>::value, int> = 0>
-    static bool set_size(void* container, std::size_t size)
-    {
-        // cannot set size for a const container...
-        return false;
+        if constexpr (!std::is_const_v<ConstType>)
+        {
+            return base_class::set_size(get_container(container), size);
+        }
+        else
+        {
+            // cannot set size for a const container...
+            return false;
+        }
+        
     }
 
     /////////////////////////////////////////////////////////////////////////
 
-    template<typename..., typename C = ConstType, std::enable_if_t<!std::is_const<C>::value, int> = 0>
     static void clear(void* container)
     {
-        base_class::clear(get_container(container));
-    }
-
-    template<typename..., typename C = ConstType, std::enable_if_t<std::is_const<C>::value, int> = 0>
-    static void clear(void* container)
-    {
-        // cannot clear a const container...
-    }
-
-    /////////////////////////////////////////////////////////////////////////
-
-    template<typename..., typename C = ConstType, std::enable_if_t<!std::is_const<C>::value, int> = 0>
-    static void erase(void* container, const iterator_data& itr_pos, iterator_data& itr)
-    {
-        const auto ret = base_class::erase(get_container(container), itr_wrapper::get_iterator(itr_pos));
-        itr_wrapper::create(itr, ret);
-    }
-
-    template<typename..., typename C = ConstType, std::enable_if_t<std::is_const<C>::value, int> = 0>
-    static void erase(void* container, const iterator_data& itr_pos, iterator_data& itr)
-    {
-        itr_wrapper::create(itr, base_class::end(get_container(container)));
-        return;
+        if constexpr (!std::is_const_v<ConstType>)
+        {
+            base_class::clear(get_container(container));
+        }
+        else
+        {
+            // cannot clear a const container...
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////
 
-    template<typename..., typename C = ConstType, std::enable_if_t<!std::is_const<C>::value, int> = 0>
+    static void erase(void* container, const iterator_data& itr_pos, iterator_data& itr)
+    {
+        if constexpr (!std::is_const_v<ConstType>)
+        {
+            const auto ret = base_class::erase(get_container(container), itr_wrapper::get_iterator(itr_pos));
+            itr_wrapper::create(itr, ret);
+        }
+        else
+        {
+            itr_wrapper::create(itr, base_class::end(get_container(container)));
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
     static void insert(void* container, argument& value, const iterator_data& itr_pos, iterator_data& itr)
     {
-        if (value.get_type() == ::rttr::type::get<value_t>())
+        if constexpr (!std::is_const_v<ConstType>)
         {
-            auto ret = base_class::insert(get_container(container), value.get_value<value_t>(), itr_wrapper::get_iterator(itr_pos));
-            itr_wrapper::create(itr, ret);
+            if (value.get_type() == ::rttr::type::get<value_t>())
+            {
+                auto ret = base_class::insert(get_container(container), value.get_value<value_t>(), itr_wrapper::get_iterator(itr_pos));
+                itr_wrapper::create(itr, ret);
+            }
+            else
+            {
+                end(container, itr);
+            }
         }
         else
         {
@@ -190,80 +194,65 @@ struct sequential_container_mapper_wrapper : iterator_wrapper_base<Tp>
         }
     }
 
-    template<typename..., typename C = ConstType, std::enable_if_t<std::is_const<C>::value, int> = 0>
-    static void insert(void* container, argument& value, const iterator_data& itr_pos, iterator_data& itr)
-    {
-        end(container, itr);
-    }
-
     /////////////////////////////////////////////////////////////////////////
     // is_const<T> is used because of std::initializer_list, it can only return a constant value
-    template<typename..., typename C = ConstType, typename ReturnType = decltype(base_class::get_value(std::declval<C&>(), 0)),
-        std::enable_if_t<!std::is_const<C>::value &&
-                         !std::is_array<std::remove_reference_t<ReturnType>>::value &&
-                         !std::is_const<std::remove_reference_t<ReturnType>>::value, int> = 0>
     static bool set_value(void* container, std::size_t index, argument& value)
     {
-        if (value.get_type() == ::rttr::type::get<value_t>())
+        using ReturnType = decltype(base_class::get_value(std::declval<ConstType&>(), 0));
+        if constexpr (std::is_const_v<ConstType> || std::is_const_v<std::remove_reference_t<ReturnType>>)
         {
-            base_class::get_value(get_container(container), index) = value.get_value<value_t>();
-            return true;
+            base_class::get_value(get_container(container), index);
+            return false;
         }
         else
         {
-            return false;
-        }
-    }
-
-    template<typename..., typename C = ConstType, typename ReturnType = decltype(base_class::get_value(std::declval<C&>(), 0)),
-        std::enable_if_t<!std::is_const<C>::value &&
-                         std::is_array<std::remove_reference_t<ReturnType>>::value &&
-                         !std::is_const<std::remove_reference_t<ReturnType>>::value, int> = 0>
-    static bool set_value(void* container, std::size_t index, argument& value)
-    {
-        if (value.get_type() == ::rttr::type::get<value_t>())
-        {
-            copy_array(value.get_value<value_t>(), base_class::get_value(get_container(container), index));
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    template<typename..., typename C = ConstType, typename ReturnType = decltype(base_class::get_value(std::declval<C&>(), 0)),
-        std::enable_if_t<std::is_const<C>::value ||
-                         std::is_const<std::remove_reference_t<ReturnType>>::value, int> = 0>
-    static bool set_value(void* container, std::size_t index, argument& value)
-    {
-        base_class::get_value(get_container(container), index);
-        return false;
+            if constexpr (std::is_array_v<std::remove_reference_t<ReturnType>>)
+            {
+                if (value.get_type() == ::rttr::type::get<value_t>())
+                {
+                    copy_array(value.get_value<value_t>(), base_class::get_value(get_container(container), index));
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (value.get_type() == ::rttr::type::get<value_t>())
+                {
+                    base_class::get_value(get_container(container), index) = value.get_value<value_t>();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }  
     }
 
     /////////////////////////////////////////////////////////////////////////
-
-    template<typename..., typename C = ConstType, typename ReturnType = decltype(base_class::get_value(std::declval<C&>(), 0)),
-        std::enable_if_t<std::is_reference<ReturnType>::value && !std::is_array<std::remove_reference_t<ReturnType>>::value, int> = 0>
     static variant get_value(void* container, std::size_t index)
     {
-        return variant(std::ref(base_class::get_value(get_container(container), index)));
+        using ReturnType = decltype(base_class::get_value(std::declval<ConstType&>(), 0));
+        if constexpr (std::is_reference_v<ReturnType>)
+        {
+            if constexpr (std::is_array_v<std::remove_reference_t<ReturnType>>)
+            {
+                return variant(std::ref(base_class::get_value(get_container(container), index)));
+            }
+            else
+            {
+                return variant(std::ref(base_class::get_value(get_container(container), index)));
+            }
+        }
+        else
+        {
+            return variant(static_cast<value_t>(base_class::get_value(get_container(container), index)));
+        }
     }
-
-    template<typename..., typename C = ConstType, typename ReturnType = decltype(base_class::get_value(std::declval<C&>(), 0)),
-        std::enable_if_t<std::is_reference<ReturnType>::value && std::is_array<std::remove_reference_t<ReturnType>>::value, int> = 0>
-    static variant get_value(void* container, std::size_t index)
-    {
-        return variant(std::ref(base_class::get_value(get_container(container), index)));
-    }
-
-    template<typename..., typename C = ConstType, typename ReturnType = decltype(base_class::get_value(std::declval<C&>(), 0)),
-        std::enable_if_t<!std::is_reference<ReturnType>::value, int> = 0>
-    static variant get_value(void* container, std::size_t index)
-    {
-        return variant(static_cast<value_t>(base_class::get_value(get_container(container), index)));
-    }
-
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

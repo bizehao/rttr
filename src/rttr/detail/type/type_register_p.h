@@ -132,7 +132,7 @@ private:
     type_register_private();
     ~type_register_private();
 
-    template<typename T, typename Data_Type = conditional_t<std::is_pointer<T>::value, T, std::unique_ptr<T>>>
+    template<typename T, typename Data_Type = std::conditional_t<std::is_pointer<T>::value, T, std::unique_ptr<T>>>
     struct data_container
     {
         data_container(type::type_id id) : m_id(id) {}

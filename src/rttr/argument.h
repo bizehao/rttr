@@ -41,7 +41,32 @@ class variant;
 class variant_array;
 class instance;
 
+namespace
+{
+    template<typename T>
+    concept decay_arg_t = !std::is_same_v<argument, T>;
 
+    template<typename T>
+    concept is_variant = std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, variant>;
+
+    template<typename T>
+    concept arg_value_t = !std::is_rvalue_reference_v<T> && !is_variant<T>;
+
+    template<typename T>
+    concept arg_rvalue_t = std::is_rvalue_reference_v<T> && !is_variant<T>;
+
+    template<typename T>
+    concept ptr_type = std::is_pointer_v<T>;
+
+    template<typename T>
+    concept non_ptr_type = !std::is_pointer_v<T>;
+
+    template<typename T>
+    concept is_variant_t = is_variant<T> && !std::is_rvalue_reference_v<T>;
+
+    template<typename T>
+    concept is_variant_ref_t = is_variant<T> && std::is_rvalue_reference_v<T>;
+}
 /*!
  * The \ref argument class is used for forwarding arguments to \ref property "properties" or \ref method "methods".
  *
@@ -49,29 +74,6 @@ class instance;
  */
 class RTTR_API argument
 {
-    template<typename T>
-    using decay_arg_t = std::enable_if_t<!std::is_same<argument, T>::value, T>;
-
-    template<typename T>
-    using is_variant = std::is_same<std::remove_cv_t<std::remove_reference_t<T>>, variant>;
-
-    template<typename T>
-    using arg_value_t = std::enable_if_t<!std::is_rvalue_reference<T>::value && !is_variant<T>::value, T>;
-
-    template<typename T>
-    using arg_rvalue_t = std::enable_if_t<std::is_rvalue_reference<T>::value && !is_variant<T>::value, std::remove_reference_t<T> >;
-
-    template<typename T>
-    using ptr_type = std::enable_if_t<std::is_pointer<T>::value, bool>;
-
-    template<typename T>
-    using non_ptr_type = std::enable_if_t<!std::is_pointer<T>::value, bool>;
-
-    template<typename T>
-    using is_variant_t = std::enable_if_t<is_variant<T>::value && !std::is_rvalue_reference<T>::value, T>;
-
-    template<typename T>
-    using is_variant_ref_t = std::enable_if_t<is_variant<T>::value && std::is_rvalue_reference<T>::value, std::remove_reference_t<T>>;
 
 public:
 
@@ -81,9 +83,9 @@ public:
     RTTR_INLINE argument(variant& var) RTTR_NOEXCEPT;
     RTTR_INLINE argument(const variant& var) RTTR_NOEXCEPT;
 
-    template<typename T, typename Tp = decay_arg_t<T>>
+    template<decay_arg_t T>
     RTTR_INLINE argument(const T& data) RTTR_NOEXCEPT;
-    template<typename T, typename Tp = decay_arg_t<T>>
+    template<decay_arg_t T>
     RTTR_INLINE argument(T& data) RTTR_NOEXCEPT;
 
     RTTR_INLINE argument& operator=(const argument& other) RTTR_NOEXCEPT;
@@ -96,20 +98,20 @@ public:
     template<typename T>
     RTTR_INLINE T& get_value() const RTTR_NOEXCEPT;
 #else
-    template<typename T>
-    RTTR_INLINE ptr_type<T> is_type() const RTTR_NOEXCEPT;
-    template<typename T>
-    RTTR_INLINE non_ptr_type<T> is_type() const RTTR_NOEXCEPT;
+    template<ptr_type T>
+    RTTR_INLINE bool is_type() const RTTR_NOEXCEPT;
+    template<non_ptr_type T>
+    RTTR_INLINE bool is_type() const RTTR_NOEXCEPT;
 
-    template<typename T>
-    RTTR_INLINE arg_value_t<T>& get_value() const RTTR_NOEXCEPT;
-    template<typename T>
-    RTTR_INLINE arg_rvalue_t<T> && get_value() const RTTR_NOEXCEPT;
+    template<arg_value_t T>
+    RTTR_INLINE T& get_value() const RTTR_NOEXCEPT;
+    template<arg_rvalue_t T>
+    RTTR_INLINE std::remove_reference_t<T>&& get_value() const RTTR_NOEXCEPT;
 
-    template<typename T>
-    RTTR_INLINE is_variant_t<T>& get_value() const RTTR_NOEXCEPT;
-    template<typename T>
-    RTTR_INLINE is_variant_ref_t<T> && get_value() const RTTR_NOEXCEPT;
+    template<is_variant_t T>
+    RTTR_INLINE T& get_value() const RTTR_NOEXCEPT;
+    template<is_variant_ref_t T>
+    RTTR_INLINE std::remove_reference_t<T>&& get_value() const RTTR_NOEXCEPT;
 #endif
 
 private:

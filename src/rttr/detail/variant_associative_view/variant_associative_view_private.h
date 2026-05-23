@@ -68,11 +68,11 @@ class RTTR_LOCAL variant_associative_view_private
         {
         }
 
-        template<typename T, typename RawType = raw_type_t<T>, typename ConstType = remove_pointer_t<T>>
+        template<typename T, typename RawType = raw_type_t<T>, typename ConstType = std::remove_pointer_t<T>>
         variant_associative_view_private(const T& container) RTTR_NOEXCEPT
         :   m_type(type::get<RawType>()),
             m_key_type(type::get<typename associative_container_mapper<RawType>::key_t>()),
-            m_value_type(type::get<std::conditional_t<std::is_void<typename associative_container_mapper<RawType>::value_t>::value,
+            m_value_type(type::get<std::conditional_t<std::is_void_v<typename associative_container_mapper<RawType>::value_t>,
                                                 invalid_type,
                                                 typename associative_container_mapper<RawType>::value_t>>()),
             m_container(as_void_ptr(container)),

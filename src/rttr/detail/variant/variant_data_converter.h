@@ -1335,7 +1335,7 @@ template<typename T>
 struct convert_from_enum
 {
     template<typename T_>
-    using enum_type_t = typename std::underlying_type<T_>::type;
+    using enum_type_t = std::underlying_type_t<T_>;
 
     static RTTR_INLINE enum_type_t<T> get_underlying_value(const T& from)
     {
@@ -1343,35 +1343,32 @@ struct convert_from_enum
     }
 
     template<typename T1>
-    static RTTR_INLINE
-    std::enable_if_t<!std::is_same<bool, enum_type_t<T1> >::value, bool>
-    to(const T1& from, bool& to)
+    static RTTR_INLINE bool to(const T1& from, bool& to)
     {
-        const auto value = get_underlying_value(from);
-        if (value == 0)
+        if constexpr (std::is_same_v<bool, enum_type_t<T1> >)
         {
-            to = false;
-            return true;
-        }
-        else if (value == 1)
-        {
-            to = true;
+            // for unknown reason MSVC will here scream a warning 'C4800'...
+            to = static_cast<bool>(from);
             return true;
         }
         else
         {
-            return false;
+            const auto value = get_underlying_value(from);
+            if (value == 0)
+            {
+                to = false;
+                return true;
+            }
+            else if (value == 1)
+            {
+                to = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-    }
-
-    template<typename T1>
-    static RTTR_INLINE
-    std::enable_if_t<std::is_same<bool, enum_type_t<T1> >::value, bool>
-    to(const T1& from, bool& to)
-    {
-        // for unknown reason MSVC will here scream a warning 'C4800'...
-        to = static_cast<bool>(from);
-        return true;
     }
 
     static RTTR_INLINE bool to(const T& from, char& to)

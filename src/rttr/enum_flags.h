@@ -88,7 +88,7 @@ class enum_flags
                                                    "Please use an enum which fits into an 'int32_t'." );
     public:
         using type = Enum;
-        using enum_type = std::conditional_t<std::is_signed<typename std::underlying_type<Enum>::type>::value,
+        using enum_type = std::conditional_t<std::is_signed_v<std::underlying_type_t<Enum>>,
                                                 int32_t,
                                                 uint32_t>;
         using zero = enum_type*;

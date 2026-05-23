@@ -63,31 +63,30 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////
 
     template<typename U, typename P, typename V>
-    enable_if_t<!is_global_property<U>::value && !is_read_only<P>::value, void>
-    call_impl(V& visitor) const
+    void call_impl(V& visitor) const
     {
-        visitor.visit_property(m_info);
-    }
-
-    template<typename U, typename P, typename V>
-    enable_if_t<!is_global_property<U>::value && is_read_only<P>::value, void>
-    call_impl(V& visitor) const
-    {
-        visitor.visit_readonly_property(m_info);
-    }
-
-    template<typename U, typename P, typename V>
-    enable_if_t<is_global_property<U>::value && !is_read_only<P>::value, void>
-    call_impl(V& visitor) const
-    {
-        visitor.visit_global_property(m_info);
-    }
-
-    template<typename U, typename P, typename V>
-    enable_if_t<is_global_property<U>::value && is_read_only<P>::value, void>
-    call_impl(V& visitor) const
-    {
-        visitor.visit_global_readonly_property(m_info);
+        if constexpr (is_global_property<U>::value)
+        {
+            if constexpr (is_read_only<P>::value)
+            {
+                visitor.visit_global_readonly_property(m_info);
+            }
+            else
+            {
+                visitor.visit_global_property(m_info);
+            }
+        }
+        else
+        {
+            if constexpr (is_read_only<P>::value)
+            {
+                visitor.visit_readonly_property(m_info);
+            }
+            else
+            {
+                visitor.visit_property(m_info);
+            }
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -137,18 +136,16 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////
 
     template<typename U, typename V>
-    enable_if_t<!is_global_property<U>::value, void>
-    call_impl(V& visitor) const
+    void call_impl(V& visitor) const
     {
-        visitor.visit_getter_setter_property(m_info);
-    }
-
-
-    template<typename U, typename V>
-    enable_if_t<is_global_property<U>::value, void>
-    call_impl(V& visitor) const
-    {
-        visitor.visit_global_getter_setter_property(m_info);
+        if constexpr (is_global_property<U>::value)
+        {
+            visitor.visit_global_getter_setter_property(m_info);
+        }
+        else
+        {
+            visitor.visit_getter_setter_property(m_info);
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////

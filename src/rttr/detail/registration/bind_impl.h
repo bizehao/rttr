@@ -77,9 +77,9 @@ static RTTR_INLINE auto get_enum_values(Args&&... arg) -> decltype(forward_to_ar
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using map_access_level_to_enum = conditional_t< std::is_same<T, detail::public_access>::value,
+using map_access_level_to_enum = std::conditional_t< std::is_same_v<T, detail::public_access>,
                                                 std::integral_constant<access_levels, access_levels::public_access>,
-                                                conditional_t< std::is_same<T, detail::protected_access>::value,
+                                                std::conditional_t< std::is_same_v<T, detail::protected_access>,
                                                                std::integral_constant<access_levels, access_levels::protected_access>,
                                                                std::integral_constant<access_levels, access_levels::private_access>
                                                              >
@@ -192,7 +192,7 @@ class registration::bind<detail::ctor, Class_Type, acc_level, Visitor_List, Ctor
                           "The provided amount of names in 'parameter_names' does not match argument count of the constructor signature.");
 
             // when no policy was added, we need a default policy
-            using policy_list = conditional_t< type_list_size<policy_types_found>::value == 0,
+            using policy_list = std::conditional_t< type_list_size<policy_types_found>::value == 0,
                                                default_create_policy,
                                                policy_types_found>;
 
@@ -335,7 +335,7 @@ class registration::bind<detail::ctor_func, Class_Type, F, acc_level, Visitor_Li
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using registration_derived_t = detail::conditional_t< std::is_same<T, void>::value,
+using registration_derived_t = std::conditional_t< std::is_same_v<T, void>,
                                                       registration,
                                                       registration::class_<T>
                                                      >;
@@ -377,7 +377,7 @@ class registration::bind<detail::prop, Class_Type, A, acc_level, Visitor_List> :
             using policy_types_found = typename find_types<property_policy_list, as_type_list_t<raw_type_t<Args>...>>::type;
             static_assert(!has_double_types<policy_types_found>::value, "There are multiple policies of the same type forwarded, that is not allowed!");
             // when no policy was added, we need a default policy
-            using policy_list = conditional_t< type_list_size<policy_types_found>::value == 0,
+            using policy_list = std::conditional_t< type_list_size<policy_types_found>::value == 0,
                                                default_getter_policy,
                                                policy_types_found>;
 
@@ -473,7 +473,7 @@ class registration::bind<detail::prop, Class_Type, A1, A2, acc_level, Visitor_Li
             using policy_types_found = typename find_types<property_policy_list, as_type_list_t<raw_type_t<Args>...>>::type;
             static_assert(!has_double_types<policy_types_found>::value, "There are multiple policies of the same type forwarded, that is not allowed!");
             // when no policy was added, we need a default policy
-            using policy_list = conditional_t< type_list_size<policy_types_found>::value == 0,
+            using policy_list = std::conditional_t< type_list_size<policy_types_found>::value == 0,
                                                default_getter_policy,
                                                policy_types_found>;
             // at the moment we only supported one policy
@@ -565,7 +565,7 @@ class registration::bind<detail::prop_readonly, Class_Type, A, acc_level, Visito
             using policy_types_found = typename find_types<property_policy_list, as_type_list_t<raw_type_t<Args>...>>::type;
             static_assert(!has_double_types<policy_types_found>::value, "There are multiple policies of the same type forwarded, that is not allowed!");
             // when no policy was added, we need a default policy
-            using policy_list = conditional_t< type_list_size<policy_types_found>::value == 0,
+            using policy_list = std::conditional_t< type_list_size<policy_types_found>::value == 0,
                                                default_getter_policy,
                                                policy_types_found>;
 
@@ -663,7 +663,7 @@ class registration::bind<detail::meth, Class_Type, F, acc_level, Visitor_List> :
                           "The provided amount of names in 'parameter_names' does not match argument count of the function signature.");
 
             // when no policy was added, we need a default policy
-            using policy_list = conditional_t< type_list_size<policy_types_found>::value == 0,
+            using policy_list = std::conditional_t< type_list_size<policy_types_found>::value == 0,
                                                default_invoke,
                                                policy_types_found>;
             using policy = typename std::tuple_element<0, as_std_tuple_t<policy_list>>::type;

@@ -38,19 +38,17 @@ namespace detail
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-std::enable_if_t<can_create_associative_view<T>::value, variant_associative_view_private>
-create_variant_associative_view(T&& value)
+variant_associative_view_private create_variant_associative_view(T&& value)
 {
-    return variant_associative_view_private(wrapped_raw_addressof(value));
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-std::enable_if_t<!can_create_associative_view<T>::value, variant_associative_view_private>
-create_variant_associative_view(T&& value)
-{
-    return variant_associative_view_private();
+    if constexpr (can_create_associative_view<T>::value)
+    {
+        return variant_associative_view_private(wrapped_raw_addressof(value));
+    }
+    else
+    {
+        return variant_associative_view_private();
+    }
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

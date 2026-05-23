@@ -335,12 +335,12 @@ class property_wrapper<member_object_ptr, Declaring_Typ, A(C::*), void, Acc_Leve
 
             init();
         }
-        using policy_type = std::reference_wrapper<add_const_t<A>>;
+        using policy_type = std::reference_wrapper<std::add_const_t<A>>;
         access_levels get_access_level() const RTTR_NOEXCEPT    { return Acc_Level; }
         bool is_valid()     const RTTR_NOEXCEPT                 { return true;  }
         bool is_readonly()  const RTTR_NOEXCEPT                 { return true; }
         bool is_static()    const RTTR_NOEXCEPT                 { return false; }
-        type get_type()     const RTTR_NOEXCEPT                 { return type::get< std::reference_wrapper<add_const_t<A>> >(); }
+        type get_type()     const RTTR_NOEXCEPT                 { return type::get< std::reference_wrapper<std::add_const_t<A>> >(); }
 
         variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
 

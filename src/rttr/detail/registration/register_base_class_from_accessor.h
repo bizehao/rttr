@@ -42,86 +42,61 @@ namespace detail
 {
 
 template<typename ClassType, typename AccClassType>
-enable_if_t<contains<AccClassType, typename ClassType::base_class_list>::value, void>
-register_member_accessor_class_type_when_needed_3()
+void register_member_accessor_class_type_when_needed_3()
 {
+    if constexpr (!contains<AccClassType, typename ClassType::base_class_list>::value)
+    {
+        base_class_info baseClassInfo = { type::get<AccClassType>(), &rttr_cast_impl<ClassType, AccClassType> };
+        type_register::register_base_class(type::get<ClassType>(), baseClassInfo);
+    }
 }
 
 template<typename ClassType, typename AccClassType>
-enable_if_t<!contains<AccClassType, typename ClassType::base_class_list>::value, void>
-register_member_accessor_class_type_when_needed_3()
+void register_member_accessor_class_type_when_needed_2()
 {
-    base_class_info baseClassInfo = { type::get<AccClassType>(), &rttr_cast_impl<ClassType, AccClassType> };
-    type_register::register_base_class(type::get<ClassType>(), baseClassInfo);
+    if constexpr (has_base_class_list<ClassType>::value)
+    {
+        register_member_accessor_class_type_when_needed_3<ClassType, AccClassType>();
+    }
+    else
+    {
+        base_class_info baseClassInfo = { type::get<AccClassType>(), &rttr_cast_impl<ClassType, AccClassType> };
+        type_register::register_base_class(type::get<ClassType>(), baseClassInfo);
+    }
+    
 }
 
 template<typename ClassType, typename AccClassType>
-enable_if_t<has_base_class_list<ClassType>::value, void>
-register_member_accessor_class_type_when_needed_2()
+void register_member_accessor_class_type_when_needed_1()
 {
-    register_member_accessor_class_type_when_needed_3<ClassType, AccClassType>();
+    if constexpr (std::is_base_of<AccClassType, ClassType>::value)
+    {
+        register_member_accessor_class_type_when_needed_2<ClassType, AccClassType>();
+    }
 }
 
 template<typename ClassType, typename AccClassType>
-enable_if_t<!has_base_class_list<ClassType>::value, void>
-register_member_accessor_class_type_when_needed_2()
+void register_member_accessor_class_type_when_needed()
 {
-    base_class_info baseClassInfo = { type::get<AccClassType>(), &rttr_cast_impl<ClassType, AccClassType> };
-    type_register::register_base_class(type::get<ClassType>(), baseClassInfo);
-}
-
-template<typename ClassType, typename AccClassType>
-enable_if_t<std::is_base_of<AccClassType, ClassType>::value, void>
-register_member_accessor_class_type_when_needed_1()
-{
-    register_member_accessor_class_type_when_needed_2<ClassType, AccClassType>();
-}
-
-template<typename ClassType, typename AccClassType>
-enable_if_t<!std::is_base_of<AccClassType, ClassType>::value, void>
-register_member_accessor_class_type_when_needed_1()
-{
-}
-
-template<typename ClassType, typename AccClassType>
-enable_if_t<!std::is_same<ClassType, AccClassType>::value, void>
-register_member_accessor_class_type_when_needed()
-{
-    register_member_accessor_class_type_when_needed_1<ClassType, AccClassType>();
-}
-
-template<typename ClassType, typename AccClassType>
-enable_if_t<std::is_same<ClassType, AccClassType>::value, void>
-register_member_accessor_class_type_when_needed()
-{
+    if constexpr (!std::is_same<ClassType, AccClassType>::value)
+    {
+        register_member_accessor_class_type_when_needed_1<ClassType, AccClassType>();
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename ClassType, typename F>
-enable_if_t<std::is_member_function_pointer<F>::value && !std::is_member_object_pointer<F>::value, void>
-register_accessor_class_type_when_needed()
+void register_accessor_class_type_when_needed()
 {
-    register_member_accessor_class_type_when_needed<ClassType, typename function_traits<F>::class_type>();
-}
-
-template<typename ClassType, typename F>
-enable_if_t<!std::is_member_function_pointer<F>::value && std::is_member_object_pointer<F>::value, void>
-register_accessor_class_type_when_needed()
-{
-    register_member_accessor_class_type_when_needed<ClassType, typename property_traits<F>::class_type>();
-}
-
-template<typename ClassType, typename F>
-enable_if_t<std::is_member_function_pointer<F>::value && std::is_member_object_pointer<F>::value, void>
-register_accessor_class_type_when_needed()
-{
-}
-
-template<typename ClassType, typename F>
-enable_if_t<!std::is_member_function_pointer<F>::value && !std::is_member_object_pointer<F>::value, void>
-register_accessor_class_type_when_needed()
-{
+    if constexpr (std::is_member_function_pointer_v<F> && !std::is_member_object_pointer_v<F>)
+    {
+        register_member_accessor_class_type_when_needed<ClassType, typename function_traits<F>::class_type>();
+    }
+    else if constexpr (!std::is_member_function_pointer_v<F> && std::is_member_object_pointer_v<F>)
+    {
+        register_member_accessor_class_type_when_needed<ClassType, typename property_traits<F>::class_type>();
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

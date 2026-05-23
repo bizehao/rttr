@@ -84,10 +84,10 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy, Metadata_Co
         type get_declaring_type()        const RTTR_NOEXCEPT { return type::get<typename raw_type<Class_Type>::type>(); }
         access_levels get_access_level() const RTTR_NOEXCEPT { return Acc_Level; }
 
-        RTTR_INLINE std::vector<bool> get_is_reference_impl(std::true_type) const RTTR_NOEXCEPT { return {std::is_reference<Ctor_Args>::value...}; }
+        RTTR_INLINE std::vector<bool> get_is_reference_impl(std::true_type) const RTTR_NOEXCEPT { return {std::is_reference_v<Ctor_Args>...}; }
         RTTR_INLINE std::vector<bool> get_is_reference_impl(std::false_type) const RTTR_NOEXCEPT { return {}; }
 
-        RTTR_INLINE std::vector<bool> get_is_const_impl(std::true_type) const RTTR_NOEXCEPT { return {std::is_const<typename std::remove_reference<Ctor_Args>::type>::value...}; }
+        RTTR_INLINE std::vector<bool> get_is_const_impl(std::true_type) const RTTR_NOEXCEPT { return {std::is_const_v<typename std::remove_reference_t<Ctor_Args>>...}; }
         RTTR_INLINE std::vector<bool> get_is_const_impl(std::false_type) const RTTR_NOEXCEPT { return {}; }
 
         std::vector<bool> get_is_reference() const RTTR_NOEXCEPT { return get_is_reference_impl(std::integral_constant<bool, sizeof...(Ctor_Args) != 0>()); }
@@ -261,10 +261,10 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy, Metadata_Co
         type get_declaring_type()        const RTTR_NOEXCEPT { return type::get<typename raw_type<Class_Type>::type>(); }
         access_levels get_access_level() const RTTR_NOEXCEPT { return Acc_Level; }
 
-        RTTR_INLINE std::vector<bool> get_is_reference_impl(std::true_type) const RTTR_NOEXCEPT { return {std::is_reference<Ctor_Args>::value...}; }
+        RTTR_INLINE std::vector<bool> get_is_reference_impl(std::true_type) const RTTR_NOEXCEPT { return {std::is_reference_v<Ctor_Args>...}; }
         RTTR_INLINE std::vector<bool> get_is_reference_impl(std::false_type) const RTTR_NOEXCEPT { return {}; }
 
-        RTTR_INLINE std::vector<bool> get_is_const_impl(std::true_type) const RTTR_NOEXCEPT { return {std::is_const<typename std::remove_reference<Ctor_Args>::type>::value...}; }
+        RTTR_INLINE std::vector<bool> get_is_const_impl(std::true_type) const RTTR_NOEXCEPT { return {std::is_const_v<typename std::remove_reference_t<Ctor_Args>>...}; }
         RTTR_INLINE std::vector<bool> get_is_const_impl(std::false_type) const RTTR_NOEXCEPT { return {}; }
 
         std::vector<bool> get_is_reference() const RTTR_NOEXCEPT { return get_is_reference_impl(std::integral_constant<bool, sizeof...(Ctor_Args) != 0>()); }

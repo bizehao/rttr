@@ -59,7 +59,7 @@ class enumeration_wrapper : public enumeration_wrapper_base, public metadata_han
                  m_enum_variant_values[index] = item.get_value();
                  ++index;
             }
-            static_assert(std::is_enum<Enum_Type>::value, "No enum type provided, please create an instance of this class only for enum types!");
+            static_assert(std::is_enum_v<Enum_Type>, "No enum type provided, please create an instance of this class only for enum types!");
         }
 
         bool is_valid() const RTTR_NOEXCEPT { return true; }

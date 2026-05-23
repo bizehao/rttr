@@ -384,7 +384,7 @@ namespace detail
     template <typename T>
     struct associative_container_value_t
     {
-        using type = std::conditional_t< requires { typename T::mapped_type; }, typename T::mapped_type, std::nullptr_t> //decltype(check<T>(nullptr));
+        using type = std::conditional_t < requires { typename T::mapped_type; }, typename T::mapped_type, std::nullptr_t > ;//decltype(check<T>(nullptr));
     };
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -520,13 +520,7 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////
     // checks whether the given type T has a less than operator
     template<typename T>
-	concept has_less_than_operator_impl = requires(T a)
-	{
-		{ a < a } -> std::convertible_to<bool>;
-	};
-
-    template<typename T>
-    struct has_less_than_operator : std::integral_constant<bool, std::is_same<std::true_type, has_less_than_operator_impl<T>> {};
+    struct has_less_than_operator : std::integral_constant<bool, requires(T a) { { a < a } -> std::convertible_to<bool>; } > {};
 
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
@@ -539,7 +533,7 @@ namespace detail
     };
 
     template<typename T>
-    struct has_equal_operator : std::integral_constant<bool, std::is_same<std::true_type, supports_equal_test<T>> {};
+    struct has_equal_operator : std::integral_constant<bool, supports_equal_test<T>> {};
 
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////

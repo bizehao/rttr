@@ -90,13 +90,13 @@ template<typename Default_Arg_List, typename T, typename...TArgs>
 struct find_default_args_impl<type_list<T, TArgs...>, Default_Arg_List>
 {
     template<typename Tx>
-    using decay_type = remove_cv_t<remove_reference_t< Tx >>;
+    using decay_type = std::remove_cv_t<std::remove_reference_t< Tx >>;
 
     using func_args = default_args< decay_type< T>,
                                     decay_type< TArgs>...
                                   >;
 
-    using type = conditional_t< is_same_nullptr<func_args, Default_Arg_List>::value,
+    using type = std::conditional_t< is_same_nullptr<func_args, Default_Arg_List>::value,
                                 default_list<func_args, Default_Arg_List>,
                                 typename find_default_args_impl<type_list<TArgs...>, Default_Arg_List >::type
                                >;
@@ -116,26 +116,26 @@ struct find_default_args_impl<type_list<>, Default_Arg_List>
  *
  * This avoid code distinction in `has_default_types`or `get_default_args`.
  */
-template<typename Default_Arg_List, typename T, typename Acc_Type, typename Enable = void>
+template<typename Default_Arg_List, typename T, typename Acc_Type>
 struct find_default_args_helper;
 
 // is function
-template<typename Default_Arg_List, typename T, typename Acc_Type>
-struct find_default_args_helper<Default_Arg_List, type_list<T>, Acc_Type, enable_if_t< std::is_same<Acc_Type, function_type>::value >>
+template<typename Default_Arg_List, typename T, typename Acc_Type> requires (std::is_same_v<Acc_Type, function_type>)
+struct find_default_args_helper<Default_Arg_List, type_list<T>, Acc_Type>
 :   find_default_args_impl< as_type_list_t< typename function_traits<T>::arg_types >, Default_Arg_List>
 {
 };
 
 // is ctor with one argument
-template<typename Default_Arg_List, typename T>
-struct find_default_args_helper<Default_Arg_List, type_list<T>, constructor_type, enable_if_t< is_one_argument<T>::value >>
+template<typename Default_Arg_List, typename T> requires (is_one_argument<T>::value)
+struct find_default_args_helper<Default_Arg_List, type_list<T>, constructor_type>
 :   find_default_args_impl<type_list<T>, Default_Arg_List>
 {
 };
 
 // is ctor with zero or more then one argument
-template<typename Default_Arg_List, typename...TArgs>
-struct find_default_args_helper<Default_Arg_List, type_list<TArgs...>, constructor_type, enable_if_t< !is_one_argument<TArgs...>::value >>
+template<typename Default_Arg_List, typename...TArgs> requires (!is_one_argument<TArgs...>::value)
+struct find_default_args_helper<Default_Arg_List, type_list<TArgs...>, constructor_type>
 :   find_default_args_impl<type_list<TArgs...>, Default_Arg_List>
 {
 };
@@ -174,7 +174,7 @@ struct get_default_args_impl;
 template<typename T, typename...TArgs>
 struct get_default_args_impl<type_list<T, TArgs...>>
 {
-    using type = conditional_t< is_def_type<T>::value,
+    using type = std::conditional_t< is_def_type<T>::value,
                                 T,
                                 typename get_default_args_impl<type_list<TArgs...>>::type
                                >;
@@ -199,7 +199,7 @@ using get_default_args_t = typename get_default_args_impl< type_list< TArgs... >
  * Otherwise to 'std::false_type'
  */
 template<typename...Args>
-using has_default_args = std::integral_constant<bool, !std::is_same<get_default_args_t<Args...>, default_args<>>::value>;
+using has_default_args = std::integral_constant<bool, !std::is_same_v<get_default_args_t<Args...>, default_args<>>>;
 
 template<typename T1, typename T2, typename Acc_Type>
 struct has_default_types;
@@ -212,7 +212,7 @@ struct has_default_types;
  */
 template<typename Acc_Args, typename Acc_Type, typename... TArgs>
 struct has_default_types<Acc_Args, type_list<TArgs...>, Acc_Type>
-:   std::integral_constant<bool, !std::is_same<find_default_args_t<get_default_args_t<TArgs...>, Acc_Args, Acc_Type>, empty_defaults>::value>
+:   std::integral_constant<bool, !std::is_same_v<find_default_args_t<get_default_args_t<TArgs...>, Acc_Args, Acc_Type>, empty_defaults>>
 {
 };
 
@@ -233,27 +233,22 @@ using count_default_args = count_if<is_def_type, raw_type_t<TArgs>... >;
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename Acc_Args, typename Acc_Type, typename... Args, typename Default_Type = find_default_args_t<get_default_args_t<Args...>, Acc_Args, Acc_Type> >
-static RTTR_INLINE
-enable_if_t< std::is_same<Default_Type, empty_defaults>::value, typename Default_Type::default_types_func>
-get_default_args(Args&&... arg)
+static RTTR_INLINE typename Default_Type::default_types_func get_default_args(Args&&... arg)
 {
-    return default_args<>(); // no default arguments provided
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename Acc_Args, typename Acc_Type, typename... Args, typename Default_Type = find_default_args_t<get_default_args_t<Args...>, Acc_Args, Acc_Type> >
-static RTTR_INLINE
-enable_if_t< !std::is_same<Default_Type, empty_defaults>::value, typename Default_Type::default_types_func>
-get_default_args(Args&&... arg)
-{
-    // default arguments are provided, extract them
-    auto result = forward_to_array<typename Default_Type::default_types_provided>(std::forward<Args>(arg)...);
-    // because we knew there is exactly one detail::default_argument,
-    // we can extract it without worry to check
-    typename Default_Type::default_types_func ret;
-    ret.m_args = std::move(result[0].m_args);
-    return ret;
+    if constexpr (std::is_same_v<Default_Type, empty_defaults>)
+    {
+        return default_args<>(); // no default arguments provided
+    }
+    else
+    {
+        // default arguments are provided, extract them
+        auto result = forward_to_array<typename Default_Type::default_types_provided>(std::forward<Args>(arg)...);
+        // because we knew there is exactly one detail::default_argument,
+        // we can extract it without worry to check
+        typename Default_Type::default_types_func ret;
+        ret.m_args = std::move(result[0].m_args);
+        return ret;
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

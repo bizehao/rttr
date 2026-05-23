@@ -60,13 +60,13 @@ RTTR_INLINE instance::instance(const instance& other) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Tp>
+template<typename T> requires (!std::is_same_v<instance, std::decay_t<T>> && !std::is_same_v<variant, std::decay_t<T>>)
 RTTR_INLINE instance::instance(T& data) RTTR_NOEXCEPT
 :   m_data_container(detail::data_address_container{
                      rttr::type::get<T>(), rttr::type::get<detail::wrapper_mapper_t<T>>(),
                      detail::as_void_ptr(detail::raw_addressof(data)), detail::as_void_ptr(detail::wrapped_raw_addressof(data))})
 {
-    static_assert(!std::is_same<argument, T>::value, "Don't use the instance class for forwarding an argument!");
+    static_assert(!std::is_same_v<argument, T>, "Don't use the instance class for forwarding an argument!");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

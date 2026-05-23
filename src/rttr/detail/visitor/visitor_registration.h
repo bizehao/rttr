@@ -53,18 +53,15 @@ namespace detail
         using type = type_list<TS..., T>;
     };
 
-    template<typename T, typename Enable = void>
-    struct is_class_complete_impl : std::false_type {};
+    template<typename T>
+    concept is_class_complete_impl = requires {
+        std::is_object_v<T>;
+        !std::is_pointer_v<T>;
+        (sizeof(T) > 0); 
+    };
 
     template<typename T>
-    struct is_class_complete_impl<T, enable_if_t<std::is_object<T>::value &&
-                                                 !std::is_pointer<T>::value &&
-                                                 (sizeof(T) > 0)
-                                                 >
-                                 > : std::true_type {};
-
-    template<typename T>
-    using is_class_complete = std::integral_constant<bool, is_class_complete_impl<T>::value>;
+    using is_class_complete = std::integral_constant<bool, is_class_complete_impl<T>>;
 } // end namespace detail
 } // end namespace rttr
 

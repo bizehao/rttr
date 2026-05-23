@@ -93,10 +93,10 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
         type get_instantiated_type()        const RTTR_NOEXCEPT { return type::get<instanciated_type>(); }
         type get_declaring_type()           const RTTR_NOEXCEPT { return type::get<typename raw_type<Class_Type>::type>(); }
 
-        RTTR_INLINE std::vector<bool> get_is_reference_impl(std::true_type)     const RTTR_NOEXCEPT { return {std::is_reference<Ctor_Args>::value...}; }
+        RTTR_INLINE std::vector<bool> get_is_reference_impl(std::true_type)     const RTTR_NOEXCEPT { return {std::is_reference_v<Ctor_Args>...}; }
         RTTR_INLINE std::vector<bool> get_is_reference_impl(std::false_type)    const RTTR_NOEXCEPT { return {}; }
 
-        RTTR_INLINE std::vector<bool> get_is_const_impl(std::true_type)     const RTTR_NOEXCEPT { return {std::is_const<typename std::remove_reference<Ctor_Args>::type>::value...}; }
+        RTTR_INLINE std::vector<bool> get_is_const_impl(std::true_type)     const RTTR_NOEXCEPT { return {std::is_const_v<typename std::remove_reference_t<Ctor_Args>>...}; }
         RTTR_INLINE std::vector<bool> get_is_const_impl(std::false_type)    const RTTR_NOEXCEPT { return {}; }
 
         std::vector<bool> get_is_reference()    const RTTR_NOEXCEPT { return get_is_reference_impl(std::integral_constant<bool, sizeof...(Ctor_Args) != 0>()); }
@@ -108,19 +108,16 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
         variant get_metadata(const variant& key)            const { return metadata_handler<Metadata_Count>::get_metadata(key); }
 
         template<typename... TArgs>
-        static RTTR_INLINE
-        enable_if_t< are_args_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>>::value, variant>
-        invoke_impl(const TArgs&...args)
+        static RTTR_INLINE variant invoke_impl(const TArgs&...args)
         {
-            return invoker_class::invoke(args...);
-        }
-
-        template<typename... TArgs>
-        static RTTR_INLINE
-        enable_if_t< !are_args_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>>::value, variant>
-        invoke_impl(const TArgs&...args)
-        {
-            return variant();
+            if constexpr (are_args_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>>::value)
+            {
+                return invoker_class::invoke(args...);
+            }
+            else
+            {
+                return variant();
+            }
         }
 
         variant invoke() const
@@ -284,10 +281,10 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
         type get_instantiated_type()        const RTTR_NOEXCEPT { return type::get<instanciated_type>(); }
         type get_declaring_type()           const RTTR_NOEXCEPT { return type::get<typename raw_type<Class_Type>::type>(); }
 
-        RTTR_INLINE std::vector<bool> get_is_reference_impl(std::true_type)     const RTTR_NOEXCEPT { return {std::is_reference<Ctor_Args>::value...}; }
+        RTTR_INLINE std::vector<bool> get_is_reference_impl(std::true_type)     const RTTR_NOEXCEPT { return {std::is_reference_v<Ctor_Args>...}; }
         RTTR_INLINE std::vector<bool> get_is_reference_impl(std::false_type)    const RTTR_NOEXCEPT { return {}; }
 
-        RTTR_INLINE std::vector<bool> get_is_const_impl(std::true_type)     const RTTR_NOEXCEPT { return {std::is_const<typename std::remove_reference<Ctor_Args>::type>::value...}; }
+        RTTR_INLINE std::vector<bool> get_is_const_impl(std::true_type)     const RTTR_NOEXCEPT { return {std::is_const_v<typename std::remove_reference_t<Ctor_Args>>...}; }
         RTTR_INLINE std::vector<bool> get_is_const_impl(std::false_type)    const RTTR_NOEXCEPT { return {}; }
 
         std::vector<bool> get_is_reference()    const RTTR_NOEXCEPT { return get_is_reference_impl(std::integral_constant<bool, sizeof...(Ctor_Args) != 0>()); }
@@ -296,20 +293,17 @@ class constructor_wrapper<Class_Type, class_ctor, Acc_Level, Policy,
         array_range<parameter_info> get_parameter_infos()   const RTTR_NOEXCEPT { return array_range<parameter_info>(); }
         variant get_metadata(const variant& key)            const { return metadata_handler<Metadata_Count>::get_metadata(key); }
 
-        template<typename... TArgs>
-        static RTTR_INLINE
-        enable_if_t< are_args_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>>::value, variant>
-        invoke_impl(const TArgs&...args)
+		template<typename... TArgs>
+        static RTTR_INLINE variant invoke_impl(const TArgs&...args)
         {
-            return invoker_class::invoke(args...);
-        }
-
-        template<typename... TArgs>
-        static RTTR_INLINE
-        enable_if_t< !are_args_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>>::value, variant>
-        invoke_impl(const TArgs&...args)
-        {
-            return variant();
+            if constexpr (are_args_in_valid_range<type_list<Ctor_Args...>, type_list<TArgs...>>::value)
+            {
+                return invoker_class::invoke(args...);
+            }
+            else
+            {
+                return variant();
+            }
         }
 
         variant invoke() const

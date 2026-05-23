@@ -209,17 +209,17 @@ RTTR_CONSTEXPR RTTR_INLINE std::add_const_t<T>& as_const(T& value) RTTR_NOEXCEPT
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T> requires (std::is_pointer_v<T>)
+template<typename T>
 RTTR_FORCE_INLINE void* as_void_ptr(const T& obj)
 {
-    return const_cast<void*>(reinterpret_cast<const volatile void*>(obj));
-}
-
-
-template<typename T> requires (!std::is_pointer_v<T>)
-RTTR_FORCE_INLINE void* as_void_ptr(const T& obj)
-{
-    return const_cast<void*>(reinterpret_cast<const volatile void*>(&obj));
+    if constexpr (std::is_pointer_v<T>)
+    {
+        return const_cast<void*>(reinterpret_cast<const volatile void*>(obj));
+    }
+    else
+    {
+        return const_cast<void*>(reinterpret_cast<const volatile void*>(&obj));
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -316,9 +316,8 @@ static RTTR_INLINE raw_addressof_return_type_t<T> raw_addressof(T& data)
     }
     else
     {
-        std::addressof(data);
+        return std::addressof(data);
     }
-    return raw_addressof_impl<T>::get(data);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

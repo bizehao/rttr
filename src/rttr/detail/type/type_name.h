@@ -31,6 +31,7 @@
 #include "rttr/detail/base/core_prerequisites.h"
 
 #include <string_view>
+#include <source_location>
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -84,17 +85,7 @@ RTTR_LOCAL RTTR_INLINE const char* extract_type_signature(const char* signature)
 template<typename T>
 RTTR_LOCAL RTTR_INLINE const char* f() RTTR_NOEXCEPT
 {
-    return extract_type_signature(
-    #if RTTR_COMPILER == RTTR_COMPILER_MSVC
-                                                            __FUNCSIG__
-    #elif RTTR_COMPILER == RTTR_COMPILER_GNUC
-                                                            __PRETTY_FUNCTION__
-    #elif RTTR_COMPILER == RTTR_COMPILER_CLANG || RTTR_COMPILER == RTTR_COMPILER_APPLECLANG
-                                                            __PRETTY_FUNCTION__
-    #else
-        #error "Don't know how the extract type signatur for this compiler! Abort! Abort!"
-    #endif
-                                   );
+    return extract_type_signature(std::source_location::current().function_name());
 }
 
 /////////////////////////////////////////////////////////////////////////////////

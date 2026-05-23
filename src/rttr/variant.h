@@ -68,8 +68,8 @@ namespace detail
 
     enum class variant_policy_operation : uint8_t;
 
-    template<typename T, typename Decayed = decay_except_array_t<T>>
-    using decay_variant_t = std::enable_if_t<!std::is_same<Decayed, variant>::value, Decayed>;
+    template<typename T>
+    concept decay_variant_t = !std::is_same_v<decay_except_array_t<T>, variant>;
 
     using variant_policy_func = bool (*)(variant_policy_operation, const variant_data&, argument_wrapper);
 }
@@ -210,7 +210,7 @@ class RTTR_API variant
          * \brief Constructs a new variant with the new value \p val.
          *        The value will be copied or moved into the variant.
          */
-        template<typename T, typename Tp = detail::decay_variant_t<T>>
+        template<detail::decay_variant_t T>
         variant(T&& val);
 
         /*!
@@ -233,7 +233,7 @@ class RTTR_API variant
          *
          * \return A reference to the variant with the new data.
          */
-        template<typename T, typename Tp = detail::decay_variant_t<T>>
+        template<detail::decay_variant_t T>
         variant& operator=(T&& other);
 
         /*!
@@ -1003,15 +1003,13 @@ class RTTR_API variant
          *
          * \return `True`, when the conversion was successful, otherwise `false`.
          */
-		template<typename T> requires (detail::pointer_count<T>::value == 1)
-        bool try_pointer_conversion(T& to, const type& source_type, const type& target_type) const;
 
-        /*!
-         * \brief A dummy method which does in fact always return `falsev.
-         *
-         * \return `False`.
-         */
-		template<typename T> requires (detail::pointer_count<T>::value != 1)
+         /*!
+          * \brief A dummy method which does in fact always return `falsev.
+          *
+          * \return `False`.
+          */
+		template<typename T>
         bool try_pointer_conversion(T& to, const type& source_type, const type& target_type) const;
 
         /*!

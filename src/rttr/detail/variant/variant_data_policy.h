@@ -66,7 +66,7 @@ struct variant_data_policy_arithmetic;
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T, bool Can_Place = (sizeof(T) <= sizeof(variant_data)) &&
-                                      (std::alignment_of<T>::value <= std::alignment_of<variant_data>::value)>
+                                      (std::alignment_of_v<T> <= std::alignment_of_v<variant_data>)>
 using can_place_in_variant = std::integral_constant<bool, Can_Place>;
 
 /*!
@@ -80,26 +80,26 @@ using can_place_in_variant = std::integral_constant<bool, Can_Place>;
  * \return The manager class for the type T.
  */
 template<typename T>
-using variant_policy = std::conditional_t<std::is_same<T, void_variant_type>::value,
+using variant_policy = std::conditional_t<std::is_same_v<T, void_variant_type>,
                                      variant_data_policy_void,
                                      std::conditional_t<is_nullptr_t<T>::value,
                                                    variant_data_policy_nullptr_t,
-                                                   std::conditional_t<std::is_same<T, std::string>::value || is_one_dim_char_array<T>::value,
+                                                   std::conditional_t<std::is_same_v<T, std::string> || is_one_dim_char_array<T>::value,
                                                                  variant_data_policy_string,
                                                                  std::conditional_t<can_place_in_variant<T>::value,
-                                                                               std::conditional_t<std::is_arithmetic<T>::value,
+                                                                               std::conditional_t<std::is_arithmetic_v<T>,
                                                                                              variant_data_policy_arithmetic<T>,
-                                                                                             std::conditional_t<std::is_array<T>::value,
+                                                                                             std::conditional_t<std::is_array_v<T>,
                                                                                                            variant_data_policy_array_small<T>,
-                                                                                                           std::conditional_t<std::is_enum<T>::value,
+                                                                                                           std::conditional_t<std::is_enum_v<T>,
                                                                                                                          variant_data_policy_small<T, default_type_converter<T, convert_from_enum<T>>>,
                                                                                                                          variant_data_policy_small<T>
                                                                                                                         >
                                                                                                           >
                                                                                             >,
-                                                                                std::conditional_t<std::is_array<T>::value,
+                                                                                std::conditional_t<std::is_array_v<T>,
                                                                                               variant_data_policy_array_big<T>,
-                                                                                              std::conditional_t<std::is_enum<T>::value,
+                                                                                              std::conditional_t<std::is_enum_v<T>,
                                                                                                             variant_data_policy_big<T, default_type_converter<T, convert_from_enum<T>>>,
                                                                                                             variant_data_policy_big<T>
                                                                                                            >
@@ -154,19 +154,16 @@ using variant_policy_func = bool (*)(variant_policy_operation, const variant_dat
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-std::enable_if_t<std::is_pointer<T>::value, bool>
-static RTTR_INLINE is_nullptr(T& val)
+static RTTR_INLINE bool is_nullptr(T& val)
 {
-    return (val == nullptr);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-std::enable_if_t<!std::is_pointer<T>::value, bool>
-static RTTR_INLINE is_nullptr(T& to)
-{
-    return false;
+    if constexpr (std::is_pointer_v<T>)
+    {
+        return (val == nullptr);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -174,21 +171,19 @@ static RTTR_INLINE is_nullptr(T& to)
 template<typename T>
 using is_copyable = std::is_copy_constructible<T>;
 
-template<typename T, typename Tp = decay_except_array_t<wrapper_mapper_t<T>> >
-std::enable_if_t<is_copyable<Tp>::value &&
-            is_wrapper<T>::value, variant> get_wrapped_value(T& value)
+template<typename T>
+variant get_wrapped_value(T& value)
 {
-    using raw_wrapper_type = std::remove_cv_t<std::remove_reference_t<T>>;
-    return variant(wrapper_mapper<raw_wrapper_type>::get(value));
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T, typename Tp = decay_except_array_t<wrapper_mapper_t<T>>>
-std::enable_if_t<!is_copyable<Tp>::value ||
-            !is_wrapper<T>::value, variant> get_wrapped_value(T& value)
-{
-    return variant();
+    using Tp = decay_except_array_t<wrapper_mapper_t<T>>;
+    if constexpr (is_copyable<Tp>::value && is_wrapper<T>::value)
+    {
+        using raw_wrapper_type = std::remove_cv_t<std::remove_reference_t<T>>;
+        return variant{ wrapper_mapper<raw_wrapper_type>::get(value) };
+    }
+    else
+    {
+        return variant{};
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -514,22 +509,22 @@ struct variant_data_policy_array_big : variant_data_base_policy<T, variant_data_
         delete [] &value;
     }
 
-    template<typename OT = T>
-    static RTTR_INLINE typename std::enable_if<detail::is_bounded_array<OT>::value>::type clone(const T& value, variant_data& dest)
+    static RTTR_INLINE void clone(const T& value, variant_data& dest)
     {
-        constexpr size_t size = std::extent<T>::value;
-        using Type = typename std::remove_extent<T>::type;
-        reinterpret_cast<array_dest_type&>(dest) = new Type[size];
+        if constexpr (detail::is_bounded_array<T>::value)
+        {
+            constexpr size_t size = std::extent_v<T>;
+            using Type = std::remove_extent_t<T>;
+            reinterpret_cast<array_dest_type&>(dest) = new Type[size];
 
-        COPY_ARRAY_PRE_PROC(value, dest);
-    }
+            COPY_ARRAY_PRE_PROC(value, dest);
+        }
+        else
+        {
+            reinterpret_cast<array_dest_type&>(dest) = new T;
 
-    template<typename OT = T>
-    static RTTR_INLINE typename std::enable_if<!detail::is_bounded_array<OT>::value>::type clone(const T& value, variant_data& dest)
-    {
-        reinterpret_cast<array_dest_type&>(dest) = new T;
-
-        COPY_ARRAY_PRE_PROC(value, dest);
+            COPY_ARRAY_PRE_PROC(value, dest);
+        }
     }
 
     static RTTR_INLINE void swap(T& value, variant_data& dest)
@@ -537,23 +532,24 @@ struct variant_data_policy_array_big : variant_data_base_policy<T, variant_data_
         reinterpret_cast<array_dest_type&>(dest) = value;
     }
 
-    template<typename U, typename OT = T>
-    static RTTR_INLINE typename std::enable_if<detail::is_bounded_array<OT>::value>::type create(U&& value, variant_data& dest)
+    template<typename U>
+    static RTTR_INLINE void create(U&& value, variant_data& dest)
     {
-        constexpr size_t size = std::extent<T>::value;
-        using Type = typename std::remove_extent<T>::type;
-        reinterpret_cast<array_dest_type&>(dest) = new Type[size];
+        if constexpr (detail::is_bounded_array<T>::value)
+        {
+            constexpr size_t size = std::extent_v<T>;
+            using Type = std::remove_extent_t<T>;
+            reinterpret_cast<array_dest_type&>(dest) = new Type[size];
 
-        COPY_ARRAY_PRE_PROC(value, dest);
-    }
+            COPY_ARRAY_PRE_PROC(value, dest);
+        }
+        else
+        {
+            using array_dest_type = decltype(new T);
+            reinterpret_cast<array_dest_type&>(dest) = new T;
 
-    template<typename U, typename OT = T>
-    static RTTR_INLINE typename std::enable_if<!detail::is_bounded_array<OT>::value>::type create(U&& value, variant_data& dest)
-    {
-        using array_dest_type = decltype(new T);
-        reinterpret_cast<array_dest_type&>(dest) = new T;
-
-        COPY_ARRAY_PRE_PROC(value, dest);
+            COPY_ARRAY_PRE_PROC(value, dest);
+        }
     }
 };
 

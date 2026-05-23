@@ -48,12 +48,7 @@ using can_create_associative_view = std::integral_constant<bool, is_associative_
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-std::enable_if_t<can_create_associative_view<T>::value, variant_associative_view_private>
-create_variant_associative_view(T&& value);
-
-template<typename T>
-std::enable_if_t<!can_create_associative_view<T>::value, variant_associative_view_private>
-create_variant_associative_view(T&& value);
+variant_associative_view_private create_variant_associative_view(T&& value);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 

@@ -46,30 +46,10 @@ struct base_class_info
 };
 
 /*!
- * This trait checks if a given type T has a typedef named \a base_class_list.
- * has_base_class_list_impl::value is true, when it has this type, otherwise false.
- */
-template <typename T>
-class has_base_class_list_impl
-{
-    typedef char YesType[1];
-    typedef char NoType[2];
-
-    template <typename C>
-    static YesType& test(typename C::base_class_list*);
-
-    template <typename>
-    static NoType& test(...);
-
-public:
-    static RTTR_CONSTEXPR_OR_CONST bool value = (sizeof(YesType) == sizeof(test<T>(0)));
-};
-
-/*!
  * If T has a type alias called \a 'base_class_list' then inherits from true_type, otherwise inherits from false_type.
  */
 template<typename T>
-using has_base_class_list = std::integral_constant<bool, has_base_class_list_impl<T>::value>;
+using has_base_class_list = std::integral_constant<bool, requires { typename T::base_class_list; } > ;
 
 using info_container = std::vector<detail::base_class_info>;
 
@@ -124,7 +104,7 @@ struct type_from_base_classes<DerivedClass, type_list<BaseClassList...>> : type_
  * This helper trait returns a vector with type object of all base classes.
  * When there is no type_list defined or the class has no base class, an empty vector is returned.
  */
-template<typename T, typename Enable = void>
+template<typename T>
 struct RTTR_LOCAL base_classes
 {
     static RTTR_INLINE info_container get_types()
@@ -134,8 +114,8 @@ struct RTTR_LOCAL base_classes
     }
 };
 
-template<typename T>
-struct RTTR_LOCAL base_classes<T, typename std::enable_if<has_base_class_list<T>::value>::type>
+template<typename T> requires (has_base_class_list<T>::value)
+struct RTTR_LOCAL base_classes<T>
 {
     static RTTR_INLINE info_container get_types()
     {

@@ -42,12 +42,12 @@ namespace detail
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using is_comparable_type = std::integral_constant<bool, std::is_same<T, std::string>::value ||
-                                                        std::is_same<T, std::string_view>::value ||
-                                                        std::is_arithmetic<T>::value ||
-                                                        std::is_enum<T>::value ||
-                                                        std::is_same<T, std::nullptr_t>::value ||
-                                                        std::is_pointer<T>::value
+using is_comparable_type = std::integral_constant<bool, std::is_same_v<T, std::string> ||
+                                                        std::is_same_v<T, std::string_view> ||
+                                                        std::is_arithmetic_v<T> ||
+                                                        std::is_enum_v<T> ||
+                                                        std::is_same_v<T, std::nullptr_t> ||
+                                                        std::is_pointer_v<T>
                                                  >;
 
 /////////////////////////////////////////////////////////////////////////////////////////
