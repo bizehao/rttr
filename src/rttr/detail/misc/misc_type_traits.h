@@ -128,34 +128,6 @@ namespace detail
 
     /////////////////////////////////////////////////////////////////////////////////////////
 
-    template <bool... b> struct static_all_of;
-    //specialization for type true, go continue recurse if the first argument is true
-    template <bool... tail>
-    struct static_all_of<true, tail...> : static_all_of<tail...> {};
-    // end recursion if first argument is false
-    template <bool... tail>
-    struct static_all_of<false, tail...> : std::false_type {};
-
-    // finish when no argument are left
-    template <> struct static_all_of<> : std::true_type {};
-
-    // use it like e.g.:
-    // static_all_of<std::is_class<ClassType>::value...>::value
-
-    /////////////////////////////////////////////////////////////////////////////////////////
-
-    template <bool... b> struct static_any_of;
-
-    template <bool... tail>
-    struct static_any_of<true, tail...> : std::true_type {};
-
-    template <bool... tail>
-    struct static_any_of<false, tail...> : static_any_of<tail...> {};
-
-    // finish when no argument are left
-    template <> struct static_any_of<> : std::false_type {};
-
-    /////////////////////////////////////////////////////////////////////////////////////////
     /*!
      * Determine if the given type \a T has the method
      * 'type get_type() const' declared.
@@ -358,7 +330,7 @@ namespace detail
     // contains<int, bool, double, void>::value => false
 
     template<typename T, typename... Types>
-    struct contains : static_any_of<std::is_same<T, Types>::value...>
+    struct contains : std::disjunction<std::is_same<T, Types>...>
     {
     };
 
@@ -733,7 +705,7 @@ namespace detail
              template <class...> class List2, typename U, typename... U1>
     struct is_same_nullptr_impl< List1<T, T1...>, List2<U, U1...>>
     {
-        using type = std::conditional_t<std::is_same<T, U>::value,
+        using type = std::conditional_t<std::is_same_v<T, U>,
                                    typename is_same_nullptr_impl<List1<T1...>, List2<U1...>>::type,
                                    std::conditional_t< std::is_pointer_v<T> && is_nullptr_t<U>::value,
                                                   typename is_same_nullptr_impl<List1<T1...>, List2<U1...>>::type,

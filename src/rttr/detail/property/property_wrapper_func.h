@@ -49,7 +49,7 @@ class property_wrapper<function_ptr, Declaring_Typ, Getter, Setter, Acc_Level, r
         {
             static_assert(function_traits<Getter>::arg_count == 0, "Invalid number of argument, please provide a getter-function without arguments.");
             static_assert(function_traits<Setter>::arg_count == 1, "Invalid number of argument, please provide a setter-function with exactly one argument.");
-            static_assert(std::is_same<return_type, arg_type>::value, "Please provide the same signature for getter and setter!");
+            static_assert(std::is_same_v<return_type, arg_type>, "Please provide the same signature for getter and setter!");
 
             init();
         }
@@ -166,7 +166,7 @@ class property_wrapper<function_ptr, Declaring_Typ, Getter, Setter, Acc_Level, r
             static_assert(function_traits<Getter>::arg_count == 0, "Invalid number of argument, please provide a getter-function without arguments.");
             static_assert(function_traits<Setter>::arg_count == 1, "Invalid number of argument, please provide a setter-function with exactly one argument.");
 
-            static_assert(std::is_same<return_type, arg_type>::value, "Please provide the same signature for getter and setter!");
+            static_assert(std::is_same_v<return_type, arg_type>, "Please provide the same signature for getter and setter!");
 
             init();
         }
@@ -280,7 +280,7 @@ class property_wrapper<function_ptr, Declaring_Typ, Getter, Setter, Acc_Level, g
             static_assert(function_traits<Getter>::arg_count == 0, "Invalid number of argument, please provide a getter-function without arguments.");
             static_assert(function_traits<Setter>::arg_count == 1, "Invalid number of argument, please provide a setter-function with exactly one argument.");
 
-            static_assert(std::is_same<return_type, arg_type>::value, "Please provide the same signature for getter and setter!");
+            static_assert(std::is_same_v<return_type, arg_type>, "Please provide the same signature for getter and setter!");
 
             init();
         }

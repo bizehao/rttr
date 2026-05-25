@@ -80,34 +80,88 @@ using can_place_in_variant = std::integral_constant<bool, Can_Place>;
  * \return The manager class for the type T.
  */
 template<typename T>
-using variant_policy = std::conditional_t<std::is_same_v<T, void_variant_type>,
-                                     variant_data_policy_void,
-                                     std::conditional_t<is_nullptr_t<T>::value,
-                                                   variant_data_policy_nullptr_t,
-                                                   std::conditional_t<std::is_same_v<T, std::string> || is_one_dim_char_array<T>::value,
-                                                                 variant_data_policy_string,
-                                                                 std::conditional_t<can_place_in_variant<T>::value,
-                                                                               std::conditional_t<std::is_arithmetic_v<T>,
-                                                                                             variant_data_policy_arithmetic<T>,
-                                                                                             std::conditional_t<std::is_array_v<T>,
-                                                                                                           variant_data_policy_array_small<T>,
-                                                                                                           std::conditional_t<std::is_enum_v<T>,
-                                                                                                                         variant_data_policy_small<T, default_type_converter<T, convert_from_enum<T>>>,
-                                                                                                                         variant_data_policy_small<T>
-                                                                                                                        >
-                                                                                                          >
-                                                                                            >,
-                                                                                std::conditional_t<std::is_array_v<T>,
-                                                                                              variant_data_policy_array_big<T>,
-                                                                                              std::conditional_t<std::is_enum_v<T>,
-                                                                                                            variant_data_policy_big<T, default_type_converter<T, convert_from_enum<T>>>,
-                                                                                                            variant_data_policy_big<T>
-                                                                                                           >
-                                                                                             >
-                                                                              >
-                                                                >
-                                                  >
-                                    >;
+constexpr auto select_variant_policy()
+{
+    if constexpr (std::is_same_v<T, void_variant_type>)
+    {
+        return std::type_identity<variant_data_policy_void>{};
+    }
+    else if constexpr (is_nullptr_t<T>::value)
+    {
+        return std::type_identity<variant_data_policy_nullptr_t>{};
+    }
+    else if constexpr (std::is_same_v<T, std::string> || is_one_dim_char_array<T>::value)
+    {
+        return std::type_identity<variant_data_policy_string>{};
+    }
+    else if constexpr (can_place_in_variant<T>::value)
+    {
+        if constexpr (std::is_arithmetic_v<T>)
+        {
+            return std::type_identity<variant_data_policy_arithmetic<T>>{};
+        }
+        else if constexpr (std::is_array_v<T>)
+        {
+            return std::type_identity<variant_data_policy_array_small<T>>{};
+        }
+        else if constexpr (std::is_enum_v<T>)
+        {
+            return std::type_identity<variant_data_policy_small<T, default_type_converter<T, convert_from_enum<T>>>>{};
+        }
+        else
+        {
+            return std::type_identity<variant_data_policy_small<T>>{};
+        }
+    }
+    else
+    {
+        if constexpr (std::is_array_v<T>)
+        {
+            return std::type_identity<variant_data_policy_array_big<T>>{};
+        }
+        else if constexpr (std::is_enum_v<T>)
+        {
+            return std::type_identity<variant_data_policy_big<T, default_type_converter<T, convert_from_enum<T>>>>{};
+        }
+        else
+        {
+            return std::type_identity<variant_data_policy_big<T>>{};
+        }
+    }
+}
+
+template<typename T>
+using variant_policy = typename decltype(select_variant_policy<T>())::type;
+
+//template<typename T>
+//using variant_policy = std::conditional_t<std::is_same_v<T, void_variant_type>,
+//                                     variant_data_policy_void,
+//                                     std::conditional_t<is_nullptr_t<T>::value,
+//                                                   variant_data_policy_nullptr_t,
+//                                                   std::conditional_t<std::is_same_v<T, std::string> || is_one_dim_char_array<T>::value,
+//                                                                 variant_data_policy_string,
+//                                                                 std::conditional_t<can_place_in_variant<T>::value,
+//                                                                               std::conditional_t<std::is_arithmetic_v<T>,
+//                                                                                             variant_data_policy_arithmetic<T>,
+//                                                                                             std::conditional_t<std::is_array_v<T>,
+//                                                                                                           variant_data_policy_array_small<T>,
+//                                                                                                           std::conditional_t<std::is_enum_v<T>,
+//                                                                                                                         variant_data_policy_small<T, default_type_converter<T, convert_from_enum<T>>>,
+//                                                                                                                         variant_data_policy_small<T>
+//                                                                                                                        >
+//                                                                                                          >
+//                                                                                            >,
+//                                                                                std::conditional_t<std::is_array_v<T>,
+//                                                                                              variant_data_policy_array_big<T>,
+//                                                                                              std::conditional_t<std::is_enum_v<T>,
+//                                                                                                            variant_data_policy_big<T, default_type_converter<T, convert_from_enum<T>>>,
+//                                                                                                            variant_data_policy_big<T>
+//                                                                                                           >
+//                                                                                             >
+//                                                                              >
+//                                                                >
+//                                                  >
+//                                    >;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 

@@ -52,21 +52,20 @@ class destructor_wrapper_base;
 class enumeration_wrapper_base;
 
 template<typename T>
-using class_item_to_wrapper_t = std::conditional_t< std::is_same<T, property>::value,
-                                               property_wrapper_base,
-                                               std::conditional_t< std::is_same<T, method>::value,
-                                                              method_wrapper_base,
-                                                              std::conditional_t< std::is_same<T, constructor>::value,
-                                                                             constructor_wrapper_base,
-                                                                             std::conditional_t< std::is_same<T, destructor>::value,
-                                                                                            destructor_wrapper_base,
-                                                                                            std::conditional_t< std::is_same<T, enumeration>::value,
-                                                                                                            enumeration_wrapper_base,
-                                                                                                            void>
-                                                                                            >
-                                                                            >
-                                                            >
-                                              >;
+struct class_item_to_wrapper { using type = void; };
+template<> 
+struct class_item_to_wrapper<property> { using type = property_wrapper_base; };
+template<> 
+struct class_item_to_wrapper<method> { using type = method_wrapper_base; };
+template<> 
+struct class_item_to_wrapper<constructor> { using type = constructor_wrapper_base; };
+template<> 
+struct class_item_to_wrapper<destructor> { using type = destructor_wrapper_base; };
+template<> 
+struct class_item_to_wrapper<enumeration> { using type = enumeration_wrapper_base; };
+
+template<typename T>
+using class_item_to_wrapper_t = typename class_item_to_wrapper<T>::type;
 
 
 template<typename T>

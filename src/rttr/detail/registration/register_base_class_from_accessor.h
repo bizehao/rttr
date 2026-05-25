@@ -78,7 +78,7 @@ void register_member_accessor_class_type_when_needed_1()
 template<typename ClassType, typename AccClassType>
 void register_member_accessor_class_type_when_needed()
 {
-    if constexpr (!std::is_same<ClassType, AccClassType>::value)
+    if constexpr (!std::is_same_v<ClassType, AccClassType>)
     {
         register_member_accessor_class_type_when_needed_1<ClassType, AccClassType>();
     }

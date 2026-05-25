@@ -386,8 +386,8 @@ RTTR_INLINE void type::register_converter_func(F func)
     const std::size_t arg_count = function_traits<F>::arg_count;
 
     static_assert(arg_count == 2, "Invalid argument count! The converter function signature must be: <target_type(source_type, bool&)>");
-    static_assert(!std::is_same<void, target_type>::value, "Return type cannot be void!");
-    static_assert(std::is_same<bool&, typename param_types<F, 1>::type>::value, "Second argument type must be a bool reference(bool&).");
+    static_assert(!std::is_same_v<void, target_type>, "Return type cannot be void!");
+    static_assert(std::is_same_v<bool&, typename param_types<F, 1>::type>, "Second argument type must be a bool reference(bool&).");
 
     using source_type_orig = param_types_t<F, 0>;
     using source_type = std::remove_cvref_t<source_type_orig>;

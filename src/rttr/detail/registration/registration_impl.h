@@ -84,7 +84,7 @@ template<typename...TArgs>
 RTTR_INLINE detail::parameter_names<std::decay_t<TArgs>...> parameter_names(TArgs&&...args)
 {
     using namespace detail;
-    static_assert(static_all_of<is_string_literal<raw_type_t<TArgs>>::value...>::value, "Please use this function only with string literals!");
+    static_assert(std::conjunction_v<is_string_literal<raw_type_t<TArgs>>...>, "Please use this function only with string literals!");
 
     return { static_cast<std::decay_t<TArgs>>(std::forward<TArgs>(args))...};
 }

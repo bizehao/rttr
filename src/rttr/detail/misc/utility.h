@@ -420,13 +420,13 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T> requires (std::is_same<T, std::string>::value || std::is_same<T, std::wstring>::value)
+template<typename T> requires (std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>)
 inline  bool starts_with(const T& big_str, const T& small_str)
 {
     return (big_str.compare(0, small_str.size(), small_str) == 0);
 }
 
-template<typename T> requires (std::is_same<T, std::string>::value || std::is_same<T, std::wstring>::value)
+template<typename T> requires (std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>)
 inline bool ends_with(const T& big_str, const T& small_str)
 {
     return (big_str.size() >= small_str.size() &&

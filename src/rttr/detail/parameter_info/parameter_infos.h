@@ -66,7 +66,7 @@ struct parameter_infos<>
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename...Args>
-using has_param_names = std::integral_constant<bool, !std::is_same<null_type, find_if_t<is_parameter_names, Args...>>::value>;
+using has_param_names = std::integral_constant<bool, !std::is_same_v<null_type, find_if_t<is_parameter_names, Args...>>>;
 
 template<typename...TArgs>
 using count_param_names = count_if<is_parameter_names, raw_type_t<TArgs>... >;

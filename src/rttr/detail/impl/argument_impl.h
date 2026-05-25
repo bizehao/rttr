@@ -62,7 +62,7 @@ argument::argument(const T& data) RTTR_NOEXCEPT
     m_variant(nullptr),
     m_type(rttr::type::get(data))
 {
-    static_assert(!std::is_same<instance, T>::value, "Don't use the argument class for forwarding an instance!");
+    static_assert(!std::is_same_v<instance, T>, "Don't use the argument class for forwarding an instance!");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ argument::argument(T& data) RTTR_NOEXCEPT
     m_variant(nullptr),
     m_type(rttr::type::get(data))
 {
-    static_assert(!std::is_same<instance, T>::value, "Don't use the argument class for forwarding an instance!");
+    static_assert(!std::is_same_v<instance, T>, "Don't use the argument class for forwarding an instance!");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

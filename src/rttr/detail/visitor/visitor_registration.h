@@ -81,7 +81,7 @@ namespace detail
     \
     \
     /* Read from an index IDX */\
-    template<size_t IDX, bool = std::is_same<std::true_type, _name##_is_defined<IDX>>::value>\
+    template<size_t IDX, bool = std::is_same_v<std::true_type, _name##_is_defined<IDX>>>\
     struct _name##_read;\
     \
     template<size_t IDX>\
