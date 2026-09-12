@@ -28,7 +28,7 @@
 #include <rttr/registration>
 
 using namespace rttr;
-using namespace std;
+
 
 #include <iostream>
 #include <memory>
@@ -72,30 +72,34 @@ struct enum_test_class
 
 RTTR_REGISTRATION
 {
-    registration::enumeration<weekday>("weekday")
-    (
-        value("Monday",    weekday::monday),
-        value("Tuesday",   weekday::tuesday),
-        value("Wednesday", weekday::wednesday),
-        value("Thursday",  weekday::thursday),
-        value("Friday",    weekday::friday),
-        value("Saturday",  weekday::saturday),
-        value("Sunday",    weekday::sunday),
-        metadata(ui_metainfo::description, "List of Weekdays.")
-    );
-
-    registration::enumeration<some_enum>("some_enum")
-    (
-        value("nothing_fancy", some_enum::nothing_fancy)
-    );
-
-    registration::class_<enum_test_class>("enum_test_class")
-        .enumeration<enum_test_class::color>("enum_test_class::color")
-        (
-            value("red",    enum_test_class::color::red),
-            value("green",  enum_test_class::color::green),
-            value("blue",   enum_test_class::color::blue)
-        );
+    registration::do_enumeration<^^ui_metainfo>();
+    registration::do_enumeration<^^weekday>();
+    registration::do_enumeration<^^some_enum>();
+    registration::do_enumeration<^^enum_test_class::color>();
+    // registration::enumeration<weekday>("weekday")
+    // (
+    //     value("Monday",    weekday::monday),
+    //     value("Tuesday",   weekday::tuesday),
+    //     value("Wednesday", weekday::wednesday),
+    //     value("Thursday",  weekday::thursday),
+    //     value("Friday",    weekday::friday),
+    //     value("Saturday",  weekday::saturday),
+    //     value("Sunday",    weekday::sunday),
+    //     metadata(ui_metainfo::description, "List of Weekdays.")
+    // );
+    //
+    // registration::enumeration<some_enum>("some_enum")
+    // (
+    //     value("nothing_fancy", some_enum::nothing_fancy)
+    // );
+    //
+    // registration::class_<enum_test_class>("enum_test_class")
+    //     .enumeration<enum_test_class::color>("enum_test_class::color")
+    //     (
+    //         value("red",    enum_test_class::color::red),
+    //         value("green",  enum_test_class::color::green),
+    //         value("blue",   enum_test_class::color::blue)
+    //     );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -171,13 +175,13 @@ TEST_CASE("enumeration - get_names()", "[enumeration]")
     enumeration e = type::get_by_name("weekday").get_enumeration();
     std::vector<std::string> name_list(e.get_names().begin(), e.get_names().end());
     REQUIRE(name_list.size() == 7);
-    CHECK(name_list[0] == "Monday");
-    CHECK(name_list[1] == "Tuesday");
-    CHECK(name_list[2] == "Wednesday");
-    CHECK(name_list[3] == "Thursday");
-    CHECK(name_list[4] == "Friday");
-    CHECK(name_list[5] == "Saturday");
-    CHECK(name_list[6] == "Sunday");
+    CHECK(name_list[0] == "monday");
+    CHECK(name_list[1] == "tuesday");
+    CHECK(name_list[2] == "wednesday");
+    CHECK(name_list[3] == "thursday");
+    CHECK(name_list[4] == "friday");
+    CHECK(name_list[5] == "saturday");
+    CHECK(name_list[6] == "sunday");
 
     // negative
     e = type::get_by_name("weekday_unknown").get_enumeration();
@@ -189,7 +193,7 @@ TEST_CASE("enumeration - get_names()", "[enumeration]")
 TEST_CASE("enumeration - get_values()", "[enumeration]")
 {
     enumeration e = type::get_by_name("weekday").get_enumeration();
-    std::vector<variant> value_list(e.get_values().begin(), e.get_values().end());
+    std::vector<rttr::variant> value_list(e.get_values().begin(), e.get_values().end());
     REQUIRE(value_list.size() == 7);
 
     for (auto& var : value_list)
@@ -224,22 +228,6 @@ TEST_CASE("enumeration - compare operators()", "[enumeration]")
 
     // negative test
     CHECK(e1 != e2_invalid);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_CASE("enumeration - get_metadata()", "[enumeration]")
-{
-    enumeration e = type::get_by_name("weekday").get_enumeration();
-    variant var = e.get_metadata(ui_metainfo::description);
-    REQUIRE(var.is_type<std::string>() == true);
-
-    CHECK(var.get_value<std::string>() == "List of Weekdays.");
-
-    // negative test
-    e = type::get_by_name("weekday_unknown").get_enumeration();
-    var = e.get_metadata(ui_metainfo::description);
-    REQUIRE(var.is_valid() == false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

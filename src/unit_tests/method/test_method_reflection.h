@@ -28,6 +28,9 @@
 #ifndef TEST_METHOD_REFLECTION_H_
 #define TEST_METHOD_REFLECTION_H_
 
+#include "rttr/registration.h"
+
+
 #include <rttr/type>
 #include <string>
 
@@ -37,6 +40,9 @@ static void my_global_func(int value)
 
 struct method_test
 {
+    [[=rttr::class_op::ctor_policy(rttr::policy::ctor::op_as_raw_ptr)]]
+    method_test(){}
+
     virtual ~method_test() {}
     void method_1()                  { method_1_called = true; }                        // basic simple method
     void method_2() const volatile   { method_2_called = true; }                        // some more qualifiers
@@ -44,6 +50,12 @@ struct method_test
     void method_4(std::string& text) { text = "Text Changed"; method_4_called = true; } // call method with parameter by reference
     int method_5(double* arg)        { method_5_called = true; *arg = 22.0; return 42; }// method with return value
     const std::string& method_6() const { method_6_called = true; return dummy_text; }  // method which return a value by reference
+
+    [[=rttr::class_op::method_policy(rttr::policy::method::op_return_ref_as_ptr)]]
+    const std::string& method_6_ret_ptr() const { method_6_called = true; return dummy_text; }  // method which return a value by reference
+    [[=rttr::class_op::method_policy(rttr::policy::method::op_discard_return)]]
+    const std::string& method_6_void() const { method_6_called = true; return dummy_text; }  // method which return a value by reference
+
     static int method_7(double value){ method_7_called = true; return 23;}              // static method
     virtual void method_8()          { method_8_called = true; }                        // virtual method
     void method_9(int, int, int, int, bool, int, int, int, int, int) { method_9_called = true; } // method with many arguments
@@ -60,6 +72,7 @@ struct method_test
 
     void method_fun_ptr_arg(void(*func_ptr)(int)) { method_func_ptr_arg_called = true; m_func_ptr = func_ptr; }
 
+    [[=rttr::class_op::rename("variant_func")]]
     bool set_func_via_variant(const rttr::variant& var)
     {
         return (var == 23) ? true : false;
@@ -104,7 +117,7 @@ struct method_test_derived : method_test
     bool method_8_derived_called    = false;
     bool method_11_derived_called   = false;
 
-    RTTR_ENABLE(method_test)
+    RTTR_ENABLE()
 };
 
 struct method_test_right
@@ -123,7 +136,7 @@ struct method_test_final : method_test_derived, method_test_right
 
     bool method_13_final_called    = false;
 
-    RTTR_ENABLE(method_test_derived, method_test_right)
+    RTTR_ENABLE()
 };
 
 #endif // TEST_METHOD_REFLECTION_H_

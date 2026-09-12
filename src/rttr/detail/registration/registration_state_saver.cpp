@@ -35,12 +35,12 @@ namespace detail
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-static std::vector<T> copy_range(const array_range<T>& range, typename array_range<T>::size_type from_index)
+static std::vector<T> copy_range(const std::span<T>& range, typename std::span<T>::size_type from_index)
 {
     std::vector<T> result;
     const auto size = range.size();
     result.reserve(size - from_index);
-    typename array_range<T>::size_type index = 0;
+    typename std::span<T>::size_type index = 0;
     for (auto& item : range)
     {
         if (index >= from_index)
@@ -89,21 +89,21 @@ void registration_state_saver::reset()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<type> registration_state_saver::get_types() const RTTR_NOEXCEPT
+std::span<const type> registration_state_saver::get_types() const RTTR_NOEXCEPT
 {
     return {m_types.data(), m_types.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<property> registration_state_saver::get_global_properties() const RTTR_NOEXCEPT
+std::span<const property> registration_state_saver::get_global_properties() const RTTR_NOEXCEPT
 {
     return {m_global_properties.data(), m_global_properties.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<method> registration_state_saver::get_global_methods() const RTTR_NOEXCEPT
+std::span<const method> registration_state_saver::get_global_methods() const RTTR_NOEXCEPT
 {
     return {m_global_methods.data(), m_global_methods.size()};
 }

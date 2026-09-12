@@ -41,7 +41,7 @@ RTTR_INLINE Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT
 {
     static_assert(detail::pointer_count<Target_Type>::value == 1, "Target type must be a pointer");
     static_assert(detail::pointer_count<Source_Type>::value == 1, "Source argument must be a pointer");
-    static_assert(rttr::detail::has_get_type_func<Source_Type>::value, "Class has not type defined - please use the macro RTTR_ENABLE().");
+    static_assert(rttr::detail::has_get_type_func<std::remove_pointer_t<Source_Type>>::value, "Class has not type defined - please use the macro RTTR_ENABLE().");
 
     using Return_Type = std::remove_pointer_t<Target_Type>;
     using Arg_Type = std::remove_pointer_t<Source_Type>;

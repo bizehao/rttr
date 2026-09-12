@@ -8,14 +8,12 @@
 #define CHAISCRIPT_BASIC_HPP_
 
 #include "chaiscript_defines.hpp"
-
-#include "dispatchkit/dispatchkit.hpp"
-#include "dispatchkit/function_call.hpp"
-#include "dispatchkit/dynamic_object.hpp"
 #include "dispatchkit/boxed_number.hpp"
-
-#include "language/chaiscript_eval.hpp"
+#include "dispatchkit/dispatchkit.hpp"
+#include "dispatchkit/dynamic_object.hpp"
+#include "dispatchkit/function_call.hpp"
 #include "language/chaiscript_engine.hpp"
+#include "language/chaiscript_eval.hpp"
 
 // This file includes all of the basic requirements for ChaiScript,
 // to use, you might do something like:
@@ -28,12 +26,11 @@
 
 ChaiScript_Basic chai(
           chaiscript::Std_Lib::library(),
-          std::make_unique<parser::ChaiScript_Parser<eval::Noop_Tracer, optimizer::Optimizer_Default>>());
+          std::make_unique<parser::ChaiScript_Parser<eval::Noop_Tracer,
+optimizer::Optimizer_Default>>());
 
 */
 
 // If you want a fully packaged ready to go ChaiScript, use chaiscript.hpp
-
-
 
 #endif /* CHAISCRIPT_BASIC_HPP_ */

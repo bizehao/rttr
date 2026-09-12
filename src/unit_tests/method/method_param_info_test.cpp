@@ -47,7 +47,7 @@ struct method_param_info_test
 
     }
 
-    bool method_with_default(int val_1, double val_2, bool val_3)
+    bool method_with_default(int val_1, double val_2 = 23.0, bool val_3 = true)
     {
         return false;
     }
@@ -57,22 +57,7 @@ struct method_param_info_test
 
 RTTR_REGISTRATION
 {
-    registration::class_<method_param_info_test>("method_param_info_test")
-        .method("method_1", &method_param_info_test::method_1) // no params
-        .method("method_2", &method_param_info_test::method_2)
-        .method("method_3", &method_param_info_test::method_3)
-        (
-            parameter_names("val_1", "val_2", "val_3")
-        )
-        .method("method_4", &method_param_info_test::method_with_default)
-        (
-            default_arguments(23.0, true)
-        )
-        .method("method_5", &method_param_info_test::method_with_default)
-        (
-            default_arguments(23.0, true),
-            parameter_names("val_1", "val_2", "val_3")
-        );
+    registration::do_class<^^method_param_info_test>("method_param_info_test");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -101,23 +86,20 @@ TEST_CASE("method - parameter info - no names provided", "[method]")
     std::vector<parameter_info> infos(meth.get_parameter_infos().begin(), meth.get_parameter_infos().end());
     REQUIRE(infos.size() == 3);
 
-    CHECK(infos[0].get_name()           == std::string());
+    CHECK(infos[0].get_name()           == "val_1");
     CHECK(infos[0].has_default_value()  == false);
     CHECK(infos[0].get_type()           == type::get<bool>());
     CHECK(infos[0].get_index()          == 0);
-    CHECK(infos[0].get_default_value()  == variant());
 
-    CHECK(infos[1].get_name()           == std::string());
+    CHECK(infos[1].get_name()           == "val_2");
     CHECK(infos[1].has_default_value()  == false);
     CHECK(infos[1].get_type()           == type::get<int>());
     CHECK(infos[1].get_index()          == 1);
-    CHECK(infos[1].get_default_value()  == variant());
 
-    CHECK(infos[2].get_name()           == std::string());
+    CHECK(infos[2].get_name()           == "val_3");
     CHECK(infos[2].has_default_value()  == false);
     CHECK(infos[2].get_type()           == type::get<float>());
     CHECK(infos[2].get_index()          == 2);
-    CHECK(infos[2].get_default_value()  == variant());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -134,55 +116,23 @@ TEST_CASE("method - parameter info - names provided", "[method]")
     CHECK(infos[0].has_default_value()  == false);
     CHECK(infos[0].get_type()           == type::get<bool>());
     CHECK(infos[0].get_index()          == 0);
-    CHECK(infos[0].get_default_value()  == variant());
 
     CHECK(infos[1].get_name()           == std::string("val_2"));
     CHECK(infos[1].has_default_value()  == false);
     CHECK(infos[1].get_type()           == type::get<int>());
     CHECK(infos[1].get_index()          == 1);
-    CHECK(infos[1].get_default_value()  == variant());
 
     CHECK(infos[2].get_name()           == std::string("val_3"));
     CHECK(infos[2].has_default_value()  == false);
     CHECK(infos[2].get_type()           == type::get<float>());
     CHECK(infos[2].get_index()          == 2);
-    CHECK(infos[2].get_default_value()  == variant());
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_CASE("method - parameter info - no names provided & default values", "[method]")
-{
-    method meth = type::get<method_param_info_test>().get_method("method_4");
-    REQUIRE(meth.is_valid() == true);
-
-    std::vector<parameter_info> infos(meth.get_parameter_infos().begin(), meth.get_parameter_infos().end());
-    REQUIRE(infos.size() == 3);
-
-    CHECK(infos[0].get_name()           == std::string());
-    CHECK(infos[0].has_default_value()  == false);
-    CHECK(infos[0].get_type()           == type::get<int>());
-    CHECK(infos[0].get_index()          == 0);
-    CHECK(infos[0].get_default_value()  == variant());
-
-    CHECK(infos[1].get_name()           == std::string());
-    CHECK(infos[1].has_default_value()  == true);
-    CHECK(infos[1].get_type()           == type::get<double>());
-    CHECK(infos[1].get_index()          == 1);
-    CHECK(infos[1].get_default_value()  == 23.0);
-
-    CHECK(infos[2].get_name()           == std::string());
-    CHECK(infos[2].has_default_value()  == true);
-    CHECK(infos[2].get_type()           == type::get<bool>());
-    CHECK(infos[2].get_index()          == 2);
-    CHECK(infos[2].get_default_value()  == true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 TEST_CASE("method - parameter info - names provided & default values", "[method]")
 {
-    method meth = type::get<method_param_info_test>().get_method("method_5");
+    method meth = type::get<method_param_info_test>().get_method("method_with_default");
     REQUIRE(meth.is_valid() == true);
 
     std::vector<parameter_info> infos(meth.get_parameter_infos().begin(), meth.get_parameter_infos().end());
@@ -192,19 +142,16 @@ TEST_CASE("method - parameter info - names provided & default values", "[method]
     CHECK(infos[0].has_default_value()  == false);
     CHECK(infos[0].get_type()           == type::get<int>());
     CHECK(infos[0].get_index()          == 0);
-    CHECK(infos[0].get_default_value()  == variant());
 
     CHECK(infos[1].get_name()           == std::string("val_2"));
     CHECK(infos[1].has_default_value()  == true);
     CHECK(infos[1].get_type()           == type::get<double>());
     CHECK(infos[1].get_index()          == 1);
-    CHECK(infos[1].get_default_value()  == 23.0);
 
     CHECK(infos[2].get_name()           == std::string("val_3"));
     CHECK(infos[2].has_default_value()  == true);
     CHECK(infos[2].get_type()           == type::get<bool>());
     CHECK(infos[2].get_index()          == 2);
-    CHECK(infos[2].get_default_value()  == true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

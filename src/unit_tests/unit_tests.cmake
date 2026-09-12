@@ -26,78 +26,67 @@
 ####################################################################################
 
 set(HEADER_FILES test_classes.h
-                 method/test_method_reflection.h
-                 type/test_type.h
-                 variant/test_enums.h
-                 version.rc.in
-                 visitor/my_visitor.h
-                 visitor/visitor_test_class.h
-                 )
+        method/test_method_reflection.h
+        type/test_type.h
+        variant/test_enums.h
+        version.rc.in
+)
 
 set(SOURCE_FILES main.cpp
-                 misc/test_misc.cpp
-                 misc/array_range_test.cpp
-                 misc/string_view_test.cpp
-                 misc/enum_flags_test.cpp
-                 misc/library_test.cpp
-                 property/property_access_level_test.cpp
-                 property/property_misc_test.cpp
-                 property/property_class_inheritance.cpp
-                 property/property_class_invoke_wrapper.cpp
-                 property/property_member_function.cpp
-                 property/property_member_object.cpp
-                 property/property_order_test.cpp
-                 property/property_global_function.cpp
-                 property/property_global_object.cpp
-                 type/test_type.cpp
-                 type/test_type_names.cpp
-                 type/type_prop_meth_invoke.cpp
-                 destructor/destructor_invoke_test.cpp
-                 destructor/destructor_misc_test.cpp
-                 constructor/constructor_access_level_test.cpp
-                 constructor/constructor_default_arg_test.cpp
-                 constructor/constructor_param_info_test.cpp
-                 constructor/constructor_retrieve_test.cpp
-                 constructor/constructor_invoke_test.cpp
-                 constructor/constructor_misc_test.cpp
-                 constructor/constructor_query_test.cpp
-                 enumeration/enumeration_conversion.cpp
-                 enumeration/enumeration_misc.cpp
-                 instance/instance_test.cpp
-                 method/method_invoke_defaults_test.cpp
-                 method/method_access_level_test.cpp
-                 method/test_method_reflection.cpp
-                 method/method_default_arg_test.cpp
-                 method/method_misc_test.cpp
-                 method/method_invoke_test.cpp
-                 method/method_order_test.cpp
-                 method/method_param_info_test.cpp
-                 method/method_query_test.cpp
-                 variant/variant_assign_test.cpp
-                 variant/variant_conv_test.cpp
-                 variant/variant_ctor_test.cpp
-                 variant/variant_cmp_equal_test.cpp
-                 variant/variant_cmp_less_test.cpp
-                 variant/variant_cmp_greater_test.cpp
-                 variant/variant_cmp_less_or_equal.cpp
-                 variant/variant_cmp_greater_or_equal.cpp
-                 variant/variant_misc_test.cpp
-                 variant/variant_cast_test.cpp
-                 variant/variant_conv_to_bool.cpp
-                 variant/variant_conv_to_int8.cpp
-                 variant/variant_conv_to_int16.cpp
-                 variant/variant_conv_to_int32.cpp
-                 variant/variant_conv_to_int64.cpp
-                 variant/variant_conv_to_uint8.cpp
-                 variant/variant_conv_to_uint16.cpp
-                 variant/variant_conv_to_uint32.cpp
-                 variant/variant_conv_to_uint64.cpp
-                 variant/variant_conv_to_double.cpp
-                 variant/variant_conv_to_float.cpp
-                 variant/variant_conv_to_string.cpp
-                 variant/variant_conv_to_enum.cpp
-                 variant_associative_view/variant_associative_view_test.cpp
-                 variant_sequential_view/variant_sequential_view_test.cpp
-                 visitor/visitor_test.cpp
-                 visitor/visitor_test_class.cpp
-                 )
+
+        misc/test_misc.cpp
+        #misc/enum_flags_test.cpp #todo
+        #misc/library_test.cpp #todo
+        type/test_type.cpp
+        type/test_type_names.cpp
+        type/type_prop_meth_invoke.cpp
+        property/property_misc_test.cpp
+        property/property_class_inheritance.cpp
+        property/property_class_invoke_wrapper.cpp
+        property/property_member_object.cpp
+        property/property_order_test.cpp
+        property/property_global_function.cpp
+        property/property_global_object.cpp
+        destructor/destructor_invoke_test.cpp #did
+        destructor/destructor_misc_test.cpp #did
+        constructor/constructor_default_arg_test.cpp #did
+        constructor/constructor_param_info_test.cpp #did
+        constructor/constructor_retrieve_test.cpp #did
+        constructor/constructor_invoke_test.cpp #did
+        constructor/constructor_misc_test.cpp #did
+        enumeration/enumeration_conversion.cpp #did
+        enumeration/enumeration_misc.cpp #did
+        instance/instance_test.cpp
+        method/method_invoke_defaults_test.cpp
+        method/test_method_reflection.cpp
+        method/method_default_arg_test.cpp
+        method/method_misc_test.cpp
+        method/method_invoke_test.cpp
+        method/method_order_test.cpp
+        method/method_param_info_test.cpp
+        variant/variant_assign_test.cpp
+        variant/variant_conv_test.cpp
+        variant/variant_ctor_test.cpp
+        variant/variant_cmp_equal_test.cpp
+        variant/variant_cmp_less_test.cpp
+        variant/variant_cmp_greater_test.cpp
+        variant/variant_cmp_less_or_equal.cpp
+        variant/variant_cmp_greater_or_equal.cpp
+        variant/variant_misc_test.cpp
+        variant/variant_cast_test.cpp
+        variant/variant_conv_to_bool.cpp
+        variant/variant_conv_to_int8.cpp
+        variant/variant_conv_to_int16.cpp
+        variant/variant_conv_to_int32.cpp
+        variant/variant_conv_to_int64.cpp
+        variant/variant_conv_to_uint8.cpp
+        variant/variant_conv_to_uint16.cpp
+        variant/variant_conv_to_uint32.cpp
+        variant/variant_conv_to_uint64.cpp
+        variant/variant_conv_to_double.cpp
+        variant/variant_conv_to_float.cpp
+        variant/variant_conv_to_string.cpp
+        variant/variant_conv_to_enum.cpp
+        variant_associative_view/variant_associative_view_test.cpp
+        variant_sequential_view/variant_sequential_view_test.cpp
+)

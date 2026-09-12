@@ -41,7 +41,6 @@
 #include "rttr/rttr_enable.h"
 
 #include "rttr/detail/parameter_info/parameter_infos_compare.h"
-#include "rttr/detail/filter/filter_item_funcs.h"
 #include "rttr/detail/type/type_register_p.h"
 
 #include <algorithm>
@@ -56,7 +55,7 @@
 #include <utility>
 #include <concepts>
 
-using namespace std;
+
 
 namespace rttr
 {
@@ -154,46 +153,39 @@ type type::get_derived_type(void* ptr, const type& source_type) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<type> type::get_base_classes() const RTTR_NOEXCEPT
+std::span<type> type::get_base_classes() const RTTR_NOEXCEPT
 {
-    return array_range<type>{m_type_data->m_class_data.m_base_types.data(),
+    return std::span<type>{m_type_data->m_class_data.m_base_types.data(),
         m_type_data->m_class_data.m_base_types.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<type> type::get_derived_classes() const RTTR_NOEXCEPT
+std::span<type> type::get_derived_classes() const RTTR_NOEXCEPT
 {
-    return array_range<type>{m_type_data->m_class_data.m_derived_types.data(),
+    return std::span<type>{m_type_data->m_class_data.m_derived_types.data(),
                              m_type_data->m_class_data.m_derived_types.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<type> type::get_types() RTTR_NOEXCEPT
+std::span<type> type::get_types() RTTR_NOEXCEPT
 {
     auto& type_list = detail::type_register_private::get_instance().get_type_storage();
-    return array_range<type>{&type_list[1], type_list.size() - 1};
+    return std::span<type>{&type_list[1], type_list.size() - 1};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<type> type::get_template_arguments() const RTTR_NOEXCEPT
+std::span<type> type::get_template_arguments() const RTTR_NOEXCEPT
 {
-    return array_range<type>{m_type_data->m_class_data.m_nested_types.data(),
+    return std::span<type>{m_type_data->m_class_data.m_nested_types.data(),
                              m_type_data->m_class_data.m_nested_types.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant type::get_metadata(const variant& key) const
-{
-    return detail::type_register_private::get_metadata(*this, key);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant type::create(vector<argument> args) const
+variant type::create(std::vector<argument> args) const
 {
     auto& ctors = m_type_data->m_class_data.m_ctors;
     for (const auto& ctor : ctors)
@@ -265,31 +257,15 @@ bool type::set_property_value(std::string_view name, argument arg)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<property> type::get_properties() const RTTR_NOEXCEPT
+std::span<property> type::get_properties() const RTTR_NOEXCEPT
 {
     auto& vec = get_raw_type().m_type_data->m_class_data.m_properties;
     if (!vec.empty())
     {
-        return array_range<property>(vec.data(), vec.size(),
-                                     detail::default_predicate<property>([](const property& prop)
-                                     {
-                                         return (prop.get_access_level() == access_levels::public_access);
-                                     }) );
+        return std::span<property>(vec.data(), vec.size());
     }
 
-    return array_range<property>();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-array_range<property> type::get_properties(filter_items filter) const RTTR_NOEXCEPT
-{
-    const auto raw_t = get_raw_type();
-    auto& vec = raw_t.m_type_data->m_class_data.m_properties;
-    if (!vec.empty())
-        return array_range<property>(vec.data(), vec.size(), detail::get_filter_predicate<property>(raw_t, filter));
-
-    return array_range<property>();
+    return std::span<property>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -333,32 +309,16 @@ method type::get_method(std::string_view name, const std::vector<type>& type_lis
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<method> type::get_methods() const RTTR_NOEXCEPT
+std::span<method> type::get_methods() const RTTR_NOEXCEPT
 {
     const auto raw_t = get_raw_type();
     auto& vec = raw_t.m_type_data->m_class_data.m_methods;
     if (!vec.empty())
     {
-        return array_range<method>(vec.data(), vec.size(),
-                                   detail::default_predicate<method>([](const method& meth)
-                                   {
-                                        return (meth.get_access_level() == access_levels::public_access);
-                                   }) );
+        return std::span<method>(vec.data(), vec.size());
     }
 
-    return array_range<method>();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-array_range<method> type::get_methods(filter_items filter) const RTTR_NOEXCEPT
-{
-    const auto raw_t = get_raw_type();
-    auto& vec = raw_t.m_type_data->m_class_data.m_methods;
-    if (!vec.empty())
-        return array_range<method>(vec.data(), vec.size(), detail::get_filter_predicate<method>(raw_t, filter));
-
-    return array_range<method>();
+    return std::span<method>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -408,18 +368,18 @@ method type::get_global_method(std::string_view name, const std::vector<type>& t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<method> type::get_global_methods() RTTR_NOEXCEPT
+std::span<method> type::get_global_methods() RTTR_NOEXCEPT
 {
     auto& vec = detail::type_register_private::get_instance().get_global_methods();
-    return array_range<method>(vec.data(), vec.size());
+    return std::span<method>(vec.data(), vec.size());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<property> type::get_global_properties() RTTR_NOEXCEPT
+std::span<property> type::get_global_properties() RTTR_NOEXCEPT
 {
     auto& vec = detail::type_register_private::get_instance().get_global_properties();
-    return array_range<property>(vec.data(), vec.size());
+    return std::span<property>(vec.data(), vec.size());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -523,29 +483,15 @@ constructor type::get_constructor(const std::vector<type>& args) const RTTR_NOEX
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<constructor> type::get_constructors() const RTTR_NOEXCEPT
+std::span<constructor> type::get_constructors() const RTTR_NOEXCEPT
 {
     auto& ctors = m_type_data->m_class_data.m_ctors;
     if (!ctors.empty())
     {
-        return array_range<constructor>(ctors.data(), ctors.size(), detail::default_predicate<constructor>{ [](const constructor& ctor)
-            {
-                return (ctor.get_access_level() == access_levels::public_access);
-            } });
+        return std::span<constructor>(ctors.data(), ctors.size());
     }
 
-    return array_range<constructor>();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-array_range<constructor> type::get_constructors(filter_items filter) const RTTR_NOEXCEPT
-{
-    auto& ctors = m_type_data->m_class_data.m_ctors;
-    if (!ctors.empty())
-        return array_range<constructor>(ctors.data(), ctors.size(), detail::get_filter_predicate<constructor>(*this, filter));
-
-    return array_range<constructor>();
+    return std::span<constructor>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -566,14 +512,6 @@ void type::create_wrapped_value(const argument& arg, variant& var) const
 {
     if (m_type_data->create_wrapper)
         m_type_data->create_wrapper(arg, var);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void type::visit(visitor& vi, detail::type_of_visit visit_type) const RTTR_NOEXCEPT
-{
-    if (m_type_data->visit_type)
-        m_type_data->visit_type(visit_type, vi, *this);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

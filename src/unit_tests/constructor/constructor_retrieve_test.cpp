@@ -25,6 +25,7 @@
 *                                                                                   *
 *************************************************************************************/
 
+#include <iostream>
 #include <rttr/registration>
 #include <catch/catch.hpp>
 
@@ -32,32 +33,23 @@ using namespace rttr;
 
 struct ctor_test
 {
+    [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
     ctor_test(){}
+
+    [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
     ctor_test(const ctor_test& other) {}
+
+    [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
     ctor_test(int, double) {}
 
-    static ctor_test create_object() { return ctor_test(); }
-};
+    ctor_test(int, double, float) {}
 
-static ctor_test global_create_object() { return ctor_test(); }
+    ctor_test(int, double, float, float) {}
+};
 
 RTTR_REGISTRATION
 {
-    registration::class_<ctor_test>("ctor_test")
-        .constructor<>()
-        (
-            policy::ctor::as_object
-        )
-        .constructor<const ctor_test&>()
-        (
-            policy::ctor::as_object
-        )
-        .constructor<int, double>()
-        (
-            policy::ctor::as_object
-        )
-        .constructor(&ctor_test::create_object)
-        .constructor(&global_create_object);
+    registration::do_class<^^ctor_test>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -95,11 +87,18 @@ TEST_CASE("constructor - retrieve", "[constructor]")
         REQUIRE(ctor_list.size() == 5);
         auto ctor_name = t.get_name();
         // check order
+
+        // std::cout << ctor_list[0].get_signature() << std::endl;
+        // std::cout << ctor_list[1].get_signature() << std::endl;
+        // std::cout << ctor_list[2].get_signature() << std::endl;
+        // std::cout << ctor_list[3].get_signature() << std::endl;
+        // std::cout << ctor_list[4].get_signature() << std::endl;
+
         CHECK(ctor_list[0].get_signature() == std::string(ctor_name) + "( )");
         CHECK(ctor_list[1].get_signature() == std::string(ctor_name) + "( ctor_test const & )");
         CHECK(ctor_list[2].get_signature() == std::string(ctor_name) + "( int, double )");
-        CHECK(ctor_list[3].get_signature() == std::string(ctor_name) + "( )");
-        CHECK(ctor_list[4].get_signature() == std::string(ctor_name) + "( )");
+        CHECK(ctor_list[3].get_signature() == std::string(ctor_name) + "( int, double, float )");
+        CHECK(ctor_list[4].get_signature() == std::string(ctor_name) + "( int, double, float, float )");
     }
 }
 

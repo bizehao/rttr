@@ -34,28 +34,9 @@ using namespace rttr;
 
 RTTR_REGISTRATION
 {
-    registration::enumeration<variant_enum_test>("variant_enum_test")
-    (
-        value("VALUE_0", variant_enum_test::VALUE_0),
-        value("VALUE_1", variant_enum_test::VALUE_1),
-        value("VALUE_2", variant_enum_test::VALUE_2)
-    );
-
-    registration::enumeration<variant_enum_test_big>("variant_enum_test_big")
-    (
-        value("VALUE_0", variant_enum_test_big::VALUE_0),
-        value("VALUE_1", variant_enum_test_big::VALUE_1),
-        value("VALUE_2", variant_enum_test_big::VALUE_2)
-    );
-
-    registration::enumeration<enum_int8_t>("enum_int8_t")
-    (
-        value("VALUE_1", enum_int8_t::VALUE_1),
-        value("VALUE_2", enum_int8_t::VALUE_2),
-        value("VALUE_3", enum_int8_t::VALUE_3),
-        value("VALUE_4", enum_int8_t::VALUE_4),
-        value("VALUE_NEG", enum_int8_t::VALUE_NEG)
-    );
+    registration::do_enumeration<^^variant_enum_test>();
+    registration::do_enumeration<^^variant_enum_test_big>();
+    registration::do_enumeration<^^enum_int8_t>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

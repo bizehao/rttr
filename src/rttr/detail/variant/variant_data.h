@@ -47,8 +47,13 @@ using variant_basic_types = type_list<bool,
 /*!
  * This is the data storage for the \ref variant class.
  */
-using variant_data = std::aligned_storage_t<max_sizeof_list<variant_basic_types>::value,
-                                          max_alignof_list<variant_basic_types>::value>;
+template <size_t _Len, size_t _Align =alignof(std::max_align_t)>
+struct DataStorage
+{
+    alignas(_Align) std::byte storage[_Len];
+};
+
+using variant_data = DataStorage<max_sizeof_list<variant_basic_types>::value>;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 

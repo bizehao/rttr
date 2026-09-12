@@ -30,7 +30,7 @@
 #include <rttr/registration>
 
 using namespace rttr;
-using namespace std;
+
 
 #include <iostream>
 #include <memory>
@@ -74,11 +74,12 @@ struct base_not_registered
     void other_method(int i)
     {
     }
+    RTTR_ENABLE()
 };
 
 struct derive_registered : base_not_registered
 {
-
+    RTTR_ENABLE()
 };
 
 
@@ -94,89 +95,31 @@ bool method_test::method_7_called = false;
 
 RTTR_REGISTRATION
 {
-    registration::class_<method_test>("method_test")
-        .constructor<>() (policy::ctor::as_raw_ptr)
-        .method("method_1", &method_test::method_1)
-        .method("method_2", &method_test::method_2)
-        .method("method_3", &method_test::method_3)
-#if RTTR_COMPILER == RTTR_COMPILER_MSVC && RTTR_ARCH_TYPE == RTTR_ARCH_32
-        .method("method_4", static_cast<void(method_test::*)(std::string&)>(&method_test::method_4))
-        .method("method_4", static_cast<void(method_test::*)(std::string&) const>(&method_test::method_4))
-        .method("method_5", static_cast<int(method_test::*)(double*)>(&method_test::method_5))
-        .method("method_5", static_cast<int(method_test::*)(int, double)>(&method_test::method_5))
-        .method("method_5", static_cast<int(method_test::*)(int, double) const>(&method_test::method_5))
-#else
-        .method("method_4", select_non_const(&method_test::method_4))
-        .method("method_4", select_const(&method_test::method_4))
-        .method("method_5", select_overload<int(double*)>(&method_test::method_5))
-        .method("method_5", select_overload<int(int, double)>(&method_test::method_5))
-        .method("method_5", select_const(&method_test::method_5))
-#endif
-        .method("method_6", &method_test::method_6)
-        .method("method_7", &method_test::method_7)
-        .method("method_8", &method_test::method_8)
-        (
-            metadata(E_MetaData::SCRIPTABLE, true),
-            metadata("TAG",  42)
-        )
-        .method("method_9", &method_test::method_9)
-        (
-            metadata(E_MetaData::SCRIPTABLE, false)
-        )
-        .method("method_10", [](double, bool)->int{ return 42;})
-        .method("method_raw_array", &method_test::method_raw_array)
-        .method("method_default",   &method_test::method_default_arg)
-        .method("method_6_ret_ptr", &method_test::method_6)
-        (
-            policy::meth::return_ref_as_ptr
-        )
-        .method("method_6_void",     &method_test::method_6)
-        (
-            policy::meth::discard_return
-        )
-        .method("method_fun_ptr_arg", &method_test::method_fun_ptr_arg)
-        .method("method_with_ptr", &method_test::method_with_ptr)
-        .method("variant_func", &method_test::set_func_via_variant)
-        .method("func_with_noexcept", &method_test::func_with_noexcept)
-        ;
+    registration::do_class<^^method_test>();
 
-    registration::class_<method_test_derived>("method_test_derived")
-        .constructor<>()
-        .method("method_11", &method_test_derived::method_11);
+    registration::do_class<^^method_test_derived>("method_test_derived");
 
-    registration::class_<method_test_right>("method_test_right")
-        .method("method_12", &method_test_right::method_12);
+    registration::do_class<^^method_test_right>("method_test_right");
 
-    registration::class_<method_test_final>("method_test_final")
-        .method("method_13", &method_test_final::method_13);
+    registration::do_class<^^method_test_final>("method_test_final");
 
     // test free functions
-    registration::method("free_function", static_cast<void(*)(bool)>(&free_function))
-        .method("free_function", static_cast<void(*)(int&)>(&free_function))
-        .method("get_global_string_ptr", &get_global_string)
-        (
-            policy::meth::return_ref_as_ptr
-        )
-        .method("get_global_string_void", &get_global_string)
-        (
-            policy::meth::discard_return
-        )
-        ;
+    registration::do_method_overload<static_cast<void(*)(bool)>(&free_function)>("free_function");
+    registration::do_method_overload<static_cast<void(*)(int&)>(&free_function)>("free_function");
+
+    registration::do_method<^^get_global_string, policy::method::op_return_ref_as_ptr>("get_global_string_ptr");
+    registration::do_method<^^get_global_string, policy::method::op_discard_return>("get_global_string_void");
 
     // register same method again, should not register anything
-    registration::method("get_global_string_void", &get_global_string);
+    registration::do_method<^^get_global_string>("get_global_string_void");
 
     // the class 'derive_registered' has a base class 'base_not_registered'
     // which is not registered explictely via rttr, however the base-derived relationship
     // will be established by rttr internaly
-    registration::class_<derive_registered>("derive_registered")
-        .method("some_method", &derive_registered::some_method)
-        .method("other_method", &derive_registered::other_method)
-        ;
+    registration::do_class<^^base_not_registered>("base_not_registered");
+    registration::do_class<^^derive_registered>("derive_registered");
 
-    registration::class_<derive_registered_with_base_class_list>("derive_registered_with_base_class_list")
-        .method("some_method", &derive_registered_with_base_class_list::some_method)
-        ;
+    registration::do_class<^^derive_registered_with_base_class_list>("derive_registered_with_base_class_list");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -226,9 +169,9 @@ TEST_CASE("Test method", "[method]")
     REQUIRE(obj.method_3_value == 42);
 
     ////////////////////////////////////////
-    t_meth.get_method("method_4").invoke(inst, string("test"));
+    t_meth.get_method("method_4").invoke(inst, std::string("test"));
     REQUIRE(obj.method_4_called == true);
-    string ref_for_method4;
+    std::string ref_for_method4;
     t_meth.get_method("method_4").invoke(inst, ref_for_method4);
     REQUIRE(ref_for_method4 == "Text Changed");
 
@@ -266,8 +209,8 @@ TEST_CASE("Test method", "[method]")
 
     ret = m6.invoke(inst);
     REQUIRE(obj.method_6_called == true);
-    REQUIRE(ret.is_type<string>() == true);
-    REQUIRE(ret.get_value<string>() == "Hello World");
+    REQUIRE(ret.is_type<std::string>() == true);
+    REQUIRE(ret.get_value<std::string>() == "Hello World");
 
     ////////////////////////////////////////
     REQUIRE(t_meth.get_method("method_7").is_static() == true);
@@ -275,6 +218,8 @@ TEST_CASE("Test method", "[method]")
     REQUIRE(obj.method_7_called == true);
     REQUIRE(ret.is_type<int>() == true);
     REQUIRE(ret.get_value<int>() == 23);
+
+
 
     ret = t_meth.get_method("method_8").invoke(inst);
     REQUIRE(obj.method_8_called == true);
@@ -304,7 +249,7 @@ TEST_CASE("Test method", "[method]")
 
 
     ////////////////////////////////////////
-    t_meth.get_method("method_default").invoke(derived_inst, 3);
+    t_meth.get_method("method_default_arg").invoke(derived_inst, 3);
     REQUIRE(derived_inst.method_default_arg_called == true);
 
     ////////////////////////////////////////////////////////////
@@ -420,7 +365,7 @@ TEST_CASE("Test method signature", "[method]")
     REQUIRE(methods[0].get_signature() ==  "method_1( )");
     REQUIRE(methods[3].get_signature() ==  std::string("method_4( ") + type::get<std::string>().get_name() + " & )");
     REQUIRE(methods[4].get_signature() ==  "method_5( double* )");
-    REQUIRE(methods[5].get_signature() ==  "method_5( int, double )");
+    REQUIRE(methods[5].get_signature() ==  "method_6( )");
     REQUIRE(methods[21].get_signature() == "method_13( )");
 }
 
@@ -561,6 +506,7 @@ TEST_CASE("method - invoke func with noexcept in signature", "[method]")
 TEST_CASE("method - invoke base method, which is not registerd", "[method]")
 {
     type t_meth = type::get<derive_registered>();
+
     method meth = t_meth.get_method("some_method");
     derive_registered obj;
 
@@ -581,31 +527,6 @@ TEST_CASE("method - invoke base method, which is not registerd", "[method]")
     REQUIRE(range.size() == 2);
     CHECK(*range.begin() == t_meth);
     CHECK(*(++range.begin()) == derived_type);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_CASE("Test method meta data", "[method]")
-{
-    method m8 = type::get<method_test_final>().get_method("method_8");
-    variant value = m8.get_metadata(E_MetaData::SCRIPTABLE);
-    REQUIRE(value.is_type<bool>() == true);
-    REQUIRE(value.get_value<bool>() == true);
-    // string meta data
-    value = m8.get_metadata("TAG");
-    REQUIRE(value.is_valid() == true);
-    REQUIRE(value.get_value<int>() == 42);
-
-    // no meta data
-    method m7 = type::get<method_test_final>().get_method("method_7");
-    REQUIRE(m7.is_valid() == true);
-    REQUIRE(m7.get_metadata(E_MetaData::SCRIPTABLE).is_valid() == false);
-
-    // not scriptable
-    method m9 = type::get<method_test_final>().get_method("method_9");
-    value = m9.get_metadata(E_MetaData::SCRIPTABLE);
-    REQUIRE(value.is_valid() == true);
-    REQUIRE(value.get_value<bool>() == false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

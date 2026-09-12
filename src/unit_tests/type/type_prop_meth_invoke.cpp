@@ -49,13 +49,11 @@ using namespace rttr;
 
 RTTR_REGISTRATION
 {
-    registration::class_<type_prop_invoke_test_base>("type_prop_invoke_test_base")
-        .property("p1", &type_prop_invoke_test_base::p1);
+    registration::do_class<^^type_prop_invoke_test_base>("type_prop_invoke_test_base");
 
-    registration::class_<type_prop_invoke_test>("type_prop_invoke_test")
-        .property("p2", &type_prop_invoke_test::p2);
+    registration::do_class<^^type_prop_invoke_test>("type_prop_invoke_test");
 
-    registration::property("g_prop_invoke", &g_prop_invoke);
+    registration::do_property<^^g_prop_invoke>("g_prop_invoke");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

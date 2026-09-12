@@ -41,9 +41,10 @@ struct dtor_misc_test
 
 RTTR_REGISTRATION
 {
-    registration::class_<dtor_misc_test>("dtor_misc_test")
-        .constructor<>() (policy::ctor::as_raw_ptr)
-       ;
+    registration::do_class<^^dtor_misc_test>();
+    // registration::class_<dtor_misc_test>("dtor_misc_test")
+    //     .constructor<>() (policy::ctor::as_raw_ptr)
+    //    ;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

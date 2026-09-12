@@ -33,7 +33,6 @@
 #include "rttr/detail/misc/flat_map.h"
 #include "rttr/enumeration.h"
 #include "rttr/variant.h"
-#include "rttr/detail/metadata/metadata.h"
 
 #include <memory>
 #include <string>
@@ -121,9 +120,6 @@ public:
     const type_comparator_base* get_equal_comparator(const type& t);
     const type_comparator_base* get_less_than_comparator(const type& t);
 
-    /////////////////////////////////////////////////////////////////////////////////////
-    static variant get_metadata(const type& t, const variant& key);
-    static variant get_metadata(const variant& key, const std::vector<metadata>& data);
     /////////////////////////////////////////////////////////////////////////////////////
 
     static type_register_private& get_instance();

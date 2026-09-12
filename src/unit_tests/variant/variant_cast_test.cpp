@@ -189,7 +189,7 @@ TEST_CASE("variant - variant_cast<T>(const variant&)", "[variant]")
 
         using value_t = decltype(value);
         static_assert(std::is_reference<value_t>::value, "Must be reference type!");
-        static_assert(std::is_const<detail::remove_reference_t<value_t>>::value, "Must be const-reference type!");
+        static_assert(std::is_const<std::remove_reference_t<value_t>>::value, "Must be const-reference type!");
     }
 }
 

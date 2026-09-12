@@ -32,6 +32,7 @@ using namespace rttr;
 
 struct dtor_invoke_test
 {
+    [[=class_op::ctor_policy(policy::ctor::op_as_raw_ptr)]]
     dtor_invoke_test()
     {
 
@@ -41,9 +42,10 @@ struct dtor_invoke_test
 
 RTTR_REGISTRATION
 {
-    registration::class_<dtor_invoke_test>("dtor_invoke_test")
-        .constructor<>() (policy::ctor::as_raw_ptr)
-       ;
+    registration::do_class<^^dtor_invoke_test>();
+    // registration::class_<dtor_invoke_test>("dtor_invoke_test")
+    //     .constructor<>() (policy::ctor::as_raw_ptr)
+    //    ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

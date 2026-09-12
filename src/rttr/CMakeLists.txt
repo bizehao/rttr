@@ -57,18 +57,17 @@ if (${BUILD_RTTR_DYNAMIC})
                           VISIBILITY_INLINES_HIDDEN 1)
     
     target_link_libraries(rttr_core PRIVATE ${CMAKE_DL_LIBS})
-                          
-                          
-    if(${CMAKE_VERSION} VERSION_GREATER "3.8.0") 
-        target_compile_features(rttr_core PUBLIC cxx_std_20) # at least c++11 is needed to compile RTTR
-    endif()
+
+    #cpp 26
+    target_compile_features(rttr_core PUBLIC cxx_std_26)
+    target_compile_options(rttr_core PUBLIC -freflection)
                          
     target_include_directories(rttr_core PUBLIC
                                $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../>
                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../>
                                $<INSTALL_INTERFACE:include>)
 
-    set_compiler_warnings(rttr_core)
+    #set_compiler_warnings(rttr_core)
     
     if (BUILD_INSTALLER)
         install(TARGETS rttr_core EXPORT rttr_targets
@@ -111,12 +110,12 @@ if (BUILD_STATIC)
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../>
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../>
                                 $<INSTALL_INTERFACE:include>)
+
+    #cpp 26
+    target_compile_features(rttr_core_lib PUBLIC cxx_std_26)
+    target_compile_options(rttr_core_lib PUBLIC -freflection)
     
-    if(${CMAKE_VERSION} VERSION_GREATER "3.8.0") 
-        target_compile_features(rttr_core_lib PUBLIC cxx_std_20) # at least c++11 is needed to compile RTTR
-    endif()
-    
-    set_compiler_warnings(rttr_core_lib)
+    #set_compiler_warnings(rttr_core_lib)
 
     if (BUILD_INSTALLER)
         install(TARGETS rttr_core_lib EXPORT rttr_targets
@@ -154,7 +153,7 @@ if (BUILD_WITH_STATIC_RUNTIME_LIBS)
             target_compile_features(rttr_core_s PUBLIC cxx_std_20) # at least c++11 is needed to compile RTTR
         endif()
         
-        set_compiler_warnings(rttr_core_s)
+        #set_compiler_warnings(rttr_core_s)
 
         if (MSVC)
             target_compile_options(rttr_core_s PUBLIC "/MT$<$<CONFIG:Debug>:d>")
@@ -199,7 +198,7 @@ if (BUILD_WITH_STATIC_RUNTIME_LIBS)
             target_compile_features(rttr_core_lib_s PUBLIC cxx_std_20) # at least c++11 is needed to compile RTTR
         endif()
     
-        set_compiler_warnings(rttr_core_lib_s)
+        #set_compiler_warnings(rttr_core_lib_s)
 
         if (MSVC)
             target_compile_options(rttr_core_lib_s PUBLIC "/MT$<$<CONFIG:Debug>:d>")

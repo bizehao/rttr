@@ -39,7 +39,6 @@
 #include "rttr/wrapper_mapper.h"
 #include "rttr/detail/type/type_comparator.h"
 #include "rttr/detail/type/type_data.h"
-#include "rttr/detail/type/type_name.h"
 #include "rttr/detail/registration/registration_manager.h"
 #include "rttr/detail/misc/register_wrapper_mapper_conversion.h"
 #include <concepts>
@@ -281,13 +280,13 @@ RTTR_INLINE variant type::create_variant(const argument& data) const
 namespace detail
 {
 
-RTTR_INLINE static type get_invalid_type() RTTR_NOEXCEPT { return create_type(nullptr); }
+RTTR_INLINE static rttr::type get_invalid_type() RTTR_NOEXCEPT { return create_type(nullptr); }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_INLINE type create_type(type_data* data) RTTR_NOEXCEPT
+RTTR_INLINE rttr::type create_type(type_data* data) RTTR_NOEXCEPT
 {
-    return data ? type(data) : type();
+    return data ? rttr::type(data) : rttr::type();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -295,7 +294,7 @@ template<typename T>
 concept is_complete_type = !std::is_function_v<T> && !std::is_same_v<T, void>;
 
 template<typename T>
-RTTR_LOCAL RTTR_INLINE type create_or_get_type() RTTR_NOEXCEPT
+RTTR_LOCAL RTTR_INLINE rttr::type create_or_get_type() RTTR_NOEXCEPT
 {
     if constexpr (is_complete_type<T>)
     {
@@ -303,7 +302,7 @@ RTTR_LOCAL RTTR_INLINE type create_or_get_type() RTTR_NOEXCEPT
         // (a forward declaration is not enough because base_classes will not be found)
         static_assert(requires { sizeof(T); }, "T is need to be a complete type");
     }
-    static const type val = create_type(get_registration_manager().add_item(make_type_data<T>()));
+    static const rttr::type val = create_type(get_registration_manager().add_item(make_type_data<T>()));
     return val;
 }
 
@@ -312,7 +311,7 @@ RTTR_LOCAL RTTR_INLINE type create_or_get_type() RTTR_NOEXCEPT
 /////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-RTTR_LOCAL RTTR_INLINE type get_type_from_instance(const T*) RTTR_NOEXCEPT
+RTTR_LOCAL RTTR_INLINE rttr::type get_type_from_instance(const T*) RTTR_NOEXCEPT
 {
     return detail::create_or_get_type<T>();
 }
@@ -329,7 +328,7 @@ struct type_converter;
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-RTTR_INLINE type type::get() RTTR_NOEXCEPT
+RTTR_INLINE rttr::type type::get() RTTR_NOEXCEPT
 {
     return detail::create_or_get_type<std::remove_cvref_t<T>>();
 }
@@ -337,7 +336,7 @@ RTTR_INLINE type type::get() RTTR_NOEXCEPT
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<>
-RTTR_INLINE type type::get<detail::invalid_type>() RTTR_NOEXCEPT
+RTTR_INLINE rttr::type type::get<detail::invalid_type>() RTTR_NOEXCEPT
 {
     return detail::get_invalid_type();
 }

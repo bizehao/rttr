@@ -37,93 +37,25 @@ namespace rttr
 {
 namespace detail
 {
-struct has_param_name {};
-struct no_param_name {};
 
-template<typename Param_Type, std::size_t Param_Index, typename Has_Name, typename Default_Type>
-class parameter_info_wrapper;
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename Param_Type, std::size_t Param_Index, typename Default_Type>
-class parameter_info_wrapper<Param_Type, Param_Index, has_param_name, Default_Type>: public parameter_info_wrapper_base
+template<std::meta::info Param, std::size_t Param_Index>
+class parameter_info_wrapper : public parameter_info_wrapper_base
 {
+    using Default_Type = [:std::meta::type_of(Param):];
     public:
-        parameter_info_wrapper(std::string_view name) RTTR_NOEXCEPT
-        :   m_default_value(nullptr), m_name(name)
-        {
+        parameter_info_wrapper() {}
+        std::string_view get_name() const override        RTTR_NOEXCEPT   {
+            if constexpr (std::meta::has_identifier(Param)) {
+                return std::meta::identifier_of(Param);
+            }
+            else {
+                return std::string_view{};
+            }
         }
-
-        std::string_view get_name() const        RTTR_NOEXCEPT   { return m_name; }
-        type get_type() const               RTTR_NOEXCEPT   { return type::get<Param_Type>(); }
-        bool has_default_value() const      RTTR_NOEXCEPT   { return true; }
-        variant get_default_value() const                   { return variant(*m_default_value); }
-        void set_default_value(const Default_Type* default_value) RTTR_NOEXCEPT { m_default_value = default_value; }
-        uint32_t get_index() const          RTTR_NOEXCEPT   { return static_cast<uint32_t>(Param_Index); }
-    private:
-        const Default_Type* m_default_value;
-        std::string         m_name;
+        rttr::type get_type() const override              RTTR_NOEXCEPT   { return type::get<Default_Type>(); }
+        bool has_default_value() const override     RTTR_NOEXCEPT   { return  std::meta::has_default_argument(Param); }
+        uint32_t get_index() const override         RTTR_NOEXCEPT   { return static_cast<uint32_t>(Param_Index); }
 };
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename Param_Type, std::size_t Param_Index, typename Default_Type>
-class parameter_info_wrapper<Param_Type, Param_Index, no_param_name, Default_Type>: public parameter_info_wrapper_base
-{
-    public:
-        parameter_info_wrapper() RTTR_NOEXCEPT
-        :   m_default_value(nullptr)
-        {
-        }
-
-        std::string_view get_name() const        RTTR_NOEXCEPT { return std::string_view{}; }
-        type get_type() const               RTTR_NOEXCEPT   { return type::get<Param_Type>(); }
-        bool has_default_value() const      RTTR_NOEXCEPT   { return true; }
-        variant get_default_value() const                   { return variant(*m_default_value); }
-        void set_default_value(const Default_Type* default_value) RTTR_NOEXCEPT { m_default_value = default_value; }
-        uint32_t get_index() const         RTTR_NOEXCEPT    { return static_cast<uint32_t>(Param_Index); }
-    private:
-        const Default_Type* m_default_value;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-// Specialization which has NO default value
-template<typename Param_Type, std::size_t Param_Index>
-class parameter_info_wrapper<Param_Type, Param_Index, has_param_name, void> : public parameter_info_wrapper_base
-{
-    public:
-        parameter_info_wrapper(std::string_view name) RTTR_NOEXCEPT
-        :   m_name(name)
-        {
-        }
-
-        std::string_view get_name() const        RTTR_NOEXCEPT   { return m_name; }
-        type get_type() const               RTTR_NOEXCEPT   { return type::get<Param_Type>(); }
-        bool has_default_value() const      RTTR_NOEXCEPT   { return false; }
-        variant get_default_value() const                   { return variant(); }
-        uint32_t get_index() const          RTTR_NOEXCEPT   { return static_cast<uint32_t>(Param_Index); }
-    private:
-        std::string m_name;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// Specialization which has NO default value
-template<typename Param_Type, std::size_t Param_Index>
-class parameter_info_wrapper<Param_Type, Param_Index, no_param_name, void> : public parameter_info_wrapper_base
-{
-    public:
-        parameter_info_wrapper() RTTR_NOEXCEPT {}
-
-        std::string_view get_name() const        RTTR_NOEXCEPT   { return std::string_view{}; }
-        type get_type() const               RTTR_NOEXCEPT   { return type::get<Param_Type>(); }
-        bool has_default_value() const      RTTR_NOEXCEPT   { return false; }
-        variant get_default_value() const                   { return variant(); }
-        uint32_t get_index() const          RTTR_NOEXCEPT   { return static_cast<uint32_t>(Param_Index); }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
 
 } // end namespace detail
 } // end namespace rttr

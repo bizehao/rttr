@@ -29,7 +29,7 @@
 #include "rttr/argument.h"
 #include "rttr/instance.h"
 
-using namespace std;
+
 
 static RTTR_CONSTEXPR const char* is_ref_list[] = {"", " &"};
 static RTTR_CONSTEXPR const char* is_const_list[] = {"", " const"};
@@ -41,7 +41,7 @@ namespace detail
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-method_wrapper_base::method_wrapper_base(std::string_view name, type declaring_type) RTTR_NOEXCEPT
+method_wrapper_base::method_wrapper_base(std::string_view name, rttr::type declaring_type) RTTR_NOEXCEPT
 :   m_name(name),
     m_declaring_type(declaring_type)
 {
@@ -72,7 +72,7 @@ std::string_view method_wrapper_base::get_name() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-type method_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
+rttr::type method_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
 {
     return m_declaring_type;
 }
@@ -121,14 +121,7 @@ bool method_wrapper_base::is_valid() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-access_levels method_wrapper_base::get_access_level() const RTTR_NOEXCEPT
-{
-    return access_levels::public_access;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-type method_wrapper_base::get_return_type() const RTTR_NOEXCEPT
+rttr::type method_wrapper_base::get_return_type() const RTTR_NOEXCEPT
 {
     return get_invalid_type();
 }
@@ -156,16 +149,9 @@ std::vector<bool> method_wrapper_base::get_is_const() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<parameter_info> method_wrapper_base::get_parameter_infos() const RTTR_NOEXCEPT
+std::span<const parameter_info> method_wrapper_base::get_parameter_infos() const RTTR_NOEXCEPT
 {
-    return array_range<parameter_info>();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant method_wrapper_base::get_metadata(const variant& key) const
-{
-    return variant();
+    return std::span<const parameter_info>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -226,13 +212,6 @@ variant method_wrapper_base::invoke(instance& object, argument& arg1, argument& 
 variant method_wrapper_base::invoke_variadic(const instance& object, std::vector<argument>& args) const
 {
     return variant();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void method_wrapper_base::visit(visitor& visitor, method m) const RTTR_NOEXCEPT
-{
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

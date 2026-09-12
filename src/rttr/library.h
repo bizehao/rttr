@@ -190,7 +190,7 @@ public:
       *
       * \see type
       */
-     array_range<type> get_types() const RTTR_NOEXCEPT;
+     std::span<const type> get_types() const RTTR_NOEXCEPT;
 
      /*!
       * \brief A range of all registered global \ref property "properties" in this library.
@@ -199,7 +199,7 @@ public:
       *
       * \see property
       */
-     array_range<property> get_global_properties() const RTTR_NOEXCEPT;
+     std::span<const property> get_global_properties() const RTTR_NOEXCEPT;
 
      /*!
       * \brief A range of all registered global \ref method "methods" in this library.
@@ -208,7 +208,7 @@ public:
       *
       * \see method
       */
-     array_range<method> get_global_methods() const RTTR_NOEXCEPT;
+     std::span<const method> get_global_methods() const RTTR_NOEXCEPT;
 
 private:
     std::shared_ptr<detail::library_private> m_pimpl;

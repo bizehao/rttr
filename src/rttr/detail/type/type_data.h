@@ -35,15 +35,12 @@
 #include "rttr/detail/type/get_derived_info_func.h"
 #include "rttr/detail/type/get_create_variant_func.h"
 #include "rttr/detail/type/type_register.h"
-#include "rttr/detail/type/type_name.h"
 #include "rttr/detail/misc/utility.h"
 #include "rttr/destructor.h"
 #include "rttr/method.h"
 #include "rttr/property.h"
 #include "rttr/constructor.h"
 #include "rttr/destructor.h"
-#include "rttr/detail/metadata/metadata.h"
-
 #include <type_traits>
 #include <bitset>
 
@@ -58,7 +55,7 @@ template<typename T>
 RTTR_INLINE type_data& get_type_data() RTTR_NOEXCEPT;
 RTTR_LOCAL type_data* get_invalid_type_data() RTTR_NOEXCEPT;
 
-static type get_invalid_type() RTTR_NOEXCEPT;
+static rttr::type get_invalid_type() RTTR_NOEXCEPT;
 
 using rttr_cast_func        = void*(*)(void*);
 using get_derived_info_func = derived_info(*)(void*);
@@ -103,12 +100,6 @@ enum class type_trait_infos : std::size_t
     TYPE_TRAIT_COUNT
 };
 
-enum class type_of_visit : bool
-{
-    begin_visit_type,
-    end_visit_type
-};
-
  using type_traits = std::bitset<static_cast<std::size_t>(type_trait_infos::TYPE_TRAIT_COUNT)>;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -119,9 +110,7 @@ namespace impl
 using create_variant_func  = decltype(&create_invalid_variant_policy::create_variant);
 using get_base_types_func  = decltype(&base_classes<int>::get_types);
 using create_wrapper_func  = void(*)(const argument& arg, variant& var);
-using get_metadata_func    = std::vector<metadata>&(*)(void);
 using get_class_data_func  = class_data&(*)(void);
-using visit_type_func      = void(*)(type_of_visit, visitor&, const type&);
 
 } // end namespace impl
 
@@ -144,9 +133,7 @@ struct RTTR_LOCAL type_data
                                               // thats why we store it as function pointer
 
     enumeration_wrapper_base*  enum_wrapper;
-    impl::get_metadata_func    get_metadata;
     impl::create_wrapper_func  create_wrapper;
-    impl::visit_type_func      visit_type;
 
     bool is_valid;
     RTTR_FORCE_INLINE bool type_trait_value(type_trait_infos type_trait) const RTTR_NOEXCEPT { return m_type_traits.test(static_cast<std::size_t>(type_trait)); }
@@ -157,84 +144,12 @@ struct RTTR_LOCAL type_data
 
 };
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-struct RTTR_LOCAL get_size_of
-{
-    RTTR_INLINE RTTR_CONSTEXPR static std::size_t value()
-    {
-        return sizeof(T);
-    }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T> requires (std::is_same_v<T, void> || std::is_function_v<T>)
-struct RTTR_LOCAL get_size_of<T>
-{
-    RTTR_INLINE RTTR_CONSTEXPR static std::size_t value()
-    {
-        return 0;
-    }
-};
-
 /////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-struct RTTR_LOCAL raw_type_info
-{
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return type::get<typename raw_type<T>::type>(); }
-};
-
-/////////////////////////////////////////////////////////////////////////////////
-
-template<typename T> requires (std::is_same_v<T, typename raw_type<T>::type >)
-struct RTTR_LOCAL raw_type_info<T>
-{
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return get_invalid_type(); } // we have to return an empty type, so we can stop the recursion
-};
-
-/////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-struct RTTR_LOCAL array_raw_type
-{
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return get_invalid_type(); } // we have to return an empty type, so we can stop the recursion
-};
-
-/////////////////////////////////////////////////////////////////////////////////
-
-template<typename T> requires (std::is_array_v<T>)
-struct RTTR_LOCAL array_raw_type<T>
-{
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return type::get<raw_array_type_t<T>>(); }
-};
-
-/////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-struct RTTR_LOCAL wrapper_type_info
-{
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return get_invalid_type(); }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T> requires (is_wrapper<T>::value)
-struct RTTR_LOCAL wrapper_type_info<T>
-{
-    static RTTR_INLINE type get_type() RTTR_NOEXCEPT { return type::get<wrapper_mapper_t<T>>(); }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename Wrapper, typename Wrapped_Type>
 RTTR_LOCAL RTTR_INLINE void create_wrapper(const argument& arg, variant& var)
 {
-    if (arg.get_type() != type::get<Wrapped_Type>())
+    if (arg.get_type() != rttr::type::get<Wrapped_Type>())
         return;
 
     auto& wrapped_type = arg.get_value<Wrapped_Type>();
@@ -257,15 +172,6 @@ RTTR_LOCAL RTTR_INLINE impl::create_wrapper_func get_create_wrapper_func()
     {
         return nullptr;
     }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-RTTR_LOCAL RTTR_INLINE std::vector<metadata>& get_metadata_func_impl()
-{
-    static std::unique_ptr<std::vector<metadata>> obj = std::make_unique<std::vector<metadata>>();
-    return (*obj.get());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -292,42 +198,72 @@ namespace detail
 template<typename T>
 RTTR_LOCAL std::unique_ptr<type_data> make_type_data()
 {
-    auto obj = std::unique_ptr<type_data>
-               (
-                        new type_data
-                        {
-                            raw_type_info<T>::get_type().m_type_data, wrapper_type_info<T>::get_type().m_type_data,
-                            array_raw_type<T>::get_type().m_type_data,
+    constexpr auto info = ^^T;
+    std::string_view name;
+    if constexpr(std::meta::has_identifier(info)) {
+        name = std::meta::identifier_of(info);
+    }
+    else {
+        name = std::meta::display_string_of(info);
+    }
+    auto type_name = std::meta::display_string_of(info);
 
-                            std::string{::rttr::detail::get_type_name<T>()},
-                            std::string{::rttr::detail::get_type_name<T>()},
+    std::size_t get_sizeof = 0;
+    if constexpr (std::meta::is_complete_type(info)) {
+        if constexpr (!std::meta::is_function_type(info)) {
+            get_sizeof = std::meta::size_of(info);
+        }
+    }
 
-                            get_size_of<T>::value(),
-                            pointer_count<T>::value,
+    type_data* invalid_type_data = get_invalid_type().m_type_data;
 
-                            &create_variant_func<T>::create_variant,
-                            &base_classes<T>::get_types,
-                            nullptr,
-                            &get_metadata_func_impl<T>,
-                            get_create_wrapper_func<T>(),
+    type_data* raw_type_data = invalid_type_data;
+    if constexpr (!std::is_same_v<T, raw_type_t<T>>) {
+        raw_type_data = rttr::type::get<raw_type_t<T>>().m_type_data;
+    }
 
-                            nullptr,
-                            true,
-                            type_trait_value{ TYPE_TRAIT_TO_BITSET_VALUE(is_class) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE(is_enum) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE(is_array) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE(is_pointer) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE(is_arithmetic) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE_2(is_function_ptr, is_function_pointer) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE(is_member_object_pointer) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE(is_member_function_pointer) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE_2(::rttr::detail::is_associative_container, is_associative_container) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE_2(::rttr::detail::is_sequential_container, is_sequential_container) |
-                                              TYPE_TRAIT_TO_BITSET_VALUE_2(::rttr::detail::template_type_trait, is_template_instantiation)
-                                            },
-                            class_data(get_most_derived_info_func<T>(), template_type_trait<T>::get_template_arguments())
-                        }
-               );
+    type_data* wrapped_type_data = invalid_type_data;
+    if constexpr (is_wrapper<T>::value) {
+        wrapped_type_data = rttr::type::get<wrapper_mapper_t<T>>().m_type_data;
+    }
+
+    type_data* array_raw_type_data = invalid_type_data;
+    if constexpr (std::is_array_v<T>) {
+        array_raw_type_data = rttr::type::get<raw_array_type_t<T>>().m_type_data;
+    }
+
+    auto obj = std::make_unique<type_data>(type_data{
+        raw_type_data,
+        wrapped_type_data,
+        array_raw_type_data,
+
+        std::string{name},
+        std::string{type_name},
+
+        get_sizeof,
+        pointer_count<T>::value,
+
+        &create_variant_func<T>::create_variant,
+        &base_classes<T>::get_types,
+        nullptr,
+        get_create_wrapper_func<T>(),
+
+        true,
+        type_trait_value{
+            TYPE_TRAIT_TO_BITSET_VALUE(is_class) |
+            TYPE_TRAIT_TO_BITSET_VALUE(is_enum) |
+            TYPE_TRAIT_TO_BITSET_VALUE(is_array) |
+            TYPE_TRAIT_TO_BITSET_VALUE(is_pointer) |
+            TYPE_TRAIT_TO_BITSET_VALUE(is_arithmetic) |
+            TYPE_TRAIT_TO_BITSET_VALUE_2(is_function_ptr, is_function_pointer) |
+            TYPE_TRAIT_TO_BITSET_VALUE(is_member_object_pointer) |
+            TYPE_TRAIT_TO_BITSET_VALUE(is_member_function_pointer) |
+            TYPE_TRAIT_TO_BITSET_VALUE_2(::rttr::detail::is_associative_container, is_associative_container) |
+            TYPE_TRAIT_TO_BITSET_VALUE_2(::rttr::detail::is_sequential_container, is_sequential_container) |
+            TYPE_TRAIT_TO_BITSET_VALUE_2(::rttr::detail::template_type_trait, is_template_instantiation)
+        },
+        class_data(get_most_derived_info_func<T>(), template_type_trait<T>::get_template_arguments())
+    });
     return obj;
 }
 

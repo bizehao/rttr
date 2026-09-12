@@ -117,7 +117,7 @@ public:
 private:
     const void*         m_data;
     const variant*      m_variant;
-    const rttr::type    m_type;
+    const type    m_type;
 };
 
 } // end namespace rttr

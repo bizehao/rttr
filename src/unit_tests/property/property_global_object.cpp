@@ -34,7 +34,7 @@
 #include <catch/catch.hpp>
 
 using namespace rttr;
-using namespace std;
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,31 +46,14 @@ static std::vector<int> g_my_array(1000, 42);
 
 RTTR_REGISTRATION
 {
-    registration::property("global_obj_1", &g_name) ( metadata("Description", "Some Text") )
-        .property_readonly("global_obj_2", &g_int_value) ( metadata("Description", "Some Text") )
-        .property("global_obj_3", &g_my_array)
-        (
-            metadata("Description", "Some Text"),
-            policy::prop::bind_as_ptr
-        )
-        .property_readonly("global_obj_4", &g_int_value)
-        (
-            metadata("Description", "Some Text"),
-            policy::prop::bind_as_ptr
-        )
-        .property("global_obj_5", &g_my_array)
-        (
-            metadata("Description", "Some Text"),
-            policy::prop::as_reference_wrapper
-        )
-        .property_readonly("global_obj_6", &g_int_value)
-        (
-            metadata("Description", "Some Text"),
-            policy::prop::as_reference_wrapper
-        )
-        ;
+    registration::do_property<^^g_name>("global_obj_1");
+    registration::do_property_readonly<^^g_int_value>("global_obj_2");
+    registration::do_property<^^g_my_array, policy::prop::op_bind_as_ptr>("global_obj_3");
+    registration::do_property_readonly<^^g_int_value, policy::prop::op_bind_as_ptr>("global_obj_4");
+    registration::do_property<^^g_my_array, policy::prop::op_as_reference_wrapper>("global_obj_5");
+    registration::do_property_readonly<^^g_int_value, policy::prop::op_as_reference_wrapper>("global_obj_6");
 
-    registration::property("global_obj_1", &g_name); // cannot register the same object twice
+    registration::do_property<^^g_name>("global_obj_1"); // cannot register the same object twice
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -84,8 +67,7 @@ TEST_CASE("property - global object", "[property]")
     CHECK(prop.is_readonly() == false);
     CHECK(prop.is_static() == true);
     CHECK(prop.get_type() == type::get<std::string>());
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     CHECK(prop.set_value(instance(), std::string("New Text")) == true);
@@ -108,8 +90,7 @@ TEST_CASE("property - global object - read only", "[property]")
     CHECK(prop.is_readonly() == true);
     CHECK(prop.is_static() == true);
     CHECK(prop.get_type() == type::get<int>());
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     CHECK(prop.get_value(instance()).is_type<int>() == true);
@@ -131,8 +112,7 @@ TEST_CASE("property - global object - bind as ptr", "[property]")
     CHECK(prop.is_static() == false);
     CHECK(prop.get_type().get_raw_type().is_sequential_container() == true);
     CHECK(prop.get_type() == type::get<std::vector<int>*>());
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // invoke
     REQUIRE(prop.get_value(instance()).is_type<std::vector<int>*>() == true);
@@ -159,8 +139,7 @@ TEST_CASE("property - global object - read only - bind as ptr", "[property]")
     CHECK(prop.is_readonly() == true);
     CHECK(prop.is_static() == true);
     CHECK(prop.get_type() == type::get<const int*>());
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     CHECK(prop.get_value(instance()).is_type<const int*>() == true);
@@ -183,8 +162,7 @@ TEST_CASE("property - global object - as_reference_wrapper", "[property]")
     CHECK(prop.get_type().get_wrapped_type().is_sequential_container() == true);
     CHECK(prop.get_type() == type::get< std::reference_wrapper<std::vector<int>> >());
     CHECK(prop.get_type().is_wrapper() == true);
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // invoke
     REQUIRE(prop.get_value(instance()).is_type< std::reference_wrapper<std::vector<int>> >() == true);
@@ -212,8 +190,7 @@ TEST_CASE("property - global object - read only - as_reference_wrapper", "[prope
     CHECK(prop.is_static() == true);
     CHECK(prop.get_type() == type::get< std::reference_wrapper<const int> >());
     CHECK(prop.get_type().is_wrapper() == true);
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     CHECK(prop.get_value(instance()).is_type< std::reference_wrapper<const int> >() == true);

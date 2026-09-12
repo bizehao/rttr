@@ -32,7 +32,7 @@
 #include <utility>
 
 
-using namespace std;
+
 
 namespace rttr
 {
@@ -78,13 +78,6 @@ constructor::operator bool() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-access_levels constructor::get_access_level() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_access_level();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
 type constructor::get_instantiated_type() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_instantiated_type();
@@ -107,16 +100,9 @@ std::string_view constructor::get_signature() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<parameter_info> constructor::get_parameter_infos() const RTTR_NOEXCEPT
+std::span<const parameter_info> constructor::get_parameter_infos() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_parameter_infos();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor::get_metadata(const variant& key) const
-{
-    return m_wrapper->get_metadata(key);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -189,13 +175,6 @@ bool constructor::operator==(const constructor& other) const RTTR_NOEXCEPT
 bool constructor::operator!=(const constructor& other) const RTTR_NOEXCEPT
 {
     return (m_wrapper != other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void constructor::visit(visitor& visitor) const RTTR_NOEXCEPT
-{
-    m_wrapper->visit(visitor, constructor(*this));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

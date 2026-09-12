@@ -31,7 +31,7 @@
 #include <catch/catch.hpp>
 
 using namespace rttr;
-using namespace std;
+
 
 enum class enum_test_flag
 {

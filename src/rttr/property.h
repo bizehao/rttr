@@ -31,8 +31,6 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/class_item_mapper.h"
 #include "rttr/parameter_info.h"
-#include "rttr/access_levels.h"
-
 #include <string>
 #include <string_view>
 
@@ -44,7 +42,6 @@ class enumeration;
 class instance;
 class argument;
 class property;
-class visitor;
 
 namespace detail
 {
@@ -130,16 +127,6 @@ class RTTR_API property
          * \return True if this property is valid, otherwise false.
          */
         explicit operator bool() const RTTR_NOEXCEPT;
-
-        /*!
-         * \brief Returns the access level with which this property was
-         *        \ref registration::class_<T>::property() "registered".
-         *
-         * \remark When the property is not valid, this function will return level \ref access_levels::public_access.
-         *
-         * \return \ref access_levels of the property.
-         */
-        access_levels get_access_level() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns true if this property is read only, otherwise false.
@@ -232,16 +219,6 @@ class RTTR_API property
         variant get_value(instance object) const;
 
         /*!
-         * \brief Returns the meta data for the given key \p key.
-         *
-         * \remark When no meta data is registered with the given \p key,
-         *         an invalid \ref variant object is returned (see \ref variant::is_valid).
-         *
-         * \return A variant object, containing arbitrary data.
-         */
-        variant get_metadata(const variant& key) const;
-
-        /*!
          * \brief Returns true if this property is the same like the \p other.
          *
          * \return True if both properties are equal, otherwise false.
@@ -259,13 +236,10 @@ class RTTR_API property
         //! Constructs a property from a property_wrapper_base.
         property(const detail::property_wrapper_base* wrapper) RTTR_NOEXCEPT;
 
-        void visit(visitor& visitor) const RTTR_NOEXCEPT;
-
         template<typename T>
         friend T detail::create_item(const detail::class_item_to_wrapper_t<T>* wrapper);
         template<typename T>
         friend T detail::create_invalid_item();
-        friend class visitor;
 
     private:
         const detail::property_wrapper_base* m_wrapper;

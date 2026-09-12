@@ -48,14 +48,14 @@ enumeration_wrapper_base::~enumeration_wrapper_base() RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void enumeration_wrapper_base::set_declaring_type(type declaring_type) RTTR_NOEXCEPT
+void enumeration_wrapper_base::set_declaring_type(rttr::type declaring_type) RTTR_NOEXCEPT
 {
     m_declaring_type = declaring_type;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-type enumeration_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
+rttr::type enumeration_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
 {
     return m_declaring_type;
 }
@@ -69,30 +69,30 @@ bool enumeration_wrapper_base::is_valid() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-type enumeration_wrapper_base::get_underlying_type() const RTTR_NOEXCEPT
+rttr::type enumeration_wrapper_base::get_underlying_type() const RTTR_NOEXCEPT
 {
     return get_invalid_type();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-type enumeration_wrapper_base::get_type() const RTTR_NOEXCEPT
+rttr::type enumeration_wrapper_base::get_type() const RTTR_NOEXCEPT
 {
     return get_invalid_type();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<std::string_view> enumeration_wrapper_base::get_names() const RTTR_NOEXCEPT
+std::span<const std::string_view> enumeration_wrapper_base::get_names() const RTTR_NOEXCEPT
 {
-    return array_range<std::string_view>();
+    return std::span<const std::string_view>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<variant> enumeration_wrapper_base::get_values() const RTTR_NOEXCEPT
+std::span<const variant> enumeration_wrapper_base::get_values() const RTTR_NOEXCEPT
 {
-    return array_range<variant>();
+    return std::span<const variant>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -105,13 +105,6 @@ std::string_view enumeration_wrapper_base::value_to_name(argument& value) const
 /////////////////////////////////////////////////////////////////////////////////////////
 
 variant enumeration_wrapper_base::name_to_value(std::string_view name) const
-{
-    return variant();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant enumeration_wrapper_base::get_metadata(const variant& key) const
 {
     return variant();
 }

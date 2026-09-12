@@ -32,7 +32,6 @@
 #include "rttr/detail/misc/misc_type_traits.h"
 #include "rttr/detail/comparison/comparable_types.h"
 #include "rttr/detail/misc/template_type_trait.h"
-
 #include <type_traits>
 
 namespace rttr
@@ -48,8 +47,8 @@ RTTR_API bool compare_types_less_than(const void* lhs, const void* rhs, const ty
 
 
 template<typename T>
-using has_less_than_operator_impl = std::integral_constant<bool, has_less_than_operator<T>::value && !std::is_array<T>::value &&
-                                                                 !is_template_instance<T>::value>;
+using has_less_than_operator_impl = std::integral_constant<bool, has_less_than_operator<T>::value && !std::is_array_v<T> &&
+                                                                 !is_template_instance<T>>;
 
 template<typename T>
 using is_less_than_comparable = std::integral_constant<bool, has_less_than_operator_impl<T>::value ||

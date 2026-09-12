@@ -29,7 +29,7 @@
 #include <catch/catch.hpp>
 
 using namespace rttr;
-using namespace std;
+
 
 enum E_MetaData
 {
@@ -70,27 +70,11 @@ struct derived_class_without_registered_methods : base_class_with_methods
 
 RTTR_REGISTRATION
 {
-    registration::class_<method_misc_test>("method_misc_test")
-        .method("func", &method_misc_test::func)
-        (
-            metadata(E_MetaData::SCRIPTABLE, true),
-            metadata("Text",  "Some funky description")
-        )
-        .method("func_return", &method_misc_test::func_return)
-        .method("static_func", &method_misc_test::static_func)
+    registration::do_class<^^method_misc_test>("method_misc_test");
 
-        .method("default_func", &method_misc_test::default_func)
-        (
-            default_arguments(std::string("text")),
-            metadata(E_MetaData::SCRIPTABLE, true),
-            metadata("Text",  "Some funky description")
-        )
-        ;
+    registration::do_class<^^base_class_with_methods>("base_class_with_methods");
 
-    registration::class_<base_class_with_methods>("base_class_with_methods")
-        .method("some_method", &base_class_with_methods::some_method);
-
-    registration::class_<derived_class_without_registered_methods>("derived_class_without_registered_methods");
+    registration::do_class<^^derived_class_without_registered_methods>("derived_class_without_registered_methods");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -185,62 +169,6 @@ TEST_CASE("method - compare operators", "[method]")
 
     // negative test
     CHECK(meth_1 != meth_invalid);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_CASE("method - get_metadata()", "[method]")
-{
-    method meth = type::get_by_name("method_misc_test").get_method("func");
-    variant var = meth.get_metadata(E_MetaData::SCRIPTABLE);
-    REQUIRE(var.is_type<bool>() == true);
-    CHECK(var.get_value<bool>() == true);
-
-    var = meth.get_metadata("Text");
-    REQUIRE(var.is_type<std::string>() == true);
-    CHECK(var.get_value<std::string>() == "Some funky description");
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_CASE("method - default func - get_metadata()", "[method]")
-{
-    method meth = type::get_by_name("method_misc_test").get_method("default_func");
-    variant var = meth.get_metadata(E_MetaData::SCRIPTABLE);
-    REQUIRE(var.is_type<bool>() == true);
-    CHECK(var.get_value<bool>() == true);
-
-    var = meth.get_metadata("Text");
-    REQUIRE(var.is_type<std::string>() == true);
-    CHECK(var.get_value<std::string>() == "Some funky description");
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_CASE("method - NEGATIVE - get_metadata()", "[method]")
-{
-    method meth = type::get_by_name("method_misc_test").get_method("func");
-    // no metadata found
-    variant var = meth.get_metadata(E_MetaData::TOOL_TIP);
-    CHECK(var.is_type<bool>() == false);
-    CHECK(var.is_valid() == false);
-
-    // no method found, no metadata found
-    meth = type::get_by_name("method_misc_test").get_method("");
-    CHECK(meth.is_valid() == false);
-    var = meth.get_metadata(E_MetaData::TOOL_TIP);
-    CHECK(var.is_valid() == false);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_CASE("method - default_func - NEGATIVE - get_metadata()", "[method]")
-{
-    method meth = type::get_by_name("method_misc_test").get_method("default_func");
-    // no metadata found
-    variant var = meth.get_metadata(E_MetaData::TOOL_TIP);
-    CHECK(var.is_type<bool>() == false);
-    CHECK(var.is_valid() == false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -38,6 +38,9 @@
 #include <utility>
 #include <algorithm>
 #include <string>
+#include <ranges>
+#include <mdspan>
+#include <meta>
 
 #ifdef RTTR_NO_CXX17_NOEXCEPT_FUNC_TYPE
 RTTR_BEGIN_DISABLE_EXCEPT_TYPE_WARNING
@@ -442,6 +445,71 @@ template<typename T>
 static RTTR_INLINE T& identity_func(T& func) { return func; }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+
+static consteval bool is_lambda(std::meta::info v) {
+    if (std::meta::is_variable(v)) {
+        auto t = std::meta::type_of(v);
+        if  (std::meta::is_class_type(t)) {
+            auto r = std::meta::members_of(t, std::meta::access_context::current())
+            | std::views::filter(std::meta::is_operator_function)
+            | std::views::filter([](const std::meta::info InOperatorInfo){
+                    return std::meta::operator_of(InOperatorInfo) == std::meta::operators::op_parentheses;
+                }
+             )
+            | std::ranges::to<std::vector<std::meta::info>>();
+            return r.size() == 1;
+        }
+    }
+    return false;
+}
+
+static consteval std::meta::info get_lambda_fun(std::meta::info v) {
+    if (!is_lambda(v)) {
+        throw std::logic_error("get_lambda is not a lambda object");
+    }
+    auto t = std::meta::type_of(v);
+    auto r = std::meta::members_of(t, std::meta::access_context::current())
+            | std::views::filter(std::meta::is_operator_function)
+            | std::views::filter([](const std::meta::info InOperatorInfo){
+                    return std::meta::operator_of(InOperatorInfo) == std::meta::operators::op_parentheses;
+                }
+             );
+    return r.front();
+}
+
+//确保原生数组类型转换为span
+consteval std::meta::info sure_array_type(std::meta::info type) {
+    if (std::meta::is_array_type(type)) {
+        auto r = std::meta::rank(type);
+        auto t = std::meta::remove_all_extents(type);
+        std::meta::info op = type;
+        std::vector<std::meta::info> ss{^^std::size_t};
+        for (size_t i = 0; i < r; ++i) {
+            ss.push_back(std::meta::reflect_constant(std::meta::extent(op)));
+            op = std::meta::remove_extent(op);
+        }
+        auto extent = std::meta::substitute(^^std::extents, ss);
+        return std::meta::substitute(^^std::mdspan, {t, extent});
+    }
+    else {
+        return type;
+    }
+}
+
+template<typename Fun>
+constexpr bool is_mem_fun_rv_qualifier = false;
+
+template<typename R, typename... Args>
+constexpr bool is_mem_fun_rv_qualifier<R (Args...) &&> = true;
+
+template<typename R, typename... Args>
+constexpr bool is_mem_fun_rv_qualifier<R (Args...) const &&> = true;
+
+template<typename R, typename... Args>
+constexpr bool is_mem_fun_rv_qualifier<R (Args...) && noexcept> = true;
+
+template<typename R, typename... Args>
+constexpr bool is_mem_fun_rv_qualifier<R (Args...) const && noexcept> = true;
 
 } // end namespace detail
 } // end namespace rttr

@@ -41,10 +41,6 @@ class variant;
 class type;
 class argument;
 
-template<typename T>
-class class_;
-class visitor;
-
 namespace detail
 {
 
@@ -63,7 +59,6 @@ using variant_create_func   = variant(*)(const argument&);
 using get_derived_func      = derived_info(*)(void*);
 
 enum class type_of_visit : bool;
-using visit_type_func       = void(*)(type_of_visit, visitor&, const type&);
 
 template<typename T, typename Enable>
 struct type_getter;
@@ -71,7 +66,6 @@ struct type_getter;
 struct type_data;
 struct class_data;
 
-class metadata;
 class registration_manager;
 
 /*!
@@ -105,8 +99,6 @@ public:
 
     static void custom_name(type& t, std::string_view name);
 
-    static void metadata( const type& t, std::vector<metadata> data);
-
     static bool register_converter(const type_converter_base* converter);
     static bool unregister_converter(const type_converter_base* converter);
 
@@ -124,7 +116,6 @@ public:
 
     static type_data* register_type(type_data* info) RTTR_NOEXCEPT;
     static void unregister_type(type_data* info) RTTR_NOEXCEPT;
-    static bool register_visit_type_func(type& t, visit_type_func) RTTR_NOEXCEPT;
 
 private:
 

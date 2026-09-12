@@ -116,10 +116,10 @@ namespace chaiscript
 
     };
 
-    template<typename From, typename To> 
+    template<typename From, typename To>
       class Static_Caster
       {
-        public: 
+        public:
           static Boxed_Value cast(const Boxed_Value &t_from)
           {
             if (t_from.get_type_info().bare_equal(chaiscript::user_type<From>()))
@@ -168,14 +168,14 @@ namespace chaiscript
               throw chaiscript::exception::bad_boxed_dynamic_cast(t_from.get_type_info(), typeid(To), "Unknown dynamic_cast_conversion");
             }
           }
- 
+
       };
 
 
-    template<typename From, typename To> 
+    template<typename From, typename To>
       class Dynamic_Caster
       {
-        public: 
+        public:
           static Boxed_Value cast(const Boxed_Value &t_from)
           {
             if (t_from.get_type_info().bare_equal(chaiscript::user_type<From>()))
@@ -233,7 +233,7 @@ namespace chaiscript
               throw chaiscript::exception::bad_boxed_dynamic_cast(t_from.get_type_info(), typeid(To), "Unknown dynamic_cast_conversion");
             }
           }
- 
+
       };
 
 
@@ -268,7 +268,7 @@ namespace chaiscript
 
         Boxed_Value convert_down(const Boxed_Value &t_base) const override
         {
-          throw chaiscript::exception::bad_boxed_dynamic_cast(t_base.get_type_info(), typeid(Derived), 
+          throw chaiscript::exception::bad_boxed_dynamic_cast(t_base.get_type_info(), typeid(Derived),
               "Unable to cast down inheritance hierarchy with non-polymorphic types");
         }
 
@@ -431,7 +431,7 @@ namespace chaiscript
           }
         }
 
-      static void enable_conversion_saves(Conversion_Saves &t_saves, bool t_val) 
+      static void enable_conversion_saves(Conversion_Saves &t_saves, bool t_val)
       {
         t_saves.enabled = t_val;
       }
@@ -557,7 +557,7 @@ namespace chaiscript
   /// chaiscript::ChaiScript chai;
   /// chai.add(chaiscript::to_class<Base, Derived>());
   /// \endcode
-  /// 
+  ///
   template<typename Base, typename Derived>
   Type_Conversion base_class(typename std::enable_if<std::is_polymorphic<Base>::value && std::is_polymorphic<Derived>::value>::type* = nullptr)
   {
@@ -580,7 +580,7 @@ namespace chaiscript
 
 
   template<typename Callable>
-    Type_Conversion type_conversion(const Type_Info &t_from, const Type_Info &t_to, 
+    Type_Conversion type_conversion(const Type_Info &t_from, const Type_Info &t_to,
         const Callable &t_func)
     {
       return chaiscript::make_shared<detail::Type_Conversion_Base, detail::Type_Conversion_Impl<Callable>>(t_from, t_to, t_func);

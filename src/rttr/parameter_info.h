@@ -107,6 +107,8 @@ namespace detail
 class RTTR_API parameter_info
 {
     public:
+        parameter_info(const detail::parameter_info_wrapper_base* wrapper) RTTR_NOEXCEPT;
+
         /*!
          * \brief Returns type of this parameter.
          *
@@ -120,14 +122,6 @@ class RTTR_API parameter_info
          * \return Bool to indicate that this parameter has a default value.
          */
         bool has_default_value() const RTTR_NOEXCEPT;
-
-        /*!
-         * \brief Returns the default value as \ref variant for this parameter;
-         *        or an \ref variant::is_valid() "invalid" variant to indicate that no default value is available.
-         *
-         * \return Default value as variant.
-         */
-        variant get_default_value() const;
 
         /*!
          * \brief Returns the name of this parameter.
@@ -162,8 +156,6 @@ class RTTR_API parameter_info
     private:
         template<typename T>
         friend parameter_info detail::create_param_info(const T&);
-
-        parameter_info(const detail::parameter_info_wrapper_base* wrapper) RTTR_NOEXCEPT;
     private:
         const detail::parameter_info_wrapper_base* m_wrapper;
 };

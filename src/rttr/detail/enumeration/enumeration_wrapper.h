@@ -43,37 +43,41 @@ namespace rttr
 namespace detail
 {
 
-template<typename Enum_Type, std::size_t N, std::size_t Metadata_Count>
-class enumeration_wrapper : public enumeration_wrapper_base, public metadata_handler<Metadata_Count>
+template<std::meta::info Enum>
+class enumeration_wrapper : public enumeration_wrapper_base
 {
+    static constexpr auto enumerators = std::define_static_array(std::meta::enumerators_of(Enum));
+    static constexpr auto N = enumerators.size();
+    using Enum_Type = [:Enum:];
     public:
-        enumeration_wrapper(std::array< enum_data<Enum_Type>, N > data,
-                            std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
-        :   metadata_handler<Metadata_Count>(std::move(metadata_list))
+        enumeration_wrapper() RTTR_NOEXCEPT
         {
-            int index = 0;
-            for (const auto& item : data)
-            {
-                 m_enum_names[index]    = item.get_name();
-                 m_enum_values[index]   = item.get_value();
-                 m_enum_variant_values[index] = item.get_value();
-                 ++index;
-            }
             static_assert(std::is_enum_v<Enum_Type>, "No enum type provided, please create an instance of this class only for enum types!");
+
+            template for (constexpr std::size_t index : std::views::indices(enumerators.size())) {
+                constexpr std::meta::info enumerator = enumerators[index];
+                m_enum_names[index] = std::meta::identifier_of(enumerator);
+                m_enum_values[index] = [:enumerator:];
+                m_enum_variant_values[index] = [:enumerator:];
+            }
+            constexpr std::meta::info parent = std::meta::parent_of(Enum);
+            if constexpr(std::meta::is_type(parent) && std::meta::is_class_type(parent)) {
+                set_declaring_type(type::get<typename[:parent:]>());
+            }
         }
 
         bool is_valid() const RTTR_NOEXCEPT { return true; }
-        type get_type() const RTTR_NOEXCEPT { return type::get<Enum_Type>(); }
-        type get_underlying_type() const RTTR_NOEXCEPT { return type::get<typename std::underlying_type<Enum_Type>::type>(); }
+        rttr::type get_type() const RTTR_NOEXCEPT { return type::get<Enum_Type>(); }
+        rttr::type get_underlying_type() const RTTR_NOEXCEPT { return rttr::type::get<typename std::underlying_type<Enum_Type>::type>(); }
 
-        array_range<std::string_view> get_names() const RTTR_NOEXCEPT
+        std::span<const std::string_view> get_names() const RTTR_NOEXCEPT
         {
-            return array_range<std::string_view>(m_enum_names.data(), N);
+            return std::span<const std::string_view>(m_enum_names.data(), N);
         }
 
-        array_range<variant> get_values() const RTTR_NOEXCEPT
+        std::span<const variant> get_values() const RTTR_NOEXCEPT
         {
-            return array_range<variant>(m_enum_variant_values.data(), N);
+            return std::span<const variant>(m_enum_variant_values.data(), N);
         }
 
         std::string_view value_to_name(argument& value) const
@@ -110,15 +114,11 @@ class enumeration_wrapper : public enumeration_wrapper_base, public metadata_han
             return variant();
         }
 
-        variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
     private:
         std::array< std::string_view, N >    m_enum_names;
         std::array< Enum_Type, N >      m_enum_values;
         std::array< variant, N >        m_enum_variant_values;
 };
-
-/////////////////////////////////////////////////////////////////////////////////////////
 
 } // end namespace detail
 } // end namespace rttr

@@ -32,6 +32,8 @@
 
 #include <type_traits>
 #include <vector>
+#include <ranges>
+#include <meta>
 
 namespace rttr
 {
@@ -41,15 +43,12 @@ namespace detail
 {
 
 template<typename T>
-struct template_type_trait : std::false_type                                                                                                   \
-{
-    static std::vector<::rttr::type> get_template_arguments();
-};
+struct template_type_trait;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-using is_template_instance = template_type_trait<T>;
+constexpr bool is_template_instance = template_type_trait<T>::value;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 

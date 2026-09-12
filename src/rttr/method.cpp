@@ -31,7 +31,7 @@
 #include "rttr/argument.h"
 #include "rttr/instance.h"
 
-using namespace std;
+
 
 namespace rttr
 {
@@ -48,7 +48,7 @@ method create_item(const method_wrapper_base* wrapper)
 template<>
 method create_invalid_item()
 {
-    static const method_wrapper_base invalid_wrapper(string_view(), detail::get_invalid_type());
+    static const method_wrapper_base invalid_wrapper(std::string_view{}, detail::get_invalid_type());
     return method(&invalid_wrapper);
 }
 
@@ -78,16 +78,9 @@ method::operator bool() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-string_view method::get_name() const RTTR_NOEXCEPT
+std::string_view method::get_name() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_name();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-access_levels method::get_access_level() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_access_level();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -113,23 +106,16 @@ type method::get_declaring_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<parameter_info> method::get_parameter_infos() const RTTR_NOEXCEPT
+std::span<const parameter_info> method::get_parameter_infos() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_parameter_infos();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-string_view method::get_signature() const RTTR_NOEXCEPT
+std::string_view method::get_signature() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_signature();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant method::get_metadata(const variant& key) const
-{
-    return m_wrapper->get_metadata(key);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -202,13 +188,6 @@ bool method::operator==(const method& other) const RTTR_NOEXCEPT
 bool method::operator!=(const method& other) const RTTR_NOEXCEPT
 {
     return (m_wrapper != other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void method::visit(visitor& visitor) const RTTR_NOEXCEPT
-{
-    m_wrapper->visit(visitor, method(*this));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

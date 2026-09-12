@@ -35,21 +35,19 @@
 #include "rttr/detail/parameter_info/parameter_infos_compare.h"
 #include "rttr/detail/method/method_wrapper_base.h"
 #include "rttr/detail/property/property_wrapper.h"
-#include "rttr/detail/metadata/metadata.h"
 #include "rttr/constructor.h"
 #include "rttr/destructor.h"
 #include "rttr/property.h"
 #include "rttr/method.h"
 #include "rttr/detail/type/type_data.h"
 
-#include "rttr/detail/filter/filter_item_funcs.h"
 #include "rttr/detail/type/type_string_utils.h"
 #include "rttr/detail/registration/registration_manager.h"
 
 #include <set>
 #include <iterator>
 
-using namespace std;
+
 
 namespace rttr
 {
@@ -149,22 +147,6 @@ bool type_register::unregister_enumeration(enumeration_wrapper_base* enum_data)
 void type_register::custom_name(type& t, std::string_view custom_name)
 {
      type_register_private::get_instance().register_custom_name(t, custom_name);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void type_register::metadata(const type& t, std::vector<::rttr::detail::metadata> data)
-{
-    auto& vec_to_insert = t.m_type_data->get_metadata();
-
-    // when we insert new items, we want to check first whether a item with same key exist => ignore this data
-    for (auto& new_item : data)
-    {
-        if (type_register_private::get_metadata(new_item,  vec_to_insert).is_valid() == false)
-            vec_to_insert.emplace_back(std::move(new_item));
-    }
-
-    std::sort(vec_to_insert.begin(), vec_to_insert.end(), metadata::order_by_key());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -344,14 +326,6 @@ void type_register::unregister_type(type_data* info) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-bool type_register::register_visit_type_func(type& t, visit_type_func func) RTTR_NOEXCEPT
-{
-    t.m_type_data->visit_type = func;
-    return true;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -441,7 +415,7 @@ static std::string derive_name_impl(const std::string& src_name, const std::stri
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-static std::vector<type> convert_param_list(const array_range<parameter_info>& param_list)
+static std::vector<type> convert_param_list(const std::span<const parameter_info>& param_list)
 {
     std::vector<type> result;
     result.reserve(param_list.size());
@@ -455,11 +429,12 @@ static std::vector<type> convert_param_list(const array_range<parameter_info>& p
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-static array_range<T> get_items_for_type(const type& t,
+static auto get_items_for_type(const type& t,
                                          const std::vector<T>& vec)
 {
-    return array_range<T>(vec.data(), vec.size(),
-                          detail::default_predicate<T>([t](const T& item) { return (item.get_declaring_type() == t); }) );
+    return std::span<const T>(vec.data(), vec.size()) | std::views::filter([t](const T& item) {
+        return (item.get_declaring_type() == t);
+    });
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -509,7 +484,7 @@ void type_register_private::register_base_class_info(type_data* info)
     auto base_classes = info->get_base_types();
 
     // remove double entries; can only be happen for virtual inheritance case
-    set<type> double_entries;
+    std::set<type> double_entries;
     for (auto itr = base_classes.rbegin(); itr != base_classes.rend();)
     {
         if (double_entries.find(itr->m_base_type) == double_entries.end())
@@ -519,7 +494,7 @@ void type_register_private::register_base_class_info(type_data* info)
         }
         else
         {
-            itr = vector<base_class_info>::reverse_iterator(base_classes.erase((++itr).base()));
+            itr = std::vector<base_class_info>::reverse_iterator(base_classes.erase((++itr).base()));
         }
     }
 
@@ -546,9 +521,6 @@ void type_register_private::register_base_class_info(type_data* info)
 
 type_data* type_register_private::register_type(type_data* info) RTTR_NOEXCEPT
 {
-    // this will register the base types
-    info->get_base_types();
-
     using namespace detail;
 
     if (auto t = register_name_if_neccessary(info))
@@ -909,8 +881,6 @@ void type_register_private::update_class_list(const type& t, T item_ptr)
         auto base_properties = get_items_for_type(base_type, base_type.m_type_data->m_class_data.*item_ptr);
         if (base_properties.empty())
             continue;
-
-        all_class_items.reserve(all_class_items.size() + base_properties.size());
         all_class_items.insert(all_class_items.end(), base_properties.begin(), base_properties.end());
     }
 
@@ -1066,31 +1036,6 @@ bool type_register_private::register_comparator_impl(const type& t, const type_c
     std::stable_sort(comparator_list.begin(), comparator_list.end(),
                      data_type::order_by_id());
     return true;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-
-variant type_register_private::get_metadata(const type& t, const variant& key)
-{
-    auto& meta_vec = t.m_type_data->get_metadata();
-    return get_metadata(key, meta_vec);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant type_register_private::get_metadata(const variant& key, const std::vector<metadata>& data)
-{
-    auto itr = std::lower_bound(data.cbegin(), data.cend(), key, metadata::order_by_key());
-    while (itr != data.cend())
-    {
-        auto& item = *itr;
-        if (item.get_key() == key)
-            return item.get_value();
-
-        ++itr;
-    }
-
-    return variant();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

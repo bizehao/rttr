@@ -29,7 +29,7 @@
 #include <catch/catch.hpp>
 
 using namespace rttr;
-using namespace std;
+
 
 
 struct method_invoke_test
@@ -50,21 +50,15 @@ struct method_invoke_test
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
+///
+std::function<int(int)> func_8([](int value){ return value; });
+auto func_9 = [](int value){ return value; };
 
 RTTR_REGISTRATION
 {
-    registration::class_<method_invoke_test>("method_invoke_test")
-        .method("func_0", &method_invoke_test::func_0)
-        .method("func_1", &method_invoke_test::func_1)
-        .method("func_2", &method_invoke_test::func_2)
-        .method("func_3", &method_invoke_test::func_3)
-        .method("func_4", &method_invoke_test::func_4)
-        .method("func_5", &method_invoke_test::func_5)
-        .method("func_6", &method_invoke_test::func_6)
-        .method("func_7", &method_invoke_test::func_7)
-        .method("func_8", std::function<int(int)>([](int value){ return value; }))
-        .method("func_9", [](int value){ return value; })
-        ;
+    registration::do_class<^^method_invoke_test>("method_invoke_test");
+    registration::do_method<^^func_8>("func_8");
+    registration::do_method<^^func_9>("func_9");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -173,8 +167,8 @@ TEST_CASE("method - invoke - NEGATIVE - invalid arg count", "[method]")
 
 TEST_CASE("method - invoke - std::function", "[method]")
 {
-    type t = type::get<method_invoke_test>();
-    variant var = t.invoke("func_8", instance(), {42});
+    auto t = type::get_global_method("func_8");
+    variant var = t.invoke(instance(), {42});
     REQUIRE(var.is_type<int>() == true);
     CHECK(var.get_value<int>() == 42);
 }
@@ -183,10 +177,10 @@ TEST_CASE("method - invoke - std::function", "[method]")
 
 TEST_CASE("method - invoke - lambda", "[method]")
 {
-    type t = type::get<method_invoke_test>();
-    auto param_infos = t.get_method("func_9").get_parameter_infos();
+    auto t = type::get_global_method("func_9");
+    auto param_infos = t.get_parameter_infos();
     CHECK(param_infos.size() == 1);
-    variant var = t.invoke("func_9", instance(), {23});
+    variant var = t.invoke(instance(), {23});
     REQUIRE(var.is_type<int>() == true);
     CHECK(var.get_value<int>() == 23);
 }

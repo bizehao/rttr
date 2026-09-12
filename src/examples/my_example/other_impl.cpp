@@ -10,5 +10,5 @@ void add(int a)
 
 RTTR_REGISTRATION
 {
-	registration::method("add", &add);
+	//registration::method("add", &add);
 }

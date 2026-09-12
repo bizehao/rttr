@@ -34,7 +34,7 @@
 #include <catch/catch.hpp>
 
 using namespace rttr;
-using namespace std;
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -63,32 +63,48 @@ static int& get_int_value()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+auto get_global_func_5 = [](){ return 45;};
+
+int lambda_var = 500;
+auto get_global_lambda = [](){ return lambda_var;};
+auto set_global_lambda = [](int v){ return lambda_var = v;};
+
 RTTR_REGISTRATION
 {
-    registration::property("global_func_1", &get_name, &set_name) ( metadata("Description", "Some Text") )
-        .property_readonly("global_func_2", &get_value) ( metadata("Description", "Some Text") )
-        .property("global_func_3", &get_name, &set_name)
-        (
-            metadata("Description", "Some Text"),
-            policy::prop::bind_as_ptr
-        )
-        .property_readonly("global_func_4", &get_int_value)
-        (
-            metadata("Description", "Some Text"),
-            policy::prop::bind_as_ptr
-        )
-        .property_readonly("global_func_5", [](){ return 45;})
-        .property_readonly("global_func_6", &get_int_value)
-        (
-            metadata("Description", "Some Text"),
-            policy::prop::as_reference_wrapper
-        )
-        .property("global_func_7", &get_name, &set_name)
-        (
-            metadata("Description", "Some Text"),
-            policy::prop::as_reference_wrapper
-        )
-        ;
+    registration::do_property<^^get_name, ^^set_name>("global_func_1");
+    registration::do_property_readonly<^^get_value>("global_func_2");
+    registration::do_property<^^get_name, ^^set_name, policy::prop::op_bind_as_ptr>("global_func_3");
+    registration::do_property_readonly<^^get_int_value, policy::prop::op_bind_as_ptr>("global_func_4");
+
+    registration::do_property_readonly<^^get_global_func_5>("global_func_5");
+    registration::do_property_readonly<^^get_int_value, policy::prop::op_as_reference_wrapper>("global_func_6");
+    registration::do_property<^^get_name, ^^set_name, policy::prop::op_as_reference_wrapper>("global_func_7");
+    registration::do_property<^^get_global_lambda, ^^set_global_lambda>("global_func_8");
+
+    // registration::property("global_func_1", &get_name, &set_name) ( metadata("Description", "Some Text") )
+    //     .property_readonly("global_func_2", &get_value) ( metadata("Description", "Some Text") )
+    //     .property("global_func_3", &get_name, &set_name)
+    //     (
+    //         metadata("Description", "Some Text"),
+    //         policy::prop::bind_as_ptr
+    //     )
+    //     .property_readonly("global_func_4", &get_int_value)
+    //     (
+    //         metadata("Description", "Some Text"),
+    //         policy::prop::bind_as_ptr
+    //     )
+    //     .property_readonly("global_func_5", [](){ return 45;})
+    //     .property_readonly("global_func_6", &get_int_value)
+    //     (
+    //         metadata("Description", "Some Text"),
+    //         policy::prop::as_reference_wrapper
+    //     )
+    //     .property("global_func_7", &get_name, &set_name)
+    //     (
+    //         metadata("Description", "Some Text"),
+    //         policy::prop::as_reference_wrapper
+    //     )
+    //     ;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -103,8 +119,7 @@ TEST_CASE("property - global function", "[property]")
     CHECK(prop.is_static() == true);
     CHECK(prop.get_declaring_type().is_valid() == false);
     CHECK(prop.get_type() == type::get<std::string>());
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     CHECK(prop.set_value(instance(), std::string("New Text")) == true);
@@ -126,8 +141,7 @@ TEST_CASE("property - global function - read only", "[property]")
     CHECK(prop.is_readonly() == true);
     CHECK(prop.is_static() == true);
     CHECK(prop.get_type() == type::get<int>());
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     CHECK(prop.get_value(instance()).is_type<int>() == true);
@@ -148,8 +162,7 @@ TEST_CASE("property - global function - bind as ptr", "[property]")
     CHECK(prop.is_readonly() == false);
     CHECK(prop.is_static() == true);
     CHECK(prop.get_type() == type::get<const std::string*>());
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     const std::string text("Hello World");
@@ -173,11 +186,12 @@ TEST_CASE("property - global function - read only - bind as ptr", "[property]")
     CHECK(prop.is_static() == true);
     CHECK(prop.get_declaring_type().is_valid() == false);
     CHECK(prop.get_type() == type::get<const int*>());
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
+    std::cout << prop.get_value(instance()).get_type().get_name() << std::endl;
     CHECK(prop.get_value(instance()).is_type<const int*>() == true);
+
     CHECK(*prop.get_value(instance()).get_value<const int*>() == 42);
 
     // invalid invoke
@@ -194,7 +208,7 @@ TEST_CASE("property - global function - read only - std::function", "[property]"
     CHECK(prop.is_static() == true);
     CHECK(prop.set_value(instance(), 23) == false);
 
-    variant var = prop.get_value(instance());
+    rttr::variant var = prop.get_value(instance());
     CHECK(var.is_type<int>() == true);
     CHECK(var.get_value<int>() == 45);
 }
@@ -211,8 +225,7 @@ TEST_CASE("property - global function - read only - as_reference_wrapper", "[pro
     CHECK(prop.is_static() == true);
     CHECK(prop.get_type() == type::get<std::reference_wrapper<const int>>());
     CHECK(prop.get_type().is_wrapper() == true);
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     CHECK(prop.get_value(instance()).is_type<std::reference_wrapper<const int>>() == true);
@@ -233,8 +246,7 @@ TEST_CASE("property - global function - as_reference_wrapper", "[property]")
     CHECK(prop.is_static() == true);
     CHECK(prop.get_type() == type::get< std::reference_wrapper<const std::string> >());
     CHECK(prop.get_type().is_wrapper() == true);
-    CHECK(prop.get_access_level() == rttr::access_levels::public_access);
-    CHECK(prop.get_metadata("Description") == "Some Text");
+    //CHECK(prop.get_metadata("Description") == "Some Text");
 
     // valid invoke
     const std::string text("Hello World");
@@ -247,3 +259,21 @@ TEST_CASE("property - global function - as_reference_wrapper", "[property]")
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+
+TEST_CASE("property - global lambda", "[property]")
+{
+    property prop = type::get_global_property("global_func_8");
+    REQUIRE(prop.is_valid() == true);
+
+    // metadata
+    CHECK(prop.is_readonly() == false);
+    CHECK(prop.is_static() == true);
+    CHECK(prop.get_declaring_type().is_valid() == false);
+    CHECK(prop.get_type() == type::get<int>());
+
+    // valid invoke
+    CHECK(prop.get_value(instance()).get_value<int>() == 500);
+    CHECK(prop.set_value(instance(), 600) == true);
+    CHECK(prop.get_value(instance()).is_type<int>() == true);
+    CHECK(prop.get_value(instance()).get_value<int>() == 600);
+}

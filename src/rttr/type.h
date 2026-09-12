@@ -29,8 +29,7 @@
 #define RTTR_TYPE_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/array_range.h"
-#include "rttr/filter_item.h"
+
 
 #include <type_traits>
 #include <vector>
@@ -39,6 +38,7 @@
 #include <cstdint>
 #include <string_view>
 #include <compare>
+#include <span>
 
 namespace rttr
 {
@@ -52,7 +52,6 @@ class enumeration;
 class type;
 class instance;
 class argument;
-class visitor;
 
 template<typename Target_Type, typename Source_Type>
 Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT;
@@ -344,7 +343,7 @@ class RTTR_API type
          *
          * \return A range of type objects.
          */
-        static array_range<type> get_types() RTTR_NOEXCEPT;
+        static std::span<type> get_types() RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns the size in bytes of the object representation of the current type (i.e. `sizeof(T)`).
@@ -401,7 +400,7 @@ class RTTR_API type
          *
          * \see is_template_instantiation()
          */
-        array_range<type> get_template_arguments() const RTTR_NOEXCEPT;
+        std::span<type> get_template_arguments() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns true whether the given type represents an enumeration.
@@ -574,7 +573,7 @@ class RTTR_API type
          *
          * \return A range of types.
          */
-        array_range<type> get_base_classes() const RTTR_NOEXCEPT;
+        std::span<type> get_base_classes() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a range of all derived classes of this type.
@@ -586,21 +585,11 @@ class RTTR_API type
          *
          * \return A range of type objects.
          */
-        array_range<type> get_derived_classes() const RTTR_NOEXCEPT;
+        std::span<type> get_derived_classes() const RTTR_NOEXCEPT;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////
-
-         /*!
-         * \brief Returns the meta data for the given key \p key.
-         *
-         * \remark When no meta data is registered with the given \p key,
-         *         an invalid \ref variant object is returned (see \ref variant::is_valid).
-         *
-         * \return A variant object, containing arbitrary data.
-         */
-        variant get_metadata(const variant& key) const;
 
         /*!
          * \brief Returns a public constructor whose parameters match the types in the specified list.
@@ -621,58 +610,7 @@ class RTTR_API type
          *
          * \return A range of constructors.
          */
-        array_range<constructor> get_constructors() const RTTR_NOEXCEPT;
-
-        /*!
-         * \brief Returns a range of all registered constructors for this type,
-         *        based on the given \p filter. The base classes are **not** included in the search.
-         *
-         * Combine the enum values inside \ref filter_item with the OR operator to return a certain range of constructors.
-         *
-         * See following example code:
-         * \code{.cpp}
-         * #include <rttr/registration>
-         *
-         * struct my_struct { my_struct() {} my_struct(int) {} my_struct(bool) {} RTTR_ENABLE() };
-         *
-         * RTTR_REGISTRATION
-         * {
-         *     rttr::registration::class_<my_struct>("my_struct")
-         *         .constructor<>() ( policy::ctor::as_object )
-         *         .constructor<bool>(registration::protected_access) ( policy::ctor::as_object )
-         *         .constructor<int>() ( policy::ctor::as_object );
-         * }
-         *
-         * int main()
-         * {
-         *     type t = rttr::type::get<my_struct>();
-         *     for (auto& ctor : t.get_constructors())
-         *         std::cout << ctor.get_signature() << ", "; // prints "my_struct( ), my_struct( int ),"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& ctor : t.get_constructors(filter_item::instance_item | filter_item::non_public_access))
-         *         std::cout << ctor.get_signature() << ", "; // prints "my_struct( bool ),"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& ctor : t.get_constructors(filter_item::static_item | filter_item::non_public_access))
-         *         std::cout << ctor.get_signature() << ", "; // prints "my_struct( bool ),"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& ctor : t.get_constructors(filter_item::instance_item | filter_item::public_access | filter_item::declared_only))
-         *         std::cout << ctor.get_signature() << std::endl; // prints "my_struct( ), my_struct( int ),"
-         *
-         *     return 0;
-         * }
-         * \endcode
-         *
-         * \remark The properties are sorted after its order of registration.
-         *
-         * \return A range of properties.
-         */
-        array_range<constructor> get_constructors(filter_items filter) const RTTR_NOEXCEPT;
+        std::span<constructor> get_constructors() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Creates an instance of the current type, with the given arguments \p args for the constructor.
@@ -724,62 +662,7 @@ class RTTR_API type
          *
          * \return A range of properties.
          */
-        array_range<property> get_properties() const RTTR_NOEXCEPT;
-
-        /*!
-         * \brief Returns a range of all registered properties for this type,
-         *        based on the given \p filter. The base classes are included in the search.
-         *
-         * Combine the enum values inside \ref filter_item with the OR operator to return a certain range of properties.
-         *
-         * See following example code:
-         * \code{.cpp}
-         * #include <rttr/registration>
-         *
-         * struct base { int p1, p2; RTTR_ENABLE() };
-         * struct derived : base { int p3; static const int p4 = 23; RTTR_ENABLE(base) };
-         *
-         * RTTR_REGISTRATION
-         * {
-         *     rttr::registration::class_<base>("base")
-         *         .property("p1", &base::p1)
-         *         .property("p2", &base::p2, rttr::registration::private_access);
-         *
-         *     rttr::registration::class_<derived>("derived")
-         *         .property("p3", &derived::p3)
-         *         .property_readonly("p4", &derived::p4, rttr::registration::private_access);
-         * }
-         *
-         * int main()
-         * {
-         *     type t = rttr::type::get<derived>();
-         *     for (auto& prop : t.get_properties())
-         *         std::cout << prop.get_name() << ", "; // prints "p1, p3,"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& prop : t.get_properties(filter_item::instance_item | filter_item::non_public_access))
-         *         std::cout << meth.get_name() << ", "; // prints "p2,"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& prop : t.get_properties(filter_item::static_item | filter_item::non_public_access))
-         *         std::cout << meth.get_name() << ", "; // prints "p4,"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& prop : t.get_properties(filter_item::instance_item | filter_item::public_access | filter_item::declared_only))
-         *         std::cout << meth.get_name() << ", "; // prints "p3"
-         *
-         *     return 0;
-         * }
-         * \endcode
-         *
-         * \remark The properties are sorted after its order of registration.
-         *
-         * \return A range of properties.
-         */
-        array_range<property> get_properties(filter_items filter) const RTTR_NOEXCEPT;
+        std::span<property> get_properties() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a global property with the name \p name.
@@ -799,7 +682,7 @@ class RTTR_API type
          *
          * \return A range of properties.
          */
-        static array_range<property> get_global_properties() RTTR_NOEXCEPT;
+        static std::span<property> get_global_properties() RTTR_NOEXCEPT;
 
 
         /*!
@@ -864,62 +747,7 @@ class RTTR_API type
          *
          * \return A range of methods.
          */
-        array_range<method> get_methods() const RTTR_NOEXCEPT;
-
-        /*!
-         * \brief Returns a range of all registered methods for this type,
-         *        based on the given \p filter. The base classes are included in the search.
-         *
-         * Combine the enum values inside \ref filter_item with the OR operator to return a certain range of methods.
-         *
-         * See following example code:
-         * \code{.cpp}
-         * #include <rttr/registration>
-         *
-         * struct base { void func_1() {} void func_2() {} RTTR_ENABLE() };
-         * struct derived : base { void func_3() {} static void func_4() {} RTTR_ENABLE(base) };
-         *
-         * RTTR_REGISTRATION
-         * {
-         *     rttr::registration::class_<base>("base")
-         *         .method("func_1", &base::func_1)
-         *         .method("func_2", &base::func_2, rttr::registration::private_access);
-         *
-         *     rttr::registration::class_<derived>("derived")
-         *         .method("func_3", &derived::func_3)
-         *         .method("func_4", &derived::func_4, rttr::registration::private_access);
-         * }
-         *
-         * int main()
-         * {
-         *     type t = rttr::type::get<derived>();
-         *     for (auto& meth : t.get_methods())
-         *         std::cout << meth.get_name() << ", "; // prints "func_1, func_3,"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& meth : t.get_methods(filter_item::instance_item | filter_item::non_public_access))
-         *         std::cout << meth.get_name() << ", "; // prints "func_2,"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& meth : t.get_methods(filter_item::static_item | filter_item::non_public_access))
-         *         std::cout << meth.get_name() << ", "; // prints "func_4,"
-         *
-         *     std::cout << std::endl;
-         *
-         *     for (auto& meth : t.get_methods(filter_item::instance_item | filter_item::public_access | filter_item::declared_only))
-         *         std::cout << meth.get_name() << ", "; // prints "func_3,"
-         *
-         *     return 0;
-         * }
-         * \endcode
-         *
-         * \remark The methods are sorted after its order of registration.
-         *
-         * \return A range of methods.
-         */
-        array_range<method> get_methods(filter_items filter) const RTTR_NOEXCEPT;
+        std::span<method> get_methods() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns a global method with the name \p name.
@@ -949,7 +777,7 @@ class RTTR_API type
          *
          * \return A range of methods.
          */
-        static array_range<method> get_global_methods() RTTR_NOEXCEPT;
+        static std::span<method> get_global_methods() RTTR_NOEXCEPT;
 
 
         /*!
@@ -1197,11 +1025,6 @@ class RTTR_API type
          */
         void create_wrapped_value(const argument& arg, variant& var) const;
 
-        /*!
-         * \brief Visits the current type, with the given visitor \p visitor.
-         */
-        void visit(visitor& visitor, detail::type_of_visit visit_type) const RTTR_NOEXCEPT;
-
         /////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////
@@ -1216,7 +1039,6 @@ class RTTR_API type
         friend class instance;
         friend class detail::type_register;
         friend class detail::type_register_private;
-        friend class visitor;
         friend struct detail::class_data;
 
         friend type detail::create_type(detail::type_data*) RTTR_NOEXCEPT;

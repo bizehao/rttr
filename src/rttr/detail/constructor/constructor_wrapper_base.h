@@ -29,14 +29,12 @@
 #define RTTR_CONSTRUCTOR_WRAPPER_BASE_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/metadata/metadata_handler.h"
 #include "rttr/parameter_info.h"
-#include "rttr/access_levels.h"
-#include "rttr/array_range.h"
-
+#include "rttr/type.h"
 #include <string>
 #include <vector>
 #include <string_view>
+#include <span>
 
 namespace rttr
 {
@@ -62,14 +60,11 @@ class RTTR_API constructor_wrapper_base
         std::string_view get_signature() const RTTR_NOEXCEPT;
 
         virtual bool is_valid() const RTTR_NOEXCEPT;
-        virtual type get_declaring_type() const RTTR_NOEXCEPT;
-        virtual access_levels get_access_level() const RTTR_NOEXCEPT;
-        virtual type get_instantiated_type() const RTTR_NOEXCEPT;
+        virtual rttr::type get_declaring_type() const RTTR_NOEXCEPT;
+        virtual rttr::type get_instantiated_type() const RTTR_NOEXCEPT;
         virtual std::vector<bool> get_is_reference() const RTTR_NOEXCEPT;
         virtual std::vector<bool> get_is_const() const RTTR_NOEXCEPT;
-        virtual array_range<parameter_info> get_parameter_infos() const RTTR_NOEXCEPT;
-        virtual variant get_metadata(const variant& key) const;
-
+        virtual std::span<const parameter_info> get_parameter_infos() const RTTR_NOEXCEPT;
         virtual variant invoke() const;
         virtual variant invoke(argument& arg1) const;
         virtual variant invoke(argument& arg1, argument& arg2) const;
@@ -81,8 +76,6 @@ class RTTR_API constructor_wrapper_base
                                argument& arg5, argument& arg6) const;
 
         virtual variant invoke_variadic(std::vector<argument>& args) const;
-
-        virtual void visit(visitor& visitor, const constructor& ctor) const RTTR_NOEXCEPT;
     protected:
         void init() RTTR_NOEXCEPT;
     private:

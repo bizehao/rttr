@@ -7,20 +7,18 @@
 #ifndef CHAISCRIPT_UTILITY_FNV1A_HPP_
 #define CHAISCRIPT_UTILITY_FNV1A_HPP_
 
-
-#include <cstdint>
 #include "../chaiscript_defines.hpp"
 
+#include <cstdint>
 
 namespace chaiscript
 {
 
+namespace utility
+{
 
-  namespace utility
-  {
-
-
-    static constexpr std::uint32_t fnv1a_32(const char *s, std::uint32_t h = 0x811c9dc5) {
+static constexpr std::uint32_t fnv1a_32(const char* s, std::uint32_t h = 0x811c9dc5)
+{
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
@@ -30,7 +28,7 @@ namespace chaiscript
 #pragma warning(push)
 #pragma warning(disable : 4307)
 #endif
-      return (*s == 0) ? h : fnv1a_32(s+1, ((h ^ (*s)) * 0x01000193));
+    return (*s == 0) ? h : fnv1a_32(s + 1, ((h ^ (*s)) * 0x01000193));
 #ifdef CHAISCRIPT_MSVC
 #pragma warning(pop)
 #endif
@@ -38,13 +36,10 @@ namespace chaiscript
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
-    }
-
-
-  }
-
-
 }
+
+} // namespace utility
+
+} // namespace chaiscript
 
 #endif

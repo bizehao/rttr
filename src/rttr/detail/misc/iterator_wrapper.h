@@ -40,7 +40,7 @@ namespace rttr
 namespace detail
 {
 
-using iterator_data = std::aligned_storage<sizeof(double)>::type;
+using iterator_data = DataStorage<sizeof(double)>;
 
 template<typename T, bool Can_Place = (sizeof(T) <= sizeof(iterator_data)) &&
                                       (std::alignment_of<T>::value <= std::alignment_of<iterator_data>::value)>

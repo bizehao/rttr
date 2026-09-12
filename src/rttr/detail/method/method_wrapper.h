@@ -31,346 +31,227 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/method/method_wrapper_base.h"
 #include "rttr/detail/misc/function_traits.h"
-#include "rttr/detail/type/accessor_type.h"
-#include "rttr/detail/method/method_accessor.h"
-#include "rttr/detail/default_arguments/default_arguments.h"
-#include "rttr/detail/default_arguments/invoke_with_defaults.h"
-#include "rttr/detail/parameter_info/parameter_infos.h"
 #include "rttr/argument.h"
 #include "rttr/instance.h"
 #include "rttr/variant.h"
-#include "rttr/array_range.h"
-#include "rttr/detail/visitor/visitor_iterator.h"
-#include "rttr/detail/visitor/method_visitor_invoker.h"
+#include  "rttr/detail/policies/meth_policies.h"
+#include "rttr/detail/parameter_info/parameter_info_wrapper.h"
+#include "rttr/type.h"
 
 #include <functional>
 #include <string>
 #include <array>
+#include <span>
+#include <ranges>
+#include <span>
 
 namespace rttr
 {
 namespace detail
 {
 
-template<typename F, typename Declaring_Type, access_levels Acc_Level, typename Policy, typename Default_Args, typename Parameter_Infos, std::size_t Metadata_Count, typename Visitor_List>
-class method_wrapper;
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename F, typename Declaring_Type, access_levels Acc_Level, typename Policy, typename... Param_Args, std::size_t Metadata_Count, typename Visitor_List>
-class method_wrapper<F, Declaring_Type, Acc_Level, Policy, default_args<>, parameter_infos<Param_Args...>, Metadata_Count, Visitor_List> : public method_wrapper_base, public metadata_handler<Metadata_Count>
+template<std::meta::info Fun, method_policy op>
+class method_wrapper : public method_wrapper_base
 {
+    using Declaring_Type = [: std::meta::is_class_member(Fun) ? std::meta::parent_of(Fun) : ^^invalid_type :];
+    using Return_Type = [: is_lambda(Fun) ? std::meta::return_type_of(get_lambda_fun(Fun)) : std::meta::return_type_of(Fun) :];
+
+    static constexpr auto params = []() {
+        if (is_lambda(Fun)) {
+            return std::define_static_array(std::meta::parameters_of(get_lambda_fun(Fun)));
+        }
+        else {
+            return std::define_static_array(std::meta::parameters_of(Fun));
+        }
+    }();
+    static constexpr auto default_args_num = std::ranges::count_if(params, [](std::meta::info const& i) { return std::meta::has_default_argument(i);});
     public:
-        method_wrapper(std::string_view name,
-                       F func_acc,
-                       std::array<metadata, Metadata_Count> metadata_list,
-                       parameter_infos<Param_Args...> param_infos) RTTR_NOEXCEPT
-        :   method_wrapper_base(name, type::get<Declaring_Type>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_func_acc(func_acc),
-            m_param_infos(std::move(param_infos)),
-            m_param_info_list(create_paramter_info_array(m_param_infos))
+        method_wrapper(std::string_view name) RTTR_NOEXCEPT
+        :   method_wrapper_base(name, type::get<Declaring_Type>())
         {
+            if constexpr (op == method_policy::return_as_ptr) {
+                static_assert(std::is_reference_v<Return_Type>, "op is return_ref_as_ptr, return result need is left reference");
+            }
+
+            template for (constexpr auto I : std::views::indices(params.size())) {
+                auto ptr = new parameter_info_wrapper<params[I], I>{};
+                m_param_infos.push_back(std::unique_ptr<parameter_info_wrapper_base>{ptr});
+                m_param_info_list.emplace_back(parameter_info{ptr});
+            }
+
             init();
         }
 
         bool is_valid()                                     const RTTR_NOEXCEPT { return true;                                            }
-        bool is_static()                                    const RTTR_NOEXCEPT { return method_accessor<F, Policy>::is_static();         }
-        type get_return_type()                              const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_return_type();   }
-        std::vector<bool> get_is_reference()                const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_is_reference();  }
-        std::vector<bool> get_is_const()                    const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_is_const();      }
-        access_levels get_access_level()                    const RTTR_NOEXCEPT { return Acc_Level; }
-        array_range<parameter_info> get_parameter_infos()   const RTTR_NOEXCEPT { return array_range<parameter_info>(const_cast<decltype(m_param_info_list)&>(m_param_info_list).data(),
-                                                                                                       m_param_info_list.size()); }
-        variant get_metadata(const variant& key)            const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        variant invoke(instance& object) const
-        {
-           return method_accessor<F, Policy>::invoke(m_func_acc, object);
+        bool is_static()                                    const RTTR_NOEXCEPT {
+            return !std::meta::is_class_member(Fun) || std::meta::is_static_member(Fun);
         }
-        variant invoke(instance& object, argument& arg1) const
-        {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2) const
-        {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3) const
-        {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2, arg3);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4) const
-        {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2, arg3, arg4);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4, argument& arg5) const
-        {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2, arg3, arg4, arg5);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4, argument& arg5, argument& arg6) const
-        {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2, arg3, arg4, arg5, arg6);
-        }
-
-        variant invoke_variadic(const instance& object, std::vector<argument>& args) const
-        {
-            return method_accessor<F, Policy>::invoke_variadic(m_func_acc, object, args);
-        }
-
-        void visit(visitor& visitor, method meth) const RTTR_NOEXCEPT
-        {
-            auto obj = make_method_info<Declaring_Type, Policy, F>(meth, m_func_acc);
-            visitor_iterator<Visitor_List>::visit(visitor, make_method_visitor_invoker(obj));
-        }
-
-    private:
-        F  m_func_acc;
-        parameter_infos<Param_Args...> m_param_infos;
-        std::array<parameter_info, sizeof...(Param_Args)> m_param_info_list;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename F, typename Declaring_Type, access_levels Acc_Level, typename Policy, typename...Default_Args, typename...Param_Args, std::size_t Metadata_Count, typename Visitor_List>
-class method_wrapper<F, Declaring_Type, Acc_Level, Policy, default_args<Default_Args...>, parameter_infos<Param_Args...>, Metadata_Count, Visitor_List> : public method_wrapper_base, public metadata_handler<Metadata_Count>
-{
-    using method_type = typename detail::method_type<F>::type;
-    using arg_index_sequence = std::make_index_sequence<function_traits<F>::arg_count>;
-    using invoker_class = method_invoker<F, Policy, method_type, arg_index_sequence>;
-    using invoke_with_defaults = invoke_defaults_helper<invoker_class, F>;
-
-    public:
-        method_wrapper(std::string_view name,
-                       F func_acc,
-                       std::array<metadata, Metadata_Count> metadata_list,
-                       default_args<Default_Args...> default_args,
-                       parameter_infos<Param_Args...> param_infos) RTTR_NOEXCEPT
-        :   method_wrapper_base(name, type::get<Declaring_Type>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_func_acc(func_acc),
-            m_def_args(std::move(default_args)),
-            m_param_infos(std::move(param_infos)),
-            m_param_info_list(create_paramter_info_array(m_param_infos))
-        {
-            store_default_args_in_param_infos(m_param_infos, m_def_args);
-            init();
-        }
-
-        bool is_valid()                                     const RTTR_NOEXCEPT { return true;                                            }
-        bool is_static()                                    const RTTR_NOEXCEPT { return method_accessor<F, Policy>::is_static();         }
-        type get_return_type()                              const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_return_type();   }
-        std::vector<bool> get_is_reference()                const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_is_reference();  }
-        std::vector<bool> get_is_const()                    const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_is_const();      }
-        access_levels get_access_level()                    const RTTR_NOEXCEPT { return Acc_Level; }
-        array_range<parameter_info> get_parameter_infos()   const RTTR_NOEXCEPT { return array_range<parameter_info>(const_cast<decltype(m_param_info_list)&>(m_param_info_list).data(),
-                                                                                                       m_param_info_list.size()); }
-        variant get_metadata(const variant& key)            const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        variant invoke(instance& object) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args);
-        }
-        variant invoke(instance& object, argument& arg1) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2, arg3);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2, arg3, arg4);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4, argument& arg5) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2, arg3, arg4, arg5);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4, argument& arg5, argument& arg6) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2, arg3, arg4, arg5, arg6);
-        }
-
-        variant invoke_variadic(const instance& object, std::vector<argument>& args) const
-        {
-            if (args.size() <= function_traits<F>::arg_count)
-                return invoke_variadic_helper<invoke_with_defaults, arg_index_sequence>::invoke(args, m_func_acc, object, m_def_args.m_args);
+        rttr::type get_return_type()                              const RTTR_NOEXCEPT {
+            if constexpr (op == method_policy::return_as_ptr)
+            {
+                return type::get<std::remove_reference_t<Return_Type>*>();
+            }
+            else if constexpr(op == method_policy::discard_return)
+            {
+                return type::get<void>();
+            }
             else
-                return variant();
+            {
+                return type::get<Return_Type>();
+            }
+        }
+        std::vector<bool> get_is_reference()                const RTTR_NOEXCEPT {
+            std::vector<bool> rst;
+            template for (constexpr auto it : params) {
+                rst.push_back(std::meta::is_reference_type(std::meta::type_of(it)));
+            }
+            return rst;
+        }
+        std::vector<bool> get_is_const()                    const RTTR_NOEXCEPT {
+            auto result = []() consteval  {
+                auto tmp = std::views::transform(params, [](auto info) {
+                    return std::meta::is_const_type(std::meta::remove_reference(std::meta::type_of(info)));
+                });
+                return std::define_static_array(tmp);
+            }();
+            return std::vector<bool>(result.begin(), result.end());
         }
 
-        void visit(visitor& visitor, method meth) const RTTR_NOEXCEPT
-        {
-            auto obj = make_method_info<Declaring_Type, Policy, F>(meth, m_func_acc);
-            visitor_iterator<Visitor_List>::visit(visitor, make_method_visitor_invoker(obj));
+        std::span<const parameter_info> get_parameter_infos()   const RTTR_NOEXCEPT {
+            return std::span<const parameter_info>(m_param_info_list.data(),m_param_info_list.size());
         }
-
-    private:
-        F                               m_func_acc;
-        default_args<Default_Args...>   m_def_args;
-        parameter_infos<Param_Args...>  m_param_infos;
-        std::array<parameter_info, sizeof...(Param_Args)> m_param_info_list;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename F, typename Declaring_Type, access_levels Acc_Level, typename Policy, std::size_t Metadata_Count, typename Visitor_List>
-class method_wrapper<F, Declaring_Type, Acc_Level, Policy, default_args<>, parameter_infos<>, Metadata_Count, Visitor_List> : public method_wrapper_base, public metadata_handler<Metadata_Count>
-{
-    public:
-        method_wrapper(std::string_view name,
-                       F func_acc,
-                       std::array<metadata, Metadata_Count> metadata_list,
-                       parameter_infos<> param_infos) RTTR_NOEXCEPT
-        :   method_wrapper_base(name, type::get<Declaring_Type>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_func_acc(func_acc)
-        {
-            init();
-        }
-
-        bool is_valid()                                     const RTTR_NOEXCEPT { return true;                                            }
-        bool is_static()                                    const RTTR_NOEXCEPT { return method_accessor<F, Policy>::is_static();         }
-        type get_return_type()                              const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_return_type();   }
-        std::vector<bool> get_is_reference()                const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_is_reference();  }
-        std::vector<bool> get_is_const()                    const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_is_const();      }
-        access_levels get_access_level()                    const RTTR_NOEXCEPT { return Acc_Level;                                       }
-        array_range<parameter_info> get_parameter_infos()   const RTTR_NOEXCEPT { return array_range<parameter_info>();                   }
-        variant get_metadata(const variant& key)            const { return metadata_handler<Metadata_Count>::get_metadata(key); }
 
         variant invoke(instance& object) const
         {
-           return method_accessor<F, Policy>::invoke(m_func_acc, object);
+           return invoke_impl(object, {});
         }
         variant invoke(instance& object, argument& arg1) const
         {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1);
+            return invoke_impl(object, {arg1});
         }
         variant invoke(instance& object, argument& arg1, argument& arg2) const
         {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2);
+            return invoke_impl(object, {arg1, arg2});
         }
         variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3) const
         {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2, arg3);
+            return invoke_impl(object, {arg1, arg2, arg3});
         }
         variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4) const
         {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2, arg3, arg4);
+            return invoke_impl(object, {arg1, arg2, arg3, arg4});
         }
         variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4, argument& arg5) const
         {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2, arg3, arg4, arg5);
+            return invoke_impl(object, {arg1, arg2, arg3, arg4, arg5});
         }
         variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4, argument& arg5, argument& arg6) const
         {
-            return method_accessor<F, Policy>::invoke(m_func_acc, object, arg1, arg2, arg3, arg4, arg5, arg6);
+            return invoke_impl(object, {arg1, arg2, arg3, arg4, arg5, arg6});
         }
 
         variant invoke_variadic(const instance& object, std::vector<argument>& args) const
         {
-            return method_accessor<F, Policy>::invoke_variadic(m_func_acc, object, args);
-        }
-
-        void visit(visitor& visitor, method meth) const RTTR_NOEXCEPT
-        {
-            auto obj = make_method_info<Declaring_Type, Policy, F>(meth, m_func_acc);
-            visitor_iterator<Visitor_List>::visit(visitor, make_method_visitor_invoker(obj));
+            return invoke_impl(object, args);
         }
 
     private:
-        F  m_func_acc;
+
+        template<std::size_t... Is>
+        static variant override_fun(const instance& obj, std::vector<argument> args)
+        {
+            //check args type
+            bool check = detail::check_all_true(args[Is].template is_type<typename[:std::meta::type_of(params[Is]):]>()...);
+            if (!check)
+            {
+                return variant{};
+            }
+
+            constexpr bool is_mem_fun = std::meta::is_class_member(Fun) && !std::meta::is_static_member(Fun);
+            if constexpr(std::is_same_v<Return_Type, void>) {
+                if constexpr(is_mem_fun) {
+                    Declaring_Type* ptr = obj.try_convert<Declaring_Type>();
+                    if (ptr) {
+                        ptr->[:Fun:](args[Is].get_value<typename[:std::meta::type_of(params[Is]):]>()...);
+                        return variant{void_variant_type{}};
+                    }
+                    else {
+                        return variant{};
+                    }
+                }
+                else {
+                    [:Fun:](args[Is].get_value<typename[:std::meta::type_of(params[Is]):]>()...);
+                    return variant{void_variant_type{}};
+                }
+            }
+            else {
+                if constexpr(is_mem_fun) {
+                    Declaring_Type* ptr = obj.try_convert<Declaring_Type>();
+                    if (ptr) {
+                        if constexpr(op == method_policy::discard_return) {
+                            ptr->[:Fun:](args[Is].get_value<typename[:std::meta::type_of(params[Is]):]>()...);
+                            return variant{void_variant_type{}};
+                        }
+                        else if constexpr(op == method_policy::return_as_ptr) {
+                            return variant{&ptr->[:Fun:](args[Is].get_value<typename[:std::meta::type_of(params[Is]):]>()...)};
+                        }
+                        else {
+                            return variant{ptr->[:Fun:](args[Is].get_value<typename[:std::meta::type_of(params[Is]):]>()...)};
+                        }
+                    }
+                    else {
+                        return variant{};
+                    }
+                }
+                else {
+                    if constexpr(op == method_policy::discard_return) {
+                        [:Fun:](args[Is].get_value<typename[:std::meta::type_of(params[Is]):]>()...);
+                        return variant{void_variant_type{}};
+                    }
+                    else if constexpr(op == method_policy::return_as_ptr) {
+                        return variant{&[:Fun:](args[Is].get_value<typename[:std::meta::type_of(params[Is]):]>()...)};
+                    }
+                    else {
+                        return variant{[:Fun:](args[Is].get_value<typename[:std::meta::type_of(params[Is]):]>()...)};
+                    }
+                }
+            }
+        }
+
+        static variant invoke_impl(const instance& obj, std::vector<argument> args)
+        {
+            constexpr std::size_t at_most_args_num = params.size() - default_args_num;
+            if (args.size() < at_most_args_num || args.size() > params.size()) {
+                return variant{};
+            }
+
+            auto make_override_fun = []<std::size_t N> static{
+                return []<std::size_t... Ns>(std::index_sequence<Ns...>)
+                {
+                    return override_fun<Ns...>;
+                }(std::make_index_sequence<N>{});
+            };
+
+            //default_args_num
+            //有所有默认参数 ~ 没有任何默认参数
+            auto override_funs = [make_override_fun]<std::size_t... Ns>(std::index_sequence<Ns...>)
+            {
+                return std::make_tuple(make_override_fun.template operator()<at_most_args_num + Ns>()...);
+            }(std::make_index_sequence<default_args_num+1>{});
+
+            std::size_t index = args.size() - at_most_args_num;
+            template for (constexpr std::size_t Js : std::views::indices(std::tuple_size_v<std::decay_t<decltype(override_funs)>>))
+            {
+                if (Js == index)
+                {
+                    return std::get<Js>(override_funs)(obj, std::move(args));
+                }
+            }
+            return variant{};
+        }
+        std::vector<std::unique_ptr<parameter_info_wrapper_base>> m_param_infos;
+        std::vector<parameter_info> m_param_info_list;
 };
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename F, typename Declaring_Type, access_levels Acc_Level, typename Policy, typename...Default_Args, std::size_t Metadata_Count, typename Visitor_List>
-class method_wrapper<F, Declaring_Type, Acc_Level, Policy, default_args<Default_Args...>, parameter_infos<>, Metadata_Count, Visitor_List> : public method_wrapper_base, public metadata_handler<Metadata_Count>
-{
-    using method_type = typename detail::method_type<F>::type;
-    using arg_index_sequence = std::make_index_sequence<function_traits<F>::arg_count>;
-    using invoker_class = method_invoker<F, Policy, method_type, arg_index_sequence>;
-    using invoke_with_defaults = invoke_defaults_helper<invoker_class, F>;
-
-    public:
-        method_wrapper(std::string_view name,
-                       F func_acc,
-                       std::array<metadata, Metadata_Count> metadata_list,
-                       default_args<Default_Args...> default_args,
-                       parameter_infos<> param_infos)
-        :   method_wrapper_base(name, type::get<Declaring_Type>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_func_acc(func_acc),
-            m_def_args(std::move(default_args))
-        {
-            init();
-        }
-
-        bool is_valid()                                     const RTTR_NOEXCEPT { return true;                                            }
-        bool is_static()                                    const RTTR_NOEXCEPT { return method_accessor<F, Policy>::is_static();         }
-        type get_return_type()                              const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_return_type();   }
-        std::vector<bool> get_is_reference()                const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_is_reference();  }
-        std::vector<bool> get_is_const()                    const RTTR_NOEXCEPT { return method_accessor<F, Policy>::get_is_const();      }
-        access_levels get_access_level()                    const RTTR_NOEXCEPT { return Acc_Level;                                       }
-        array_range<parameter_info> get_parameter_infos()   const RTTR_NOEXCEPT { return array_range<parameter_info>();                   }
-        variant get_metadata(const variant& key)            const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        variant invoke(instance& object) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args);
-        }
-        variant invoke(instance& object, argument& arg1) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2, arg3);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2, arg3, arg4);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4, argument& arg5) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2, arg3, arg4, arg5);
-        }
-        variant invoke(instance& object, argument& arg1, argument& arg2, argument& arg3, argument& arg4, argument& arg5, argument& arg6) const
-        {
-            return invoke_with_defaults::invoke(m_func_acc, object, m_def_args.m_args, arg1, arg2, arg3, arg4, arg5, arg6);
-        }
-
-        variant invoke_variadic(const instance& object, std::vector<argument>& args) const
-        {
-            if (args.size() <= function_traits<F>::arg_count)
-                return invoke_variadic_helper<invoke_with_defaults, arg_index_sequence>::invoke(args, m_func_acc, object, m_def_args.m_args);
-            else
-                return variant();
-        }
-
-        void visit(visitor& visitor, method meth) const RTTR_NOEXCEPT
-        {
-            auto obj = make_method_info<Declaring_Type, Policy, F>(meth, m_func_acc);
-            visitor_iterator<Visitor_List>::visit(visitor, make_method_visitor_invoker(obj));
-        }
-
-    private:
-        F                               m_func_acc;
-        default_args<Default_Args...>   m_def_args;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
 
 } // end namespace detail
 } // end namespace rttr

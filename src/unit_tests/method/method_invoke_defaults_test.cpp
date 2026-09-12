@@ -31,20 +31,20 @@
 #include <catch/catch.hpp>
 
 using namespace rttr;
-using namespace std;
+
 
 
 struct method_invoke_defaults_test
 {
     method_invoke_defaults_test() { for (auto& item : m_invoked) { item = false; } }
     void func_0(){ m_invoked[0] = true; }
-    void func_1(int) { m_invoked[1] = true; }
-    void func_2(int, int) { m_invoked[2] = true; }
-    void func_3(int, int, int) { m_invoked[3] = true; }
-    void func_4(int, int, int, int) { m_invoked[4] = true; }
-    void func_5(int, int, int, int, int) { m_invoked[5] = true; }
-    void func_6(int, int, int, int, int, int) { m_invoked[6] = true; }
-    void func_7(int, int, int, int, int, int, int) { m_invoked[7] = true; }
+    void func_1(int a = 1) { m_invoked[1] = true; }
+    void func_2(int a = 1, int b = 2) { m_invoked[2] = true; }
+    void func_3(int a = 1, int b = 2, int c = 3) { m_invoked[3] = true; }
+    void func_4(int a = 1, int b = 2, int c = 3, int d = 4) { m_invoked[4] = true; }
+    void func_5(int a = 1, int b = 2, int c = 3, int d = 4, int e = 5) { m_invoked[5] = true; }
+    void func_6(int a = 1, int b = 2, int c = 3, int d = 4, int e = 5, int f = 6) { m_invoked[6] = true; }
+    void func_7(int a = 1, int b = 2, int c = 3, int d = 4, int e = 5, int f = 6, int g = 7) { m_invoked[7] = true; }
 
     std::array<bool, 8> m_invoked;
 };
@@ -55,16 +55,7 @@ struct method_invoke_defaults_test
 
 RTTR_REGISTRATION
 {
-    registration::class_<method_invoke_defaults_test>("method_invoke_defaults_test")
-        .method("func_0", &method_invoke_defaults_test::func_0)
-        .method("func_1", &method_invoke_defaults_test::func_1) ( default_arguments(1) )
-        .method("func_2", &method_invoke_defaults_test::func_2) ( default_arguments(1, 2) )
-        .method("func_3", &method_invoke_defaults_test::func_3) ( default_arguments(1, 2, 3))
-        .method("func_4", &method_invoke_defaults_test::func_4) ( default_arguments(1, 2, 3, 4) )
-        .method("func_5", &method_invoke_defaults_test::func_5) ( default_arguments(1, 2, 3, 4, 5) )
-        .method("func_6", &method_invoke_defaults_test::func_6) ( default_arguments(1, 2, 3, 4, 5, 6) )
-        .method("func_7", &method_invoke_defaults_test::func_7) ( default_arguments(1, 2, 3, 4, 5, 6, 7) )
-        ;
+    registration::do_class<^^method_invoke_defaults_test>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

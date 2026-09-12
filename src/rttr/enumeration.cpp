@@ -31,7 +31,7 @@
 
 #include <utility>
 
-using namespace std;
+
 
 namespace rttr
 {
@@ -105,21 +105,14 @@ type enumeration::get_declaring_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant enumeration::get_metadata(const variant& key) const
-{
-    return m_wrapper->get_metadata(key);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-array_range<std::string_view> enumeration::get_names() const RTTR_NOEXCEPT
+std::span<const std::string_view> enumeration::get_names() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_names();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<variant> enumeration::get_values() const RTTR_NOEXCEPT
+std::span<const variant> enumeration::get_values() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_values();
 }

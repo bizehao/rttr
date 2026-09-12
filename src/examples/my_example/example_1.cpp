@@ -1,220 +1,40 @@
-#include <rttr/registration.h>
+#include <format>
 #include <iostream>
-#include <rttr/type>
+#include <print>
+#include <rttr/registration.h>
 #include <rttr/registration>
+#include <rttr/type>
 
 using namespace rttr;
 
-namespace su
+void testfun(int a = 1, double b = 3.14, float c = 66.6f, std::string d = "hello", char e = 'B')
 {
-	template<typename T>
-	class base_property
-	{
-	public:
-		virtual ~base_property() = default;
-
-
-		virtual const T& get() const = 0;
-
-		virtual void set(T q) = 0;
-
-		operator const T& () const
-		{
-			return get();
-		}
-
-		template <typename Q>
-		void operator=(Q&& q)
-		{
-			set(std::forward<Q>(q));
-		}
-	};
-
-
-	template <typename T>
-	class property : public base_property<T>
-	{
-	public:
-		property(const T& value = T{}) : _value{ value }
-		{
-		}
-
-		const T& get() const override
-		{
-			return _value;
-		}
-
-		void set(T q) override
-		{
-			if (q != _value)
-			{
-				_value = std::move(q);
-			}
-		}
-
-	private:
-		T _value;
-	};
-}
-
-void add(int a);
-
-struct test_class
-{
-	test_class(int value) : m_value(value) {}
-	void print_value() const { std::cout << m_value; }
-
-	su::property<int> get()
-	{
-		return {};
-	}
-
-	void set(su::property<int>)
-	{
-	}
-
-	su::property<int> m_value;
-};
-
-static su::property<int> convert_to_string(const int& p, bool& ok)
-{
-	ok = true;
-	return p;
-}
-
-template<typename T>
-su::property<T> convert_property(const T& p, bool& ok)
-{
-	ok = true;
-	return p;
+    std::cout << std::format("a: {}, b: {}, c: {}, d: {}, e: {}\n", a, b, c, d, e);
 }
 
 RTTR_REGISTRATION
 {
-	registration::class_<test_class>("test_class")
-	.constructor<int>()
-	.method("print_value", &test_class::print_value)
-	.property("value", &test_class::m_value);
-//.property("value", &TTget, &TTset);
-
-type::register_converter_func(convert_property<int>);
-
-//variant pp = 100;
-argument arg = 100;
-
-arg.get_value<int>();
-
-//pp.convert<int>();
-
-//arg.get_type().get_type_converter(rttr::type::get<T>())
-
-
+    registration::do_method<^^testfun>();
 }
-
-struct Base
-{
-	RTTR_ENABLE()
-};
-
-struct Other
-{
-public:
-	virtual inline ::rttr::type get_type() const
-	{
-		return ::rttr::detail::get_type_from_instance(this);
-	}
-
-	virtual inline void* get_ptr()
-	{
-		return reinterpret_cast<void*>(this);
-	}
-
-	virtual inline ::rttr::detail::derived_info get_derived_info()
-	{
-		return { reinterpret_cast<void*>(this), ::rttr::detail::get_type_from_instance(this) };
-	}
-	using base_class_list = ::rttr::type_list<>;
-private:
-};
-
-struct Derived : Base
-{
-public:
-	virtual inline ::rttr::type get_type() const
-	{
-		return ::rttr::detail::get_type_from_instance(this);
-	}
-
-	virtual inline void* get_ptr()
-	{
-		return reinterpret_cast<void*>(this);
-	}
-
-	virtual inline ::rttr::detail::derived_info get_derived_info()
-	{
-		return { reinterpret_cast<void*>(this), ::rttr::detail::get_type_from_instance(this) };
-	}
-	using base_class_list = ::rttr::type_list<Base>;
-private:
-};
-
-struct MultipleDerived : Base, Other
-{
-public:
-	virtual inline ::rttr::type get_type() const
-	{
-		return ::rttr::detail::get_type_from_instance(this);
-	}
-
-	virtual inline void* get_ptr()
-	{
-		return reinterpret_cast<void*>(this);
-	} 
-	
-	virtual inline ::rttr::detail::derived_info get_derived_info()
-	{
-		return { reinterpret_cast<void*>(this), ::rttr::detail::get_type_from_instance(this) };
-	}
-	using base_class_list = ::rttr::type_list<Base, Other>;
-private:
-};
-
+//不支持模板函数
+//会忽略const
+//会忽略匿名union成员变量
+//只检测public成员，处理protected和private没有意义
+//会排除&&函数
 int main()
 {
+    using namespace std::string_literals;
+    auto md = type::get_global_method("testfun");
 
-	rttr::type t = rttr::type::get<Derived>();
-
-	auto vv = t.create();
-
-	bool vv1 = vv.is_valid();
-
-	auto pp = t.get_base_classes();
-
-	for (auto& it : pp)
-	{
-		std::cout << it.get_name() << std::endl;
-	}
-
-	return 0;
+    md.invoke({});
+    md.invoke({}, 2);
+    md.invoke({}, 3, 6.24);
+    md.invoke({}, 4, 6.24, 33.3f);
+    md.invoke({}, 5, 6.24, 33.3f, "world"s);
+    md.invoke({}, 6, 6.24, 33.3f, "world"s, 'Z');
 
 
-	//float m1 = 3.14f;
-	//int k1 = 100;
-	//variant return_value = type::invoke("add", { k1 });
-	//std::cout << std::boolalpha << return_value.is_valid() << std::endl;
+    md.invoke({}, 7, 6.24, 33.3f, "world"s, 'Z', 'H');
 
-
-	//test_class obj(20);
-	//type class_type = type::get_by_name("test_class");
-	//// option 1
-	//variant a1 = 50;
-	////int a1 = 50;
-	//bool success = class_type.set_property_value("value", obj, a1);
-	//std::cout << obj.m_value << std::endl; // prints "50"
-
-	//// option 2
-	//property prop = class_type.get_property("value");
-	//success = prop.set_value(obj, 24);
-	//std::cout << obj.m_value << std::endl; // prints "24"
-
+    return 0;
 }

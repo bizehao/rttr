@@ -135,7 +135,7 @@ namespace detail
     template<typename T>
     concept has_get_type_func_impl = requires()
     {
-        { &raw_type_t<T>::get_type } -> std::same_as<rttr::type(T::*)() const>;
+        { &raw_type_t<T>::get_type } -> std::same_as<rttr::type(raw_type_t<T>::*)() const>;
     };
 
     /*!
@@ -354,9 +354,18 @@ namespace detail
     /////////////////////////////////////////////////////////////////////////////////////
 
     template <typename T>
+    concept has_mapped_type = requires { typename T::mapped_type; };
+
+    template <typename T>
     struct associative_container_value_t
     {
-        using type = std::conditional_t < requires { typename T::mapped_type; }, typename T::mapped_type, std::nullptr_t > ;//decltype(check<T>(nullptr));
+        using type = std::nullptr_t;
+    };
+
+    template <has_mapped_type T>
+    struct associative_container_value_t<T>
+    {
+        using type = typename T::mapped_type;
     };
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -478,7 +487,7 @@ namespace detail
     struct decay_except_array
     {
         using Tp    = std::remove_reference_t<T>;
-        using type  = std::conditional_t< std::is_function<Tp>::value,
+        using type  = std::conditional_t< std::is_function_v<Tp>,
                                      std::add_pointer_t<Tp>,
                                      std::remove_cv_t<Tp>
                                    >;

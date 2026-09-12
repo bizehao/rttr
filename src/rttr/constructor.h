@@ -31,12 +31,11 @@
 #include "rttr/detail/misc/class_item_mapper.h"
 
 #include "rttr/parameter_info.h"
-#include "rttr/access_levels.h"
-#include "rttr/array_range.h"
-
+#include "rttr/type.h"
 #include <string>
 #include <vector>
 #include <string_view>
+#include <span>
 
 namespace rttr
 {
@@ -44,7 +43,6 @@ namespace rttr
 class variant;
 class type;
 class argument;
-class visitor;
 
 namespace detail
 {
@@ -104,16 +102,6 @@ class RTTR_API constructor
         explicit operator bool() const RTTR_NOEXCEPT;
 
         /*!
-         * \brief Returns access level with which this constructor was
-         *        \ref registration::class_<T>::constructor() "registered".
-         *
-         * \remark When the constructor is not valid, this function will return level \ref access_levels::public_access.
-         *
-         * \return \ref access_levels of the method.
-         */
-        access_levels get_access_level() const RTTR_NOEXCEPT;
-
-        /*!
          * Returns the type object of the instantiated type.
          *
          * \return The instantiated type.
@@ -142,17 +130,7 @@ class RTTR_API constructor
          *
          * \return A range of parameter_info objects of the constructor signature.
          */
-        array_range<parameter_info> get_parameter_infos() const RTTR_NOEXCEPT;
-
-        /*!
-         * \brief Returns the meta data for the given key \p key.
-         *
-         * \remark When no meta data is registered with the given \p key,
-         *         an invalid \ref variant object is returned (see \ref variant::is_valid).
-         *
-         * \return A variant object, containing arbitrary data.
-         */
-        variant get_metadata(const variant& key) const;
+        std::span<const parameter_info> get_parameter_infos() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Invokes the constructor of type returned by \ref get_instantiated_type().
@@ -285,13 +263,11 @@ class RTTR_API constructor
 
     private:
         constructor(const detail::constructor_wrapper_base* wrapper) RTTR_NOEXCEPT;
-        void visit(visitor& visitor) const RTTR_NOEXCEPT;
 
         template<typename T>
         friend T detail::create_item(const detail::class_item_to_wrapper_t<T>* wrapper);
         template<typename T>
         friend T detail::create_invalid_item();
-        friend class visitor;
 
     private:
         const detail::constructor_wrapper_base* m_wrapper;

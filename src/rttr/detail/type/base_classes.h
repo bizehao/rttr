@@ -27,7 +27,8 @@
 
 #ifndef RTTR_BASE_CLASSES_H_
 #define RTTR_BASE_CLASSES_H_
-
+#include "rttr/detail/constructor/constructor_wrapper_base.h"
+#include <meta>
 
 namespace rttr
 {
@@ -48,24 +49,7 @@ struct base_class_info
 /*!
  * If T has a type alias called \a 'base_class_list' then inherits from true_type, otherwise inherits from false_type.
  */
-template<typename T>
-using has_base_class_list = std::integral_constant<bool, requires { typename T::base_class_list; } > ;
-
 using info_container = std::vector<detail::base_class_info>;
-
-/*!
- * This class fills from a given type_list the corresponding type objects into a std::vector.
- */
-template<typename DerivedClass, typename... T>
-struct RTTR_LOCAL type_from_base_classes;
-
-template<typename DerivedClass>
-struct RTTR_LOCAL type_from_base_classes<DerivedClass>
-{
-    static RTTR_INLINE void fill(info_container&)
-    {
-    }
-};
 
 /*!
  * This is the trick to make the replacement of `dynamic_cast` possible.
@@ -82,28 +66,21 @@ static void* rttr_cast_impl(void* ptr)
     return static_cast<void*>(static_cast<BaseType*>(static_cast<DerivedType*>(ptr)));
 }
 
-template<typename DerivedClass, typename BaseClass, typename... U>
-struct RTTR_LOCAL type_from_base_classes<DerivedClass, BaseClass, U...>
-{
-    static RTTR_INLINE void fill(info_container& vec)
-    {
-        static_assert(has_base_class_list<BaseClass>::value, "The parent class has no base class list defined - please use the macro RTTR_ENABLE");
-        vec.emplace_back(type::get<BaseClass>(), &rttr_cast_impl<DerivedClass, BaseClass>);
-        // retrieve also the types of all base classes of the base classes; you will get an compile error here,
-        // when the base class has not defined the 'base_class_list' typedef
-        type_from_base_classes<DerivedClass, typename BaseClass::base_class_list>::fill(vec);
-        // continue with the rest
-        type_from_base_classes<DerivedClass, U...>::fill(vec);
-    }
-};
-
-template<typename DerivedClass, class... BaseClassList>
-struct type_from_base_classes<DerivedClass, type_list<BaseClassList...>> : type_from_base_classes<DerivedClass, BaseClassList...> { };
-
-/*!
- * This helper trait returns a vector with type object of all base classes.
- * When there is no type_list defined or the class has no base class, an empty vector is returned.
+    /*!
+ * This class fills from a given type_list the corresponding type objects into a std::vector.
  */
+template<std::meta::info info, std::meta::info baseInfo>
+static RTTR_INLINE void base_fill(info_container& vec)
+{
+    using DerivedT = [: info :];
+    using BaseT = [: baseInfo :];
+    vec.emplace_back(type::get<BaseT>(), &rttr_cast_impl<DerivedT, BaseT>);
+
+    template for (constexpr auto b : std::define_static_array(std::meta::bases_of(baseInfo, std::meta::access_context::unprivileged()))) {
+        base_fill<info, std::meta::type_of(b)>(vec);
+    }
+}
+
 template<typename T>
 struct RTTR_LOCAL base_classes
 {
@@ -114,13 +91,19 @@ struct RTTR_LOCAL base_classes
     }
 };
 
-template<typename T> requires (has_base_class_list<T>::value)
+/*!
+ * This helper trait returns a vector with type object of all base classes.
+ * When there is no type_list defined or the class has no base class, an empty vector is returned.
+ */
+template<typename T> requires (std::is_class_v<T>)
 struct RTTR_LOCAL base_classes<T>
 {
     static RTTR_INLINE info_container get_types()
     {
         info_container result;
-        type_from_base_classes<T, typename T::base_class_list>::fill(result);
+        template for (constexpr auto b : std::define_static_array(std::meta::bases_of(^^T, std::meta::access_context::unprivileged()))) {
+            base_fill<^^T, std::meta::type_of(b)>(result);
+        }
         return result;
     }
 };

@@ -37,7 +37,7 @@ struct ctor_param_info_test
 
     }
 
-    ctor_param_info_test(const std::string& val_1, int val_2)
+    ctor_param_info_test(const std::string& val_1, std::string val_2)
     {
 
     }
@@ -47,15 +47,14 @@ struct ctor_param_info_test
 
     }
 
-
-    static ctor_param_info_test create_with_default(std::string val_1, int val_2, bool val_3)
+    ctor_param_info_test(std::string val_1, int val_2 = 42, bool val_3 = true)
     {
-        return ctor_param_info_test();
+
     }
 
-    static ctor_param_info_test create_with_default_2(double val_1, int val_2, bool val_3)
+    ctor_param_info_test(double val_1, int val_2 = 23, bool val_3 = true)
     {
-        return ctor_param_info_test();
+
     }
 };
 
@@ -63,22 +62,7 @@ struct ctor_param_info_test
 
 RTTR_REGISTRATION
 {
-    registration::class_<ctor_param_info_test>("ctor_param_info_test")
-        .constructor<>() // no params
-        .constructor<std::string, int>()
-        .constructor<bool, int, float>()
-        (
-            parameter_names("val_1", "val_2", "val_3")
-        )
-        .constructor(&ctor_param_info_test::create_with_default)
-        (
-            default_arguments(42, true)
-        )
-        .constructor(&ctor_param_info_test::create_with_default_2)
-        (
-            default_arguments(23, true),
-            parameter_names("val_1", "val_2", "val_3")
-        );
+    registration::do_class<^^ctor_param_info_test>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -99,23 +83,21 @@ TEST_CASE("constructor - parameter info - no info", "[constructor]")
 
 TEST_CASE("constructor - parameter info - no names provided", "[constructor]")
 {
-    constructor ctor = type::get<ctor_param_info_test>().get_constructor({type::get<std::string>(), type::get<int>()});
+    constructor ctor = type::get<ctor_param_info_test>().get_constructor({type::get<std::string>(), type::get<std::string>()});
     REQUIRE(ctor.is_valid() == true);
 
     std::vector<parameter_info> infos(ctor.get_parameter_infos().begin(), ctor.get_parameter_infos().end());
     REQUIRE(infos.size() == 2);
 
-    CHECK(infos[0].get_name()           == std::string());
+    CHECK(infos[0].get_name()           == "val_1");
     CHECK(infos[0].has_default_value()  == false);
     CHECK(infos[0].get_type()           == type::get<std::string>());
     CHECK(infos[0].get_index()          == 0);
-    CHECK(infos[0].get_default_value()  == variant());
 
-    CHECK(infos[1].get_name()           == std::string());
+    CHECK(infos[1].get_name()           == "val_2");
     CHECK(infos[1].has_default_value()  == false);
-    CHECK(infos[1].get_type()           == type::get<int>());
+    CHECK(infos[1].get_type()           == type::get<std::string>());
     CHECK(infos[1].get_index()          == 1);
-    CHECK(infos[1].get_default_value()  == variant());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -132,19 +114,16 @@ TEST_CASE("constructor - parameter info - names provided", "[constructor]")
     CHECK(infos[0].has_default_value()  == false);
     CHECK(infos[0].get_type()           == type::get<bool>());
     CHECK(infos[0].get_index()          == 0);
-    CHECK(infos[0].get_default_value()  == variant());
 
     CHECK(infos[1].get_name()           == std::string("val_2"));
     CHECK(infos[1].has_default_value()  == false);
     CHECK(infos[1].get_type()           == type::get<int>());
     CHECK(infos[1].get_index()          == 1);
-    CHECK(infos[1].get_default_value()  == variant());
 
     CHECK(infos[2].get_name()           == std::string("val_3"));
     CHECK(infos[2].has_default_value()  == false);
     CHECK(infos[2].get_type()           == type::get<float>());
     CHECK(infos[2].get_index()          == 2);
-    CHECK(infos[2].get_default_value()  == variant());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -157,23 +136,20 @@ TEST_CASE("constructor - parameter info - no names provided & default values", "
     std::vector<parameter_info> infos(ctor.get_parameter_infos().begin(), ctor.get_parameter_infos().end());
     REQUIRE(infos.size() == 3);
 
-    CHECK(infos[0].get_name()           == std::string());
+    CHECK(infos[0].get_name()           == "val_1");
     CHECK(infos[0].has_default_value()  == false);
     CHECK(infos[0].get_type()           == type::get<std::string>());
     CHECK(infos[0].get_index()          == 0);
-    CHECK(infos[0].get_default_value()  == variant());
 
-    CHECK(infos[1].get_name()           == std::string());
+    CHECK(infos[1].get_name()           == "val_2");
     CHECK(infos[1].has_default_value()  == true);
     CHECK(infos[1].get_type()           == type::get<int>());
     CHECK(infos[1].get_index()          == 1);
-    CHECK(infos[1].get_default_value()  == 42);
 
-    CHECK(infos[2].get_name()           == std::string());
+    CHECK(infos[2].get_name()           == "val_3");
     CHECK(infos[2].has_default_value()  == true);
     CHECK(infos[2].get_type()           == type::get<bool>());
     CHECK(infos[2].get_index()          == 2);
-    CHECK(infos[2].get_default_value()  == true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -190,19 +166,16 @@ TEST_CASE("constructor - parameter info - names provided & default values", "[co
     CHECK(infos[0].has_default_value()  == false);
     CHECK(infos[0].get_type()           == type::get<double>());
     CHECK(infos[0].get_index()          == 0);
-    CHECK(infos[0].get_default_value()  == variant());
 
     CHECK(infos[1].get_name()           == std::string("val_2"));
     CHECK(infos[1].has_default_value()  == true);
     CHECK(infos[1].get_type()           == type::get<int>());
     CHECK(infos[1].get_index()          == 1);
-    CHECK(infos[1].get_default_value()  == 23);
 
     CHECK(infos[2].get_name()           == std::string("val_3"));
     CHECK(infos[2].has_default_value()  == true);
     CHECK(infos[2].get_type()           == type::get<bool>());
     CHECK(infos[2].get_index()          == 2);
-    CHECK(infos[2].get_default_value()  == true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

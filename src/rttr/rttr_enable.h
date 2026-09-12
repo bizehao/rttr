@@ -32,6 +32,7 @@
 
 #include "rttr/type.h"
 #include "rttr/type_list.h"
+#include "rttr/policy.h"
 
 #ifdef DOXYGEN
 
@@ -77,15 +78,15 @@
 
 #else
 
-#define TYPE_LIST(...)      ::rttr::type_list<__VA_ARGS__>
-
 #define RTTR_ENABLE(...) \
 public:\
 RTTR_BEGIN_DISABLE_OVERRIDE_WARNING \
+    [[=rttr::class_op::ignore]] \
     virtual RTTR_INLINE ::rttr::type get_type() const { return ::rttr::detail::get_type_from_instance(this); }  \
+    [[=rttr::class_op::ignore]] \
     virtual RTTR_INLINE void* get_ptr() { return reinterpret_cast<void*>(this); } \
+    [[=rttr::class_op::ignore]] \
     virtual RTTR_INLINE ::rttr::detail::derived_info get_derived_info() { return {reinterpret_cast<void*>(this), ::rttr::detail::get_type_from_instance(this)}; } \
-    using base_class_list = TYPE_LIST(__VA_ARGS__); \
 RTTR_END_DISABLE_OVERRIDE_WARNING \
 private:
 

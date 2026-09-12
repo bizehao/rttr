@@ -36,87 +36,15 @@ namespace rttr
 namespace detail
 {
 
-struct return_as_ptr
-{};
-
-struct set_as_ptr
-{};
-
-struct set_as_ref_wrapper
-{};
-
-struct get_as_ref_wrapper
-{};
-
-struct return_as_copy
-{};
-
-struct read_only
-{};
-
-struct set_value
-{};
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-// default getter policy
-template<typename T>
-struct get_getter_policy
-{
-    using type = return_as_copy;
+enum class prop_policy {
+    return_as_ptr,
+    set_as_ptr,
+    set_as_ref_wrapper,
+    get_as_ref_wrapper,
+    return_as_copy,
+    read_only,
+    set_value,
 };
-
-// default setter policy
-template<typename T>
-struct get_setter_policy
-{
-    using type = set_value;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-struct bind_as_ptr
-{};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<>
-struct get_getter_policy<bind_as_ptr>
-{
-    using type = return_as_ptr;
-};
-
-template<>
-struct get_setter_policy<bind_as_ptr>
-{
-    using type = set_as_ptr;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-struct as_reference_wrapper
-{};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<>
-struct get_getter_policy<as_reference_wrapper>
-{
-    using type = get_as_ref_wrapper;
-};
-
-template<>
-struct get_setter_policy<as_reference_wrapper>
-{
-    using type = set_as_ref_wrapper;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-
-using property_policy_list = type_list<bind_as_ptr, read_only, as_reference_wrapper>;
 
 } // end namespace detail;
 

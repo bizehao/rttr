@@ -352,6 +352,14 @@ namespace rttr
 #   pragma message("WARNING: unknown compiler, don't know how to disable deprecated warnings")
 #endif
 
+
+# if (__cplusplus >  202302L) && (__cpp_impl_reflection >= 202603L)
+#define Has_Static_Reflection 1
+#else
+#define Has_Static_Reflection 0
+#endif
+
+
 } // end namespace rttr
 
 #endif // RTTR_CORE_PREREQUISITES_H_

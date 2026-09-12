@@ -53,7 +53,7 @@ RTTR_API bool compare_types_equal(const void* lhs, const void* rhs, const type& 
 
 template<typename T>
 using has_equal_operator_impl = std::integral_constant<bool, has_equal_operator<T>::value && !std::is_array_v<T> &&
-                                                             !is_template_instance<T>::value>;
+                                                             !is_template_instance<T>>;
 
 template<typename T>
 using is_equal_comparable = std::integral_constant<bool, has_equal_operator_impl<T>::value ||

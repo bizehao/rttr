@@ -58,14 +58,8 @@ struct method_order_test_derived : method_order_test_base
 
 RTTR_REGISTRATION
 {
-    registration::class_<method_order_test_base>("method_order_test_base")
-        .method("whoami", &method_order_test_base::whoami)
-        .method("vwhoami", &method_order_test_base::vwhoami)
-        ;
-    registration::class_<method_order_test_derived>("method_order_test_derived")
-        .method("whoami", &method_order_test_derived::whoami)
-        .method("vwhoami", &method_order_test_derived::vwhoami)
-        ;
+    registration::do_class<^^method_order_test_base>("method_order_test_base");
+    registration::do_class<^^method_order_test_derived>("method_order_test_derived");
 }
 
 // approach 1 looks up the "method instance"

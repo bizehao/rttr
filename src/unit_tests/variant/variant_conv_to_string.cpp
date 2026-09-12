@@ -34,15 +34,7 @@ using namespace rttr;
 
 RTTR_REGISTRATION
 {
-    registration::enumeration<enum_int64_t>("enum_int64_t")
-    (
-        value("VALUE_1", enum_int64_t::VALUE_1),
-        value("VALUE_2", enum_int64_t::VALUE_2),
-        value("VALUE_3", enum_int64_t::VALUE_3),
-        value("VALUE_4", enum_int64_t::VALUE_4),
-        value("VALUE_X", enum_int64_t::VALUE_NEG)
-    )
-    ;
+    registration::do_enumeration<^^enum_int64_t>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

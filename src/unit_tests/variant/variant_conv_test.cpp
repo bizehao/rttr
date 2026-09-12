@@ -83,14 +83,14 @@ struct derived : virtual base
 {
     virtual ~derived() {};
     double dummy2;
-    RTTR_ENABLE(base)
+    RTTR_ENABLE()
 };
 
 struct other_derived : virtual base
 {
     virtual ~other_derived() {};
     double dummy3;
-    RTTR_ENABLE(base)
+    RTTR_ENABLE()
 };
 
 enum class test_enum
@@ -106,11 +106,7 @@ RTTR_REGISTRATION
     type::register_converter_func(convert_to_string);
     type::register_converter_func(convert_to_vector);
 
-    registration::enumeration<test_enum>("test_enum")
-        (
-            value("first", test_enum::first),
-            value("second", test_enum::second)
-    );
+    registration::do_enumeration<^^test_enum>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

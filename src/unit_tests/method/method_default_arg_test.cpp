@@ -59,16 +59,9 @@ static bool global_meth_with_defaults(int val_1, const std::string& val_2 = "Thi
 
 RTTR_REGISTRATION
 {
-    registration::class_<default_arg_test>("default_arg_test")
-        .method("method_with_default", &default_arg_test::method_with_default)
-        (
-            default_arguments(std::string("This is a default"), nullptr)
-        );
+    registration::do_class<^^default_arg_test>("default_arg_test");
 
-    registration::method("global_meth_with_defaults", &global_meth_with_defaults)
-    (
-        default_arguments(std::string("This is a default"), nullptr)
-    );
+    registration::do_method<^^global_meth_with_defaults>("global_meth_with_defaults");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

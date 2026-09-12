@@ -30,26 +30,16 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/policy.h"
-#include "rttr/access_levels.h"
-#include "rttr/detail/registration/bind_types.h"
-#include "rttr/detail/registration/registration_executer.h"
-#include "rttr/detail/default_arguments/default_arguments.h"
-#include "rttr/detail/parameter_info/parameter_names.h"
 #include "rttr/variant.h"
-#include "rttr/detail/visitor/visitor_registration.h"
+#include "rttr/detail/property/property_wrapper.h"
+#include "rttr/detail/method/method_wrapper.h"
+#include "rttr/detail/enumeration/enumeration_wrapper.h"
+#include "rttr/detail/constructor/constructor_wrapper.h"
+#include "rttr/detail/destructor/destructor_wrapper.h"
+#include <meta>
+
 namespace rttr
 {
-
-namespace detail
-{
-    class metadata;
-    template<typename Enum_Type>
-    class enum_data;
-    struct public_access    {};
-    struct protected_access {};
-    struct private_access   {};
-    using access_levels_list = type_list<public_access, protected_access, private_access>;
-}
 
 /*!
  * The \ref registration class is the entry point for the manual registration of reflection information
@@ -118,160 +108,140 @@ namespace detail
  */
 class RTTR_API registration
 {
+private:
+    static consteval std::string_view get_class_mem_identifier(std::meta::info info) {
+        auto rename_tag_vec = std::meta::annotations_of_with_type(info, ^^class_op::rename_tag);
+        if (rename_tag_vec.empty()) {
+            return std::meta::identifier_of(info);
+        }
+        else {
+            auto op_rename = rename_tag_vec[0];
+            return std::meta::extract<class_op::rename_tag>(op_rename)._name;
+        }
+    }
+
+    template<typename E>
+    requires (std::is_enum_v<E>)
+    static consteval E get_policy(std::meta::info info) {
+        auto policy_tag_vec = std::meta::annotations_of_with_type(info, ^^class_op::policy_tag<E>);
+        if (policy_tag_vec.empty()) {
+            return E::op_default;
+        }
+        else {
+            auto op_policy = policy_tag_vec[0];
+            return std::meta::extract<class_op::policy_tag<E>>(op_policy)._policy;
+        }
+    }
+
+    static consteval bool check_get_set_fun(std::meta::info GS) {
+        if (std::meta::is_function(GS)) {
+            if (std::meta::is_class_member(GS)) {
+                if (std::meta::is_static_member(GS)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    static consteval std::string_view get_full_identifier(std::meta::info entry) {
+        if (!std::meta::has_identifier(entry)) {
+            throw std::invalid_argument{std::string{"invalid identifier: "} + std::meta::display_string_of(entry)};
+        }
+
+        if (std::meta::has_parent(entry)) {
+            auto parent_scope = std::meta::parent_of(entry);
+            if (parent_scope != ^^::) {
+                std::string full_name = std::string(std::meta::display_string_of(parent_scope)) + "::" + std::string(std::meta::identifier_of(entry));
+                return std::string_view{std::define_static_string(full_name)};
+            }
+        }
+
+        return std::meta::identifier_of(entry);
+    }
+
 public:
-    template<typename...T>
-    class bind;
 
     /*!
      * The \ref class_ is used to register classes to RTTR.
      */
-    template<typename Class_Type, typename Visitor_List = READ_TL(rttr_visitor_list)>
-    class class_
-    {
-        public:
-            /*!
-             * \brief Construct a class_ object with the given name \p name.
-             *
-             * \param name The name of the class as string literal. Can be retrieved later via type::get_name().
-             *
-             */
-            class_(std::string_view name);
-            ~class_();
+    template<std::meta::info ClassRefl>
+    requires (std::meta::is_class_type(ClassRefl))
+    static void do_class(std::string_view name = get_full_identifier(ClassRefl)) {
 
+        // template for (constexpr std::meta::info base : std::define_static_array(std::meta::bases_of(ClassRefl, std::meta::access_context::unchecked()))) {
+        //     cls.add_base(ensure_type_registered<std::meta::type_of(base)>());
+        // }
 
-            /*!
-             * \brief The bracket operator can be used to add additional meta data to the class type.
-             *
-             */
-            template<typename...Args>
-            class_<Class_Type, Visitor_List>& operator()(Args&&...args);
+        //unprivileged unchecked
+        constexpr auto access_context = std::meta::access_context::unprivileged();
 
+        using Clazz = [:ClassRefl:];
+        auto t = type::get<Clazz>();
+        detail::type_register::custom_name(t, name);
 
-            /*!
-             * \brief Register a constructor for this class type with or without arguments.
-             *
-             * \param level  The access level of the constructor; default is: registration::public_access.<br>
-             *               (can be also: registration::protected_access or registration::private_access)
-             *
-             * \remark The default constructor create policy is: \ref policy::ctor::as_std_shared_ptr.
-             *
-             * \see constructor, type::get_constructor(), type::create()
-             *
-             * \return A \ref bind object, in order to chain more calls.
-             */
-            template<typename... Args, typename acc_level = detail::public_access> requires (detail::contains<acc_level, detail::access_levels_list>::value)
-            bind<detail::ctor, Class_Type, acc_level, Visitor_List, Args...> constructor(acc_level level = acc_level());
+        template for (constexpr std::meta::info member : std::define_static_array(std::meta::nonstatic_data_members_of(ClassRefl, access_context))) {
+            if constexpr(std::meta::has_identifier(member)) {
+                if constexpr (std::meta::annotations_of_with_type(member, ^^class_op::ignore_tag).empty())
+                {
+                    do_property<member, get_policy<policy::prop>(member)>(get_class_mem_identifier(member));
+                }
+            }
+        }
 
-            /*!
-             * \brief Register a constructor for this class type which uses a function \p F.
-             *
-             * \param func   A function which creates an instance of \p Class_Type;
-             *               This can be a pointer to a function or a std::function.
-             * \param level  The access level of the constructor; default is: registration::public_access.<br>
-             *               (can be also: registration::protected_access or registration::private_access)
-             *
-             * \see constructor, type::get_constructor(), type::create()
-             *
-             * \return A \ref bind object, in order to chain more calls.
-             */
-            template<typename F, typename acc_level = detail::public_access> requires (!detail::contains<F, detail::access_levels_list>::value)
-            bind<detail::ctor_func, Class_Type, F, acc_level, Visitor_List> constructor(F func, acc_level level = acc_level());
+        template for (constexpr std::meta::info member : std::define_static_array(std::meta::static_data_members_of(ClassRefl, access_context))) {
+            if constexpr(std::meta::has_identifier(member)) {
+                if constexpr (std::meta::annotations_of_with_type(member, ^^class_op::ignore_tag).empty())
+                {
+                    do_property<member, get_policy<policy::prop>(member)>(get_class_mem_identifier(member));
+                }
+            }
+        }
 
+        //check ctor policy,  op_as_object and copy_constructible_type
+        constexpr auto check_ctor_policy = [](detail::ctor_policy policy) consteval{
+            if (policy == detail::ctor_policy::as_object && !std::meta::is_copy_constructible_type(ClassRefl)) {
+                throw std::invalid_argument{std::string{"is not copy_constructible_type, only policy need to as_raw_ptr or as_std_shared_ptr of "} + std::meta::display_string_of(ClassRefl)};
+            }
+        };
 
-            /*!
-             * \brief Register a property to this class.
-             *
-             * \param name  The name of the property.
-             * \param acc   The accessor to the property; this can be a pointer to a member or a pointer to a variable.
-             * \param level  The access level of the property; default is: registration::public_access.<br>
-             *               (can be also: registration::protected_access or registration::private_access)
-             *
-             * \remark The name of the property has to be unique for this class, otherwise it will not be registered.
-             *
-             * \see property, type::get_property(), type::get_property_value(), type::set_property_value()
-             *
-             * \return A \ref bind object, in order to chain more calls.
-             */
-            template<typename A, typename acc_level = detail::public_access> requires (detail::contains<acc_level, detail::access_levels_list>::value)
-            bind<detail::prop, Class_Type, A, acc_level, Visitor_List> property(std::string_view name, A acc, acc_level level = acc_level());
-
-            /*!
-             * \brief Register a read only property to this class.
-             *
-             * \param name  The name of the property.
-             * \param acc   The accessor to the property; this can be a pointer to a member, a pointer to a variable,
-             *              a pointer to a member function, a pointer to a function or a std::function.
-             * \param level  The access level of the read only property; default is: registration::public_access.<br>
-             *               (can be: registration::protected_access or registration::private_access)
-             *
-             * \remark The name of the property has to be unique for this class, otherwise it will not be registered.
-             *
-             * \see property, type::get_property(), type::get_property_value(), type::set_property_value()
-             *
-             * \return A \ref bind object, in order to chain more calls.
-             */
-            template<typename A, typename acc_level = detail::public_access> requires (detail::contains<acc_level, detail::access_levels_list>::value)
-            bind<detail::prop_readonly, Class_Type, A, acc_level, Visitor_List> property_readonly(std::string_view name, A acc, acc_level level = acc_level());
-
-            /*!
-             * \brief Register a property to this class.
-             *
-             * \param name   The name of the property.
-             * \param getter The getter accessor to the property; this can be a pointer to a member function,
-             *               a pointer to a function or a std::function.
-             * \param setter The setter accessor to the property; this can be a pointer to a member function,
-             *               a pointer to a function or a std::function.
-             * \param level  The access level of the property; default is: registration::public_access.<br>
-             *               (can be also: registration::protected_access or registration::private_access)
-             *
-             * \remark The name of the property has to be unique for this class, otherwise it will not be registered.
-             *
-             * \see property, type::get_property(), type::get_property_value(), type::set_property_value()
-             *
-             * \return A \ref bind object, in order to chain more calls.
-             */
-            template<typename A1, typename A2, typename acc_level = detail::public_access> requires (!detail::contains<A2, detail::access_levels_list>::value)
-            bind<detail::prop, Class_Type, A1, A2, acc_level, Visitor_List> property(std::string_view name, A1 getter, A2 setter, acc_level level = acc_level());
-
-
-            /*!
-             * \brief Register a method to this class.
-             *
-             * \param name      The name of the method.
-             * \param function  The function accessor to this method; this can be a member function, a function or an std::function.
-             * \param level     The access level of the method; default is: registration::public_access.<br>
-             *                  (can be also: registration::protected_access or registration::private_access)
-             *
-             * \remark The method name does not have to be unique for this class.
-             *
-             * \see method, type::get_method(), type::invoke()
-             *
-             * \return A \ref bind object, in order to chain more calls.
-             */
-            template<typename F, typename acc_level = detail::public_access>
-            bind<detail::meth, Class_Type, F, acc_level, Visitor_List> method(std::string_view name, F f, acc_level level = acc_level());
-
-
-            /*!
-             * \brief Register a nested enumeration of type \p Enum_Type
-             *
-             * \param name      The name of the enumeration.
-             *
-             * \see enumeration, type::get_enumeration()
-             *
-             * \return A \ref bind object, in order to chain more calls.
-             */
-            template<typename Enum_Type>
-            bind<detail::enum_, Class_Type, Enum_Type> enumeration(std::string_view name);
-        private:
-            class_(const std::shared_ptr<detail::registration_executer>& reg_exec);
-            class_(const class_& other);
-            class_& operator=(const class_& other);
-        private:
-            std::shared_ptr<detail::registration_executer> m_reg_exec;
-            template<typename...T>
-            friend class bind;
-    };
+        template for (constexpr std::meta::info member : std::define_static_array(std::meta::members_of(ClassRefl, access_context))) {
+            if constexpr (std::meta::is_function(member) && !std::meta::is_deleted(member)) {
+                if constexpr (std::meta::annotations_of_with_type(member, ^^class_op::ignore_tag).empty())
+                {
+                    if constexpr (std::meta::is_constructor(member)) {
+                        constexpr auto policy = policy::transform(get_policy<policy::ctor>(member));
+                        check_ctor_policy(policy);
+                        detail::store_item<Clazz>(std::make_unique<detail::constructor_wrapper<member, policy>>());
+                    }
+                    else if constexpr (std::meta::is_destructor(member)) {
+                        detail::store_item<Clazz>(std::make_unique<detail::destructor_wrapper<member>>());
+                    }
+                    else if constexpr (std::meta::is_operator_function(member)) {
+                        //todo
+                    }
+                    else if constexpr (std::meta::is_conversion_function(member)) {
+                        //todo
+                    }
+                    else {
+                        //normal mem function
+                        //排除限定符为&&的成员函数
+                        if constexpr(!detail::is_mem_fun_rv_qualifier<typename[:std::meta::type_of(member):]>) {
+                            do_method<member, get_policy<policy::method>(member)>(get_class_mem_identifier(member));
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /*!
      * \brief Register a global property with read write access.
@@ -287,8 +257,20 @@ public:
      *
      * \return A \ref bind object, in order to chain more calls.
      */
-    template<typename A, typename Visitor_List = READ_TL(rttr_visitor_list)>
-    static bind<detail::prop, detail::invalid_type, A, detail::public_access, Visitor_List> property(std::string_view name, A acc);
+    //global var; static class member; non-static class member
+    template<std::meta::info Var, policy::prop PolicyOp = policy::prop::op_default>
+    requires (!detail::is_lambda(Var) && (std::meta::is_variable(Var) || std::meta::is_nonstatic_data_member(Var)))
+    static void do_property(std::string_view name = get_full_identifier(Var)) {
+        using T = [: std::meta::is_class_member(Var) ? std::meta::parent_of(Var) : ^^detail::invalid_type :];
+        constexpr auto pair = policy::transform(PolicyOp);
+        if constexpr (std::meta::is_const(Var)) {
+            detail::store_item<T>(std::make_unique<detail::property_wrapper_object<Var, pair.first, detail::prop_policy::read_only>>(name));
+        }
+        else {
+            detail::store_item<T>(std::make_unique<detail::property_wrapper_object<Var, pair.first, pair.second>>(name));
+        }
+
+    }
 
     /*!
      * \brief Register a global read only property.
@@ -305,8 +287,13 @@ public:
      *
      * \return A \ref bind object, in order to chain more calls.
      */
-    template<typename A, typename Visitor_List = READ_TL(rttr_visitor_list)>
-    static bind<detail::prop_readonly, detail::invalid_type, A, detail::public_access, Visitor_List> property_readonly(std::string_view name, A acc);
+    template<std::meta::info Var, policy::prop PolicyOp = policy::prop::op_default>
+    requires (!detail::is_lambda(Var) && (std::meta::is_variable(Var) || std::meta::is_nonstatic_data_member(Var)))
+    static void do_property_readonly(std::string_view name = get_full_identifier(Var)) {
+        using T = [: std::meta::is_class_member(Var) ? std::meta::parent_of(Var) : ^^detail::invalid_type :];
+        constexpr auto pair = policy::transform(PolicyOp, true);
+        detail::store_item<T>(std::make_unique<detail::property_wrapper_object<Var, pair.first, pair.second>>(name));
+    }
 
     /*!
      * \brief Register a property to this class.
@@ -323,8 +310,19 @@ public:
      *
      * \return A \ref bind object, in order to chain more calls.
      */
-    template<typename A1, typename A2, typename Visitor_List = READ_TL(rttr_visitor_list)>
-    static bind<detail::prop, detail::invalid_type, A1, A2, detail::public_access, Visitor_List> property(std::string_view name, A1 getter, A2 setter);
+    template<std::meta::info GetVar, std::meta::info SetVar, policy::prop PolicyOp = policy::prop::op_default>
+    requires ((check_get_set_fun(GetVar) || detail::is_lambda(GetVar))  && (check_get_set_fun(SetVar) || detail::is_lambda(SetVar)))
+    static void do_property(std::string_view name) {
+        constexpr auto pair = policy::transform(PolicyOp);
+        detail::store_item<detail::invalid_type>(std::make_unique<detail::property_wrapper_function<GetVar, SetVar, pair.first, pair.second>>(name));
+    }
+
+    template<std::meta::info GetVar, policy::prop PolicyOp = policy::prop::op_default>
+    requires (check_get_set_fun(GetVar) || detail::is_lambda(GetVar))
+    static void do_property_readonly(std::string_view name) {
+        constexpr auto pair = policy::transform(PolicyOp, true);
+        detail::store_item<detail::invalid_type>(std::make_unique<detail::property_wrapper_function<GetVar, ^^void, pair.first, pair.second>>(name));
+    }
 
     /*!
      * \brief Register a method to this class.
@@ -339,8 +337,27 @@ public:
      *
      * \return A \ref bind object, in order to chain more calls.
      */
-    template<typename F, typename Visitor_List = READ_TL(rttr_visitor_list)>
-    static bind<detail::meth, detail::invalid_type, F, detail::public_access, Visitor_List> method(std::string_view name, F f);
+    template<std::meta::info Fun, policy::method PolicyOp = policy::method::op_default>
+    requires (std::meta::is_function(Fun) || detail::is_lambda(Fun))
+    static void do_method(std::string_view name = get_full_identifier(Fun)) {
+        constexpr auto p= policy::transform(PolicyOp);
+        using T = [: std::meta::is_class_member(Fun) ? std::meta::parent_of(Fun) : ^^detail::invalid_type :];
+        detail::store_item<T>(std::make_unique<detail::method_wrapper<Fun, p>>(name));
+    }
+
+    //默认参数和参数名字会失效
+    template<auto Fun, policy::method PolicyOp = policy::method::op_default>
+    requires (detail::is_function_ptr<decltype(Fun)>::value)
+    static void do_method_overload(std::string_view name) {
+        constexpr auto p= policy::transform(PolicyOp);
+        using Cur_Fun = detail::function_traits<decltype(Fun)>;
+        static auto fun_lambda_wrapper = []<std::size_t... Is>(std::index_sequence<Is...>) static {
+            return [](std::tuple_element_t<Is, typename Cur_Fun::arg_types>... args) {
+                Fun(std::forward<std::tuple_element_t<Is, typename Cur_Fun::arg_types>>(args)...);
+            };
+        }(std::make_index_sequence<Cur_Fun::arg_count>{});
+        detail::store_item<detail::invalid_type>(std::make_unique<detail::method_wrapper<^^fun_lambda_wrapper, p>>(name));
+    }
 
     /*!
      * \brief Register a global enumeration of type \p Enum_Type
@@ -353,96 +370,13 @@ public:
      *
      * \return A \ref bind object, in order to chain more calls.
      */
-    template<typename Enum_Type>
-    static bind<detail::enum_, detail::invalid_type, Enum_Type> enumeration(std::string_view name);
-
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    /*!
-     * This variable can be used to specify during registration of a class member
-     * the access level: `public`.
-     *
-     * See following example code:
-     * \code{.cpp}
-     *  using namespace rttr;
-     *  struct Foo
-     *  {
-     *      void func() {}
-     *  };
-     *
-     *  RTTR_REGISTRATION
-     *  {
-     *      registration::class_<Foo>("Foo")
-     *          .method("func", &Foo::func, registration::public_access);
-     *  }
-     * \endcode
-     *
-     * \see access_levels
-     */
-    static const detail::public_access      public_access;
-
-    /*!
-     * This variable can be used to specify during registration of a class member
-     * the access level: `protected`.
-     *
-     * See following example code:
-     * \code{.cpp}
-     *  using namespace rttr;
-     *  struct Foo
-     *  {
-     *      protected:
-     *          void func() {}
-     *
-     *      RTTR_REGISTRATION_FRIEND
-     *  };
-     *
-     *  RTTR_REGISTRATION
-     *  {
-     *      registration::class_<Foo>("Foo")
-     *          .method("func", &Foo::func, registration::protected_access);
-     *  }
-     * \endcode
-     *
-     * \see access_levels
-     */
-    static const detail::protected_access   protected_access;
-
-    /*!
-     * This variable can be used to specify during registration of a class member
-     * the access level: `private`.
-     *
-     * See following example code:
-     * \code{.cpp}
-     *  using namespace rttr;
-     *  struct Foo
-     *  {
-     *      private:
-     *          void func() {}
-     *
-     *      RTTR_REGISTRATION_FRIEND
-     *  };
-     *
-     *  RTTR_REGISTRATION
-     *  {
-     *      registration::class_<Foo>("Foo")
-     *          .method("func", &Foo::func, registration::private_access);
-     *  }
-     * \endcode
-     *
-     * \see access_levels
-     */
-    static const detail::private_access     private_access;
-
-private:
-    registration() = default;
-    registration(const std::shared_ptr<detail::registration_executer>& reg_exec) : m_reg_exec(reg_exec) { }
-    registration(const registration& other);
-    registration& operator=(const registration& other);
-
-private:
-    std::shared_ptr<detail::registration_executer> m_reg_exec;
-    template<typename...T>
-    friend class bind;
+    template<std::meta::info Enum>
+    requires (std::meta::is_enum_type(Enum))
+    static void do_enumeration(std::string_view name = get_full_identifier(Enum)) {
+        auto t = type::template get<typename[:Enum:]>();
+        detail::type_register::custom_name(t, name);
+        detail::store_item<detail::invalid_type>(std::make_unique<detail::enumeration_wrapper<Enum>>());
+    }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -478,343 +412,12 @@ private:
  *
  */
 template<typename Signature>
-Signature* select_overload(Signature* func)
+constexpr Signature* select_overload(Signature* func)
 {
   return func;
 }
 
-
-/*!
- * \brief This is a helper function to register overloaded member functions.
- *
- * Use it like following:
- * \code{.cpp}
- *
- * #include <rttr/registration>
- * #include <cmath>
- * using namespace rttr;
- *
- * struct Foo
- * {
- *   void func(int) {}
- *   void func(int, int) {}
- * };
- *
- * RTTR_REGISTRATION
- * {
- *      registration::class_<Foo>("Foo")
- *                   .method("func", select_overload<void(int)>(&Foo::func))
- *                   .method("func", select_overload<void(int, int)>(&Foo::func));
- * }
- * \endcode
- *
- * \remark The method **cannot** be used with *MSVC x86* compiler, because of the different calling convention for global- and member-functions.
- * As workaround you have to explicitly cast to the member function pointer:
- *
- * \code{.cpp}
- *
- * RTTR_REGISTRATION
- * {
- *      registration::class_<Foo>("Foo")
- *                   .method("func", static_cast<void(Foo::*)(int)>(&Foo::func))
- *                   .method("func", static_cast<void(Foo::*)(int, int)>(&Foo::func));
- * }
- * \endcode
- */
-template<typename Signature, typename ClassType>
-auto select_overload(Signature (ClassType::*func)) -> decltype(func)
-{
-    return func;
-}
-
-
-/*!
- * \brief This is a helper function to register overloaded const member functions.
- *
- * Use it like following:
- * \code{.cpp}
- *
- * #include <rttr/registration>
- * using namespace rttr;
- * struct Foo
- * {
- *   void func() {}
- *   void func() const {}
- * };
- *
- * RTTR_REGISTRATION
- * {
- *      registration::class_<Foo>("Foo")
- *                   .method("func", select_non_const(&Foo::func))
- *                   .method("func", select_const(&Foo::func));
- * }
- * \endcode
- *
- * \remark The method **cannot** be used with *MSVC x86* compiler, because of the different calling convention for global- and member-functions.
- * As workaround you have to explicitly cast to the member function pointer:
- *
- * \code{.cpp}
- *
- * RTTR_REGISTRATION
- * {
- *      registration::class_<Foo>("Foo")
- *                   .method("func", static_cast<void(Foo::*)()>(&Foo::func))
- *                   .method("func", static_cast<void(Foo::*)()const>(&Foo::func));
- * }
- * \endcode
- */
-template<typename ClassType, typename ReturnType, typename... Args>
-auto select_const(ReturnType (ClassType::*func)(Args...) const) -> decltype(func)
-{
-    return func;
-}
-
-#ifndef RTTR_NO_CXX17_NOEXCEPT_FUNC_TYPE
-/*!
- * \brief Overload with `noexcept` function type.
- *
- * \see select_const
- */
-template<typename ClassType, typename ReturnType, typename... Args>
-auto select_const(ReturnType (ClassType::*func)(Args...) const noexcept) -> decltype(func)
-{
-    return func;
-}
-#endif
-
-/*!
- * \brief This is a helper function to register overloaded const member functions.
- *
- * Use it like following:
- * \code{.cpp}
- *
- * #include <rttr/registration>
- * using namespace rttr;
- * struct Foo
- * {
- *   void func() {}
- *   void func() const {}
- * };
- *
- * RTTR_REGISTRATION
- * {
- *      registration::class<Foo>("Foo")
- *                   .method("func", select_non_const(&Foo::func))
- *                   .method("func", select_const(&Foo::func));
- * }
- * \endcode
- *
- * \remark The method **cannot** be used with *MSVC x86* compiler, because of the different calling convention for global- and member-functions.
- * As workaround you have to explicitly cast to the member function pointer:
- *
- * \code{.cpp}
- *
- * RTTR_REGISTRATION
- * {
- *      registration::class_<Foo>("Foo")
- *                   .method("func", static_cast<void(Foo::*)()>(&Foo::func))
- *                   .method("func", static_cast<void(Foo::*)()const>(&Foo::func));
- * }
- * \endcode
- *
- */
-template<typename ClassType, typename ReturnType, typename... Args>
-auto select_non_const(ReturnType(ClassType::*func)(Args...)) -> decltype(func)
-{
-    return func;
-}
-
-#ifndef RTTR_NO_CXX17_NOEXCEPT_FUNC_TYPE
-
-/*!
- * \brief Overload with `noexcept` function type.
- *
- * \see select_const
- */
-template<typename ClassType, typename ReturnType, typename... Args>
-auto select_non_const(ReturnType(ClassType::*func)(Args...) noexcept) -> decltype(func)
-{
-    return func;
-}
-#endif
-
-/*!
- * The \ref metadata function can be used to add additional meta data information during the
- * registration process of reflection information. Use it in the `()` operator of the returned
- * \ref bind object.
- */
-RTTR_INLINE detail::metadata metadata(variant key, variant value);
-
-
-/*!
- * The \ref value function should be used to add a mapping from enum `name` to `value`
- * during the registration process of reflection information. Use it in the `()` operator of the returned
- * \ref bind object.
- *
- * \see \ref registration::enumeration
- */
-template<typename Enum_Type>
-RTTR_INLINE detail::enum_data<Enum_Type> value(std::string_view, Enum_Type value);
-
-/*!
- * The \ref default_arguments function should be used add default arguments,
- * for \ref constructor "constructors" or a \ref method "methods" during the registration process of reflection information.
- * Use it in the `()` operator of the returned \ref bind object.
- *
- * The given arguments must match the signature from the starting position to the right most argument.
- *
- * See following example code:
- * \code{.cpp}
- *
- * void my_function(int a, bool b, const std::string& text);
- *
- * RTTR_REGISTRATION
- * {
- *     using namespace rttr;
- *
- *     registration::method("my_function", &my_function)
- *     (
- *         default_arguments(true, std::string("default text"))
- *     );
- *
- *     // however setting default arguments like this, will raise a compile time error
- *     registration::method("my_function2", &my_function)
- *     (
- *          default_arguments(true) // does not work!!!; default value for the last argument is missing...
- *     );
- * }
- *
- * \endcode
- *
- */
-template<typename...TArgs>
-RTTR_INLINE detail::default_args<TArgs...> default_arguments(TArgs&&...args);
-
-/*!
- * The \ref parameter_names function should be used add human-readable names of the parameters,
- * for \ref constructor "constructors" or a \ref method "methods" during the registration process of reflection information.
- * Use it in the `()` operator of the returned \ref bind object.
- *
- * The names must be provided as string literals (i.e. const char*) arguments.
- *
- * See following example code:
- * \code{.cpp}
- *   using namespace rttr;
- *
- *   void set_window_geometry(const char* name, int w, int h) {...}
- *
- *   RTTR_REGISTRATION
- *   {
- *        registration::method("set_window_geometry", &set_window_geometry)
- *        (
- *            parameter_names("window name", "width", "height")
- *        );
- *   }
- * \endcode
- *
- * \see \ref parameter_info
- *
- */
-template<typename...TArgs>
-RTTR_INLINE detail::parameter_names<std::decay_t<TArgs>...> parameter_names(TArgs&&...args);
-
-
 /////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef DOXYGEN
-
-
-/*!
- * \brief Use this macro to automatically register your reflection information to RTTR before `main` is called.
- *
- * Use it in following way:
- * \code{.cpp}
- * RTTR_REGISTRATION
- * {
- *      rttr::registration::method("foo", &foo);
- * }
- * \endcode
- *
- * Just place the macro in global scope in a cpp file.
- *
- * \remark It is not possible to place the macro multiple times in one cpp file.
- *
- */
-#define RTTR_REGISTRATION
-
-/*!
- * \brief Use this macro to automatically register your reflection information inside a plugin to RTTR.
- *
- * Use it in following way:
- * \code{.cpp}
- *
- *   int some_method() { return 42; }
- *
- *   RTTR_PLUGIN_REGISTRATION
- *   {
- *       rttr::registration::method("some_method", &some_method);
- *   }
- * \endcode
- *
- * Just place the macro in global scope in a cpp file.
- *
- * \remark It is not possible to place the macro multiple times in one cpp file.
- *         When you compile your plugin with the `gcc` toolchain, make sure you use the compiler option: `-fno-gnu-unique`.
- *         otherwise the unregistration will not work properly.
- *
- * \see library
- */
-#define RTTR_PLUGIN_REGISTRATION
-
-/*!
- * \brief Place this macro inside a class, when you need to reflect properties,
- *        methods or constructors which are declared in `protected` or `private` scope of the class.
- *
-\code{.cpp}
-class Foo
-{
-    private:
-        int m_value;
-
-    RTTR_REGISTRATION_FRIEND
-};
-\endcode
-
-\code{.cpp}
-RTTR_REGISTRATION
-{
-    rttr::registration::class_<Foo>()
-        .property("value", &Foo::m_value);
-}
-\endcode
- */
-#define RTTR_REGISTRATION_FRIEND
-
-/*!
- * The \ref bind class is used to chain registration calls.
- *
- * The class should not be instantiate directly, because it will be created automatically,
- * when a *constructor*, *property*, *method* or *enumeration* is registered.
- *
- * Additionally, the class has implemented the bracket operator `()` as variadic function template.
- * Use it to forward \ref rttr::metadata() "metadata()" or \ref policy "policies" to the previous registered item.
- *
- * \remark Do not instantiate this class directly!
-*/
-template<typename...T>
-class registration::bind : public detail::base_class
-{
-    public:
-        /*!
-         * \brief The bracket operator can be used to add additional meta data or policies.
-         */
-        template<typename... Args>
-        base_class operator()(Args&&... arg);
-};
-
-#endif
 
 } // end namespace rttr
 

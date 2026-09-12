@@ -34,7 +34,7 @@ namespace detail
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-property_wrapper_base::property_wrapper_base(std::string_view name, type declaring_type) RTTR_NOEXCEPT
+property_wrapper_base::property_wrapper_base(std::string_view name, rttr::type declaring_type) RTTR_NOEXCEPT
 :   m_name(name),
     m_declaring_type(declaring_type)
 {
@@ -69,16 +69,9 @@ std::string_view property_wrapper_base::get_name() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-type property_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
+rttr::type property_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
 {
     return m_declaring_type;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-access_levels property_wrapper_base::get_access_level() const RTTR_NOEXCEPT
-{
-    return access_levels::public_access;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -97,16 +90,9 @@ bool property_wrapper_base::is_static() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-type property_wrapper_base::get_type() const RTTR_NOEXCEPT
+rttr::type property_wrapper_base::get_type() const RTTR_NOEXCEPT
 {
     return get_invalid_type();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant property_wrapper_base::get_metadata(const variant& key) const
-{
-    return variant();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -121,13 +107,6 @@ bool property_wrapper_base::set_value(instance& object, argument& arg) const
 variant property_wrapper_base::get_value(instance& object) const
 {
     return variant();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void property_wrapper_base::visit(visitor& visitor, property prop) const RTTR_NOEXCEPT
-{
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

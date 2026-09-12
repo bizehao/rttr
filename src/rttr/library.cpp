@@ -175,21 +175,21 @@ std::string_view library::get_error_string() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<type> library::get_types() const RTTR_NOEXCEPT
+std::span<const type> library::get_types() const RTTR_NOEXCEPT
 {
     return m_pimpl->get_types();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<property> library::get_global_properties() const RTTR_NOEXCEPT
+std::span<const property> library::get_global_properties() const RTTR_NOEXCEPT
 {
     return m_pimpl->get_global_properties();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<method> library::get_global_methods() const RTTR_NOEXCEPT
+std::span<const method> library::get_global_methods() const RTTR_NOEXCEPT
 {
     return m_pimpl->get_global_methods();
 }

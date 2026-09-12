@@ -33,7 +33,7 @@
 #include "rttr/instance.h"
 #include "rttr/enumeration.h"
 
-using namespace std;
+
 
 namespace rttr
 {
@@ -75,13 +75,6 @@ bool property::is_valid() const RTTR_NOEXCEPT
 property::operator bool() const RTTR_NOEXCEPT
 {
     return m_wrapper->is_valid();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-access_levels property::get_access_level() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_access_level();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -149,13 +142,6 @@ variant property::get_value(instance object) const
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant property::get_metadata(const variant& key) const
-{
-    return m_wrapper->get_metadata(key);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
 bool property::operator==(const property& other) const RTTR_NOEXCEPT
 {
     return (m_wrapper == other.m_wrapper);
@@ -166,13 +152,6 @@ bool property::operator==(const property& other) const RTTR_NOEXCEPT
 bool property::operator!=(const property& other) const RTTR_NOEXCEPT
 {
     return (m_wrapper != other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void property::visit(visitor& visitor) const RTTR_NOEXCEPT
-{
-    m_wrapper->visit(visitor, property(*this));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

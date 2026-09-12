@@ -36,17 +36,11 @@ namespace rttr
 namespace detail
 {
 
-struct return_as_ptr;
-
-struct discard_return
-{};
-
-struct default_invoke
-{};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-using method_policy_list    = type_list<discard_return, return_as_ptr>;
+enum class method_policy {
+    return_as_ptr,
+    discard_return,
+    default_invoke
+};
 
 } // end namespace detail;
 

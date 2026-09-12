@@ -25,16 +25,14 @@
 #                                                                                  #
 ####################################################################################
 
-set(HEADER_FILES access_levels.h
-                 argument.h
-                 array_range.h
-                 associative_mapper.h
+set(HEADER_FILES
+        argument.h
+        associative_mapper.h
                  constructor.h
                  destructor.h
                  enumeration.h
                  enum_flags.h
-                 filter_item.h
-                 instance.h
+        instance.h
                  library.h
                  method.h
                  policy.h
@@ -53,8 +51,7 @@ set(HEADER_FILES access_levels.h
                  variant.h
                  variant_associative_view.h
                  variant_sequential_view.h
-                 visitor.h
-                 wrapper_mapper.h
+        wrapper_mapper.h
                  detail/base/core_prerequisites.h
                  detail/base/version.h.in
                  detail/base/version.rc.in
@@ -67,38 +64,27 @@ set(HEADER_FILES access_levels.h
                  detail/comparison/compare_equal_impl.h
                  detail/comparison/compare_less.h
                  detail/comparison/compare_less_impl.h
-                 detail/constructor/constructor_invoker.h
-                 detail/constructor/constructor_wrapper.h
-                 detail/constructor/constructor_wrapper_defaults.h
-                 detail/constructor/constructor_wrapper_base.h
+        detail/constructor/constructor_wrapper.h
+        detail/constructor/constructor_wrapper_base.h
                  detail/conversion/std_conversion_functions.h
                  detail/conversion/number_conversion.h
-                 detail/default_arguments/default_arguments.h
-                 detail/default_arguments/invoke_with_defaults.h
                  detail/destructor/destructor_wrapper.h
                  detail/destructor/destructor_wrapper_base.h
                  detail/enumeration/enumeration_helper.h
                  detail/enumeration/enumeration_wrapper.h
                  detail/enumeration/enumeration_wrapper_base.h
                  detail/enumeration/enum_data.h
-                 detail/filter/filter_item_funcs.h
                  detail/impl/argument_impl.h
-                 detail/impl/array_range_impl.h
-                 detail/impl/associative_mapper_impl.h
+        detail/impl/associative_mapper_impl.h
                  detail/impl/enum_flags_impl.h
                  detail/impl/instance_impl.h
                  detail/impl/rttr_cast_impl.h
                  detail/impl/sequential_mapper_impl.h
                  detail/impl/wrapper_mapper_impl.h
                  detail/library/library_p.h
-                 detail/metadata/metadata.h
-                 detail/metadata/metadata_handler.h
-                 detail/method/method_accessor.h
-                 detail/method/method_invoker.h
                  detail/method/method_wrapper.h
                  detail/method/method_wrapper_base.h
                  detail/misc/argument_wrapper.h
-                 detail/misc/argument_extractor.h
                  detail/misc/class_item_mapper.h
                  detail/misc/data_address_container.h
                  detail/misc/flat_map.h
@@ -111,10 +97,8 @@ set(HEADER_FILES access_levels.h
                  detail/misc/template_type_trait.h
                  detail/misc/template_type_trait_impl.h
                  detail/misc/utility.h
-                 detail/parameter_info/parameter_infos.h
-                 detail/parameter_info/parameter_infos_compare.h
-                 detail/parameter_info/parameter_names.h
-                 detail/parameter_info/parameter_info_wrapper_base.h
+        detail/parameter_info/parameter_infos_compare.h
+        detail/parameter_info/parameter_info_wrapper_base.h
                  detail/parameter_info/parameter_info_wrapper.h
                  detail/policies/prop_policies.h
                  detail/policies/meth_policies.h
@@ -123,18 +107,11 @@ set(HEADER_FILES access_levels.h
                  detail/property/property_wrapper.h
                  detail/property/property_wrapper_base.h
                  detail/property/property_wrapper_func.h
-                 detail/property/property_wrapper_member_func.h
-                 detail/property/property_wrapper_member_object.h
-                 detail/property/property_wrapper_object.h
-                 detail/registration/bind_types.h
-                 detail/registration/bind_impl.h
-                 detail/registration/register_base_class_from_accessor.h
-                 detail/registration/registration_impl.h
-                 detail/registration/registration_executer.h
-                 detail/registration/registration_manager.h
+        detail/property/property_wrapper_object.h
+        detail/registration/registration_impl.h
+        detail/registration/registration_manager.h
                  detail/registration/registration_state_saver.h
-                 detail/type/accessor_type.h
-                 detail/type/base_classes.h
+        detail/type/base_classes.h
                  detail/type/get_create_variant_func.h
                  detail/type/get_derived_info_func.h
                  detail/type/type_converter.h
@@ -142,8 +119,7 @@ set(HEADER_FILES access_levels.h
                  detail/type/type_data.h
                  detail/type/type_register.h
                  detail/type/type_impl.h
-                 detail/type/type_name.h
-                 detail/type/type_register_p.h
+        detail/type/type_register_p.h
                  detail/type/type_string_utils.h
                  detail/variant/variant_compare.h
                  detail/variant/variant_data.h
@@ -156,15 +132,6 @@ set(HEADER_FILES access_levels.h
                  detail/variant_sequential_view/variant_sequential_view_private.h
                  detail/variant_sequential_view/variant_sequential_view_creator_impl.h
                  detail/variant_sequential_view/variant_sequential_view_creator.h
-                 detail/visitor/visitor_iterator.h
-                 detail/visitor/create_type_visitor_func.h
-                 detail/visitor/create_type_visitor_func_impl.h
-                 detail/visitor/method_visitor_invoker.h
-                 detail/visitor/constructor_visitor_invoker.h
-                 detail/visitor/property_visitor_invoker.h
-                 detail/visitor/visitor_impl.h
-                 detail/visitor/type_visitor_invoker.h
-                 detail/visitor/visitor_registration.h
                 )
 
 set(SOURCE_FILES constructor.cpp
@@ -173,15 +140,12 @@ set(SOURCE_FILES constructor.cpp
                  library.cpp
                  method.cpp
                  parameter_info.cpp
-                 policy.cpp
-                 property.cpp
-                 registration.cpp
-                 type.cpp
+        property.cpp
+        type.cpp
                  variant.cpp
                  variant_associative_view.cpp
                  variant_sequential_view.cpp
-                 visitor.cpp
-                 detail/comparison/compare_equal.cpp
+        detail/comparison/compare_equal.cpp
                  detail/comparison/compare_less.cpp
                  detail/misc/standard_types.cpp
                  detail/conversion/std_conversion_functions.cpp
@@ -194,8 +158,7 @@ set(SOURCE_FILES constructor.cpp
                  detail/method/method_wrapper_base.cpp
                  detail/parameter_info/parameter_info_wrapper_base.cpp
                  detail/property/property_wrapper_base.cpp
-                 detail/registration/registration_executer.cpp
-                 detail/registration/registration_state_saver.cpp
+        detail/registration/registration_state_saver.cpp
                  detail/type/type_data.cpp
                  detail/type/type_register.cpp
                  detail/variant/variant_compare.cpp

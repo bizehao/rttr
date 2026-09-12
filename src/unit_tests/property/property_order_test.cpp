@@ -61,12 +61,8 @@ struct property_order_test_derived : property_order_test_base
 
 RTTR_REGISTRATION
 {
-    registration::class_<property_order_test_base>("property_order_test_base")
-        .property("whoami", &property_order_test_base::_whoami)
-        ;
-    registration::class_<property_order_test_derived>("property_order_test_derived")
-        .property("whoami", &property_order_test_derived::_whoami)
-        ;
+    registration::do_class<^^property_order_test_base>("property_order_test_base");
+    registration::do_class<^^property_order_test_derived>("property_order_test_derived");
 }
 
 // approach 1 looks up the "property instance"
@@ -108,14 +104,14 @@ template<class TT>
 void check_prop_order1()
 {
     TT inst;
-    REQUIRE( inst._whoami == rttr_prop_approach1(inst, "whoami") ) ;
+    REQUIRE( inst._whoami == rttr_prop_approach1(inst, "_whoami") ) ;
 }
 
 template<class TT>
 void check_prop_order2()
 {
     TT inst;
-    REQUIRE( inst._whoami == rttr_prop_approach2(inst, "whoami") ) ;
+    REQUIRE( inst._whoami == rttr_prop_approach2(inst, "_whoami") ) ;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

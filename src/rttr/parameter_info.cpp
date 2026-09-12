@@ -57,13 +57,6 @@ bool parameter_info::has_default_value() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant parameter_info::get_default_value() const
-{
-    return m_wrapper->get_default_value();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
 std::string_view parameter_info::get_name() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_name();

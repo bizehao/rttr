@@ -31,345 +31,131 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 // global function getter/setter - function pointer
-
-template<typename Declaring_Typ, typename Getter, typename Setter, access_levels Acc_Level, std::size_t Metadata_Count, typename Visitor_List>
-class property_wrapper<function_ptr, Declaring_Typ, Getter, Setter, Acc_Level, return_as_copy, set_value, Metadata_Count, Visitor_List>
-    : public property_wrapper_base, public metadata_handler<Metadata_Count>
+template<std::meta::info Getter, std::meta::info Setter, prop_policy GetPolicy, prop_policy SetPolicy>
+class property_wrapper_function : public property_wrapper_base
 {
-    using return_type   = typename function_traits<Getter>::return_type;
-    using arg_type      = typename param_types<Setter, 0>::type;
-
-    public:
-        property_wrapper(std::string_view name,
-                         Getter get, Setter set,
-                         std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
-        :   property_wrapper_base(name, type::get<Declaring_Typ>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_getter(get), m_setter(set)
-        {
-            static_assert(function_traits<Getter>::arg_count == 0, "Invalid number of argument, please provide a getter-function without arguments.");
-            static_assert(function_traits<Setter>::arg_count == 1, "Invalid number of argument, please provide a setter-function with exactly one argument.");
-            static_assert(std::is_same_v<return_type, arg_type>, "Please provide the same signature for getter and setter!");
-
-            init();
+    using return_type   = [: is_lambda(Getter) ? std::meta::return_type_of(get_lambda_fun(Getter)) : std::meta::return_type_of(Getter) :];
+    using arg_type      = [: []() {
+        if (Setter == ^^void) {
+            return ^^void;
         }
-
-        access_levels get_access_level() const RTTR_NOEXCEPT    { return Acc_Level; }
-        bool is_valid()     const RTTR_NOEXCEPT                 { return true;  }
-        bool is_readonly()  const RTTR_NOEXCEPT                 { return false; }
-        bool is_static()    const RTTR_NOEXCEPT                 { return true; }
-        type get_type()     const RTTR_NOEXCEPT                 { return type::get<return_type>(); }
-
-        variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        bool set_value(instance& object, argument& arg) const
-        {
-            if (arg.is_type<arg_type>())
-            {
-                m_setter(arg.get_value<arg_type>());
-                return true;
+        else {
+            if (is_lambda(Getter)) {
+                return std::meta::type_of(std::meta::parameters_of(get_lambda_fun(Setter))[0]);
             }
-            return false;
-        }
-
-        variant get_value(instance& object) const
-        {
-            return variant(m_getter());
-        }
-
-        void visit(visitor& visitor, property prop) const RTTR_NOEXCEPT
-        {
-            auto obj = make_property_getter_setter_info<Declaring_Typ, return_as_copy, Getter, Setter>(prop, m_getter, m_setter);
-            visitor_iterator<Visitor_List>::visit(visitor, make_property_getter_setter_visitor_invoker(obj));
-        }
-
-    private:
-        Getter m_getter;
-        Setter m_setter;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-// global function getter
-
-template<typename Declaring_Typ, typename Getter, access_levels Acc_Level, std::size_t Metadata_Count, typename Visitor_List>
-class property_wrapper<function_ptr, Declaring_Typ, Getter, void, Acc_Level, return_as_copy, read_only, Metadata_Count, Visitor_List>
-    : public property_wrapper_base, public metadata_handler<Metadata_Count>
-{
-    using return_type = typename function_traits<Getter>::return_type;
-
-    public:
-        property_wrapper(std::string_view name,
-                         Getter get, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
-        :   property_wrapper_base(name, type::get<Declaring_Typ>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_accessor(get)
-        {
-            static_assert(function_traits<Getter>::arg_count == 0, "Invalid number of argument, please provide a getter-function without arguments.");
-
-            init();
-        }
-
-        access_levels get_access_level() const RTTR_NOEXCEPT    { return Acc_Level; }
-        bool is_valid()     const RTTR_NOEXCEPT                 { return true;  }
-        bool is_readonly()  const RTTR_NOEXCEPT                 { return true; }
-        bool is_static()    const RTTR_NOEXCEPT                 { return true; }
-        type get_type()     const RTTR_NOEXCEPT                 { return type::get<return_type>(); }
-        bool is_array()     const RTTR_NOEXCEPT                 { return std::is_array<return_type>::value; }
-
-        variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        bool set_value(instance& object, argument& arg) const
-        {
-            return false;
-        }
-
-        variant get_value(instance& object) const
-        {
-            return (variant(m_accessor()));
-        }
-
-        void visit(visitor& visitor, property prop) const RTTR_NOEXCEPT
-        {
-            auto obj = make_property_info<Declaring_Typ, return_as_copy, Getter>(prop, m_accessor);
-            visitor_iterator<Visitor_List>::visit(visitor, make_property_visitor_invoker<read_only>(obj));
-        }
-
-    private:
-        Getter m_accessor;
-};
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-// global function getter/setter
-
-template<typename Declaring_Typ, typename Getter, typename Setter, access_levels Acc_Level, std::size_t Metadata_Count, typename Visitor_List>
-class property_wrapper<function_ptr, Declaring_Typ, Getter, Setter, Acc_Level, return_as_ptr, set_as_ptr, Metadata_Count, Visitor_List>
-    : public property_wrapper_base, public metadata_handler<Metadata_Count>
-{
-    using return_type   = typename function_traits<Getter>::return_type;
-    using arg_type      = typename param_types<Setter, 0>::type;
-
-    public:
-        property_wrapper(std::string_view name,
-                         Getter get, Setter set,
-                         std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
-        :   property_wrapper_base(name, type::get<Declaring_Typ>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_getter(get), m_setter(set)
-        {
-            static_assert(std::is_reference<return_type>::value, "Please provide a getter-function with a reference as return value!");
-            static_assert(std::is_reference<arg_type>::value, "Please provide a setter-function with a reference as argument!");
-
-            static_assert(function_traits<Getter>::arg_count == 0, "Invalid number of argument, please provide a getter-function without arguments.");
-            static_assert(function_traits<Setter>::arg_count == 1, "Invalid number of argument, please provide a setter-function with exactly one argument.");
-
-            static_assert(std::is_same_v<return_type, arg_type>, "Please provide the same signature for getter and setter!");
-
-            init();
-        }
-
-        access_levels get_access_level() const RTTR_NOEXCEPT    { return Acc_Level; }
-        bool is_valid()     const RTTR_NOEXCEPT                 { return true;  }
-        bool is_readonly()  const RTTR_NOEXCEPT                 { return false; }
-        bool is_static()    const RTTR_NOEXCEPT                 { return true; }
-        type get_type()     const RTTR_NOEXCEPT                 { return type::get<typename std::remove_reference<return_type>::type*>(); }
-
-        variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        bool set_value(instance& object, argument& arg) const
-        {
-            using arg_type_t = std::remove_reference_t<arg_type>;
-            if (arg.is_type<arg_type_t*>())
-            {
-                m_setter(*arg.get_value<arg_type_t*>());
-                return true;
+            else {
+                return std::meta::type_of(std::meta::parameters_of(Setter)[0]);
             }
-            return false;
         }
-
-        variant get_value(instance& object) const
-        {
-            return variant(&(m_getter()));
-        }
-
-        void visit(visitor& visitor, property prop) const RTTR_NOEXCEPT
-        {
-            auto obj = make_property_getter_setter_info<Declaring_Typ, return_as_ptr, Getter, Setter>(prop, m_getter, m_setter);
-            visitor_iterator<Visitor_List>::visit(visitor, make_property_getter_setter_visitor_invoker(obj));
-        }
-
-    private:
-        Getter  m_getter;
-        Setter  m_setter;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-// global function getter
-
-template<typename Declaring_Typ, typename Getter, access_levels Acc_Level, std::size_t Metadata_Count, typename Visitor_List>
-class property_wrapper<function_ptr, Declaring_Typ, Getter, void, Acc_Level, return_as_ptr, read_only, Metadata_Count, Visitor_List>
-    : public property_wrapper_base, public metadata_handler<Metadata_Count>
-{
-    using return_type = typename function_traits<Getter>::return_type;
-    public:
-        property_wrapper(std::string_view name,
-                         Getter get, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
-        :   property_wrapper_base(name, type::get<Declaring_Typ>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_accessor(get)
-        {
-            static_assert(std::is_reference<return_type>::value, "Please provide a function with a reference as return value!");
-
-            init();
-        }
-
-        access_levels get_access_level() const RTTR_NOEXCEPT { return Acc_Level; }
-        bool is_valid()     const RTTR_NOEXCEPT { return true;  }
-        bool is_readonly()  const RTTR_NOEXCEPT { return true; }
-        bool is_static()    const RTTR_NOEXCEPT { return true; }
-        type get_type()     const RTTR_NOEXCEPT { return type::get<typename std::add_const<typename std::remove_reference<return_type>::type>::type*>(); }
-
-        variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        bool set_value(instance& object, argument& arg) const
-        {
-            return false;
-        }
-
-        variant get_value(instance& object) const
-        {
-            return (variant(const_cast<const typename std::remove_reference<return_type>::type*>(&(m_accessor()))));
-        }
-
-        void visit(visitor& visitor, property prop) const RTTR_NOEXCEPT
-        {
-            auto obj = make_property_info<Declaring_Typ, return_as_copy, Getter>(prop, m_accessor);
-            visitor_iterator<Visitor_List>::visit(visitor, make_property_visitor_invoker<read_only>(obj));
-        }
-
-    private:
-        Getter  m_accessor;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-// global function getter/setter
-
-template<typename Declaring_Typ, typename Getter, typename Setter, access_levels Acc_Level, std::size_t Metadata_Count, typename Visitor_List>
-class property_wrapper<function_ptr, Declaring_Typ, Getter, Setter, Acc_Level, get_as_ref_wrapper, set_as_ref_wrapper, Metadata_Count, Visitor_List>
-    : public property_wrapper_base, public metadata_handler<Metadata_Count>
-{
-    using return_type   = typename function_traits<Getter>::return_type;
-    using arg_type      = typename param_types<Setter, 0>::type;
+    }() :];
 
     public:
-        property_wrapper(std::string_view name,
-                         Getter get, Setter set,
-                         std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
-        :   property_wrapper_base(name, type::get<Declaring_Typ>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_getter(get), m_setter(set)
+        property_wrapper_function(std::string_view name) RTTR_NOEXCEPT
+        :   property_wrapper_base(name, type::get<invalid_type>())
         {
-            static_assert(std::is_reference<return_type>::value, "Please provide a getter-function with a reference as return value!");
-            static_assert(std::is_reference<arg_type>::value, "Please provide a setter-function with a reference as argument!");
-
-            static_assert(function_traits<Getter>::arg_count == 0, "Invalid number of argument, please provide a getter-function without arguments.");
-            static_assert(function_traits<Setter>::arg_count == 1, "Invalid number of argument, please provide a setter-function with exactly one argument.");
-
-            static_assert(std::is_same_v<return_type, arg_type>, "Please provide the same signature for getter and setter!");
-
-            init();
-        }
-
-        access_levels get_access_level() const RTTR_NOEXCEPT    { return Acc_Level; }
-        bool is_valid()     const RTTR_NOEXCEPT                 { return true;  }
-        bool is_readonly()  const RTTR_NOEXCEPT                 { return false; }
-        bool is_static()    const RTTR_NOEXCEPT                 { return true; }
-        type get_type()     const RTTR_NOEXCEPT                 { return type::get< std::reference_wrapper<std::remove_reference_t<return_type>> >(); }
-
-        variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        bool set_value(instance& object, argument& arg) const
-        {
-            using arg_type_t = std::remove_reference_t<arg_type>;
-            if (arg.is_type<std::reference_wrapper<arg_type_t>>())
-            {
-                m_setter(arg.get_value<std::reference_wrapper<arg_type_t>>().get());
-                return true;
+            constexpr auto t_Getter = is_lambda(Getter) ? get_lambda_fun(Getter) : Getter;
+            constexpr auto t_Setter = is_lambda(Setter) ? get_lambda_fun(Setter) : Setter;
+            static_assert(std::meta::parameters_of(t_Getter).empty(), "Invalid number of argument, please provide a getter-function without arguments.");
+            if constexpr (SetPolicy != prop_policy::read_only) {
+                static_assert(std::meta::parameters_of(t_Setter).size() == 1, "Invalid number of argument, please provide a setter-function with exactly one argument.");
+                static_assert(std::is_same_v<return_type, arg_type>, "Please provide the same signature for getter and setter!");
             }
-            return false;
-        }
-
-        variant get_value(instance& object) const
-        {
-            return variant(std::ref(m_getter()));
-        }
-
-        void visit(visitor& visitor, property prop) const RTTR_NOEXCEPT
-        {
-            auto obj = make_property_getter_setter_info<Declaring_Typ, get_as_ref_wrapper, Getter, Setter>(prop, m_getter, m_setter);
-            visitor_iterator<Visitor_List>::visit(visitor, make_property_getter_setter_visitor_invoker(obj));
-        }
-
-    private:
-        Getter  m_getter;
-        Setter  m_setter;
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-// global function getter
-
-template<typename Declaring_Typ, typename Getter, access_levels Acc_Level, std::size_t Metadata_Count, typename Visitor_List>
-class property_wrapper<function_ptr, Declaring_Typ, Getter, void, Acc_Level, get_as_ref_wrapper, read_only, Metadata_Count, Visitor_List>
-    : public property_wrapper_base, public metadata_handler<Metadata_Count>
-{
-    using return_type = typename function_traits<Getter>::return_type;
-    using policy_type = std::reference_wrapper<std::add_const_t<std::remove_reference_t<return_type>>>;
-
-    public:
-        property_wrapper(std::string_view name,
-                         Getter get, std::array<metadata, Metadata_Count> metadata_list) RTTR_NOEXCEPT
-        :   property_wrapper_base(name, type::get<Declaring_Typ>()),
-            metadata_handler<Metadata_Count>(std::move(metadata_list)),
-            m_accessor(get)
-        {
-            static_assert(std::is_reference<return_type>::value, "Please provide a function with a reference as return value!");
-
+            if constexpr (GetPolicy == prop_policy::get_as_ref_wrapper || GetPolicy == prop_policy::return_as_ptr) {
+                static_assert(std::is_reference_v<return_type>, "return_type need to reference_type");
+            }
             init();
         }
 
-        access_levels get_access_level() const RTTR_NOEXCEPT { return Acc_Level; }
-        bool is_valid()     const RTTR_NOEXCEPT { return true; }
-        bool is_readonly()  const RTTR_NOEXCEPT { return true; }
-        bool is_static()    const RTTR_NOEXCEPT { return true; }
-        type get_type()     const RTTR_NOEXCEPT { return type::get<policy_type>(); }
+        bool is_valid()     const override RTTR_NOEXCEPT                 { return true;  }
+        bool is_readonly()  const override RTTR_NOEXCEPT                 {
+            return SetPolicy == prop_policy::read_only;
+        }
+        bool is_static()    const override RTTR_NOEXCEPT                 { return true; }
+        rttr::type get_type()     const override RTTR_NOEXCEPT                 {
+            constexpr bool is_readonly = SetPolicy == prop_policy::read_only;
+            if constexpr(GetPolicy == prop_policy::return_as_ptr) {
+                if constexpr (is_readonly) {
+                    return type::get<std::add_const_t<std::remove_reference_t<return_type>>*>();
+                }
+                else {
+                    return type::get<std::remove_reference_t<return_type>*>();
+                }
 
-        variant get_metadata(const variant& key) const { return metadata_handler<Metadata_Count>::get_metadata(key); }
-
-        bool set_value(instance& object, argument& arg) const
-        {
-            return false;
+            }
+            else if (GetPolicy == prop_policy::get_as_ref_wrapper){
+                if constexpr (is_readonly) {
+                    return type::get<std::reference_wrapper<std::add_const_t<std::remove_reference_t<return_type>>>>();
+                }
+                else {
+                    return type::get<std::reference_wrapper<std::remove_reference_t<return_type>>>();
+                }
+            }
+            else {
+                return type::get<return_type>();
+            }
         }
 
-        variant get_value(instance& object) const
+        bool set_value(instance& object, argument& arg) const override
         {
-            return variant(std::cref(m_accessor()));
+            if constexpr(SetPolicy == prop_policy::set_value) {
+                if (arg.is_type<arg_type>()) {
+                    std::invoke([:Setter:], arg.get_value<arg_type>());
+                    return true;
+                }
+                return false;
+            }
+            else if constexpr(SetPolicy == prop_policy::set_as_ptr) {
+                using arg_type_t = std::remove_reference_t<arg_type>;
+                if (arg.is_type<arg_type_t*>())
+                {
+                    std::invoke([:Setter:], *arg.get_value<arg_type_t*>());
+                    return true;
+                }
+                return false;
+            }
+            else if constexpr(SetPolicy == prop_policy::set_as_ref_wrapper) {
+                using arg_type_t = std::remove_reference_t<arg_type>;
+                if (arg.is_type<std::reference_wrapper<arg_type_t>>())
+                {
+                    std::invoke([:Setter:], arg.get_value<std::reference_wrapper<arg_type_t>>().get());
+                    return true;
+                }
+                return false;
+            }
+            else {
+                //prop_op_policy::read_only
+                return false;
+            }
         }
 
-        void visit(visitor& visitor, property prop) const RTTR_NOEXCEPT
+        variant get_value(instance& object) const override
         {
-            auto obj = make_property_info<Declaring_Typ, return_as_copy, Getter>(prop, m_accessor);
-            visitor_iterator<Visitor_List>::visit(visitor, make_property_visitor_invoker<read_only>(obj));
+            if constexpr(GetPolicy == prop_policy::return_as_ptr) {
+                if constexpr (SetPolicy == prop_policy::read_only) {
+                    const auto& v = std::invoke([:Getter:]);
+                    return variant(&v);
+                }
+                else {
+                    auto& v = std::invoke([:Getter:]);
+                    return variant(&v);
+                }
+            }
+            else if constexpr(GetPolicy == prop_policy::get_as_ref_wrapper){
+                if constexpr (SetPolicy == prop_policy::read_only) {
+                    auto v = std::cref(std::invoke([:Getter:]));
+                    return variant(std::move(v));
+                }
+                else {
+                    auto v = std::ref(std::invoke([:Getter:]));
+                    return variant(std::move(v));
+                }
+            }
+            else {
+                //prop_op_policy::return_as_copy
+                auto v = std::invoke([:Getter:]);
+                return variant(std::move(v));
+            }
         }
-
-    private:
-        Getter  m_accessor;
 };
-
 
 #endif // RTTR_PROPERTY_WRAPPER_FUNC_H_

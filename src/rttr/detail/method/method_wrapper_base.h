@@ -29,16 +29,14 @@
 #define RTTR_METHOD_WRAPPER_BASE_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/detail/metadata/metadata_handler.h"
 #include "rttr/type.h"
 #include "rttr/variant.h"
-#include "rttr/array_range.h"
 #include "rttr/parameter_info.h"
-#include "rttr/access_levels.h"
 
 #include <string>
 #include <vector>
 #include <string_view>
+#include <span>
 
 namespace rttr
 {
@@ -46,7 +44,6 @@ class type;
 class argument;
 class instance;
 class method;
-class visitor;
 
 namespace detail
 {
@@ -60,21 +57,19 @@ namespace detail
 class RTTR_API method_wrapper_base
 {
     public:
-        method_wrapper_base(std::string_view name, type declaring_type) RTTR_NOEXCEPT;
+        method_wrapper_base(std::string_view name, rttr::type declaring_type) RTTR_NOEXCEPT;
         virtual ~method_wrapper_base();
 
         std::string_view get_name() const RTTR_NOEXCEPT;
-        type get_declaring_type() const RTTR_NOEXCEPT;
+        rttr::type get_declaring_type() const RTTR_NOEXCEPT;
 
         virtual bool is_valid() const RTTR_NOEXCEPT;
         virtual std::string_view get_signature() const RTTR_NOEXCEPT;
-        virtual access_levels get_access_level() const RTTR_NOEXCEPT;
-        virtual type get_return_type() const RTTR_NOEXCEPT;
+        virtual rttr::type get_return_type() const RTTR_NOEXCEPT;
         virtual bool is_static() const RTTR_NOEXCEPT;
         virtual std::vector<bool> get_is_reference() const RTTR_NOEXCEPT;
         virtual std::vector<bool> get_is_const() const RTTR_NOEXCEPT;
-        virtual array_range<parameter_info> get_parameter_infos() const RTTR_NOEXCEPT;
-        virtual variant get_metadata(const variant& key) const;
+        virtual std::span<const parameter_info> get_parameter_infos() const RTTR_NOEXCEPT;
 
         virtual variant invoke(instance& object) const;
         virtual variant invoke(instance& object, argument& arg1) const;
@@ -89,7 +84,6 @@ class RTTR_API method_wrapper_base
 
         virtual variant invoke_variadic(const instance& object, std::vector<argument>& args) const;
 
-        virtual void visit(visitor& visitor, method m) const RTTR_NOEXCEPT;
     protected:
         void init() RTTR_NOEXCEPT;
     private:
@@ -98,7 +92,7 @@ class RTTR_API method_wrapper_base
     private:
         std::string m_name;
         std::string m_signature_view;
-        type        m_declaring_type;
+        rttr::type        m_declaring_type;
         std::string m_signature;
 };
 

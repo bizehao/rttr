@@ -28,7 +28,7 @@
 #include <rttr/registration>
 
 using namespace rttr;
-using namespace std;
+
 
 #include <iostream>
 #include <memory>
@@ -48,12 +48,13 @@ enum class access_t : int
 
 RTTR_REGISTRATION
 {
-    registration::enumeration<access_t>("access_t")
-    (
-        value("read",   access_t::read),
-        value("write",  access_t::write),
-        value("exec",   access_t::exec)
-    );
+    // registration::enumeration<access_t>("access_t")
+    // (
+    //     value("read",   access_t::read),
+    //     value("write",  access_t::write),
+    //     value("exec",   access_t::exec)
+    // );
+    registration::do_enumeration<^^access_t>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

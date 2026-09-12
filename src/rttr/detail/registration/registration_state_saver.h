@@ -29,9 +29,9 @@
 #define RTTR_REGISTRATION_STATE_SAVER_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-#include "rttr/array_range.h"
-
+#include "rttr/type.h"
 #include <vector>
+#include <span>
 
 namespace rttr
 {
@@ -77,17 +77,17 @@ class RTTR_LOCAL registration_state_saver
         /*!
          * Returns the list of newly registered type in the current state.
          */
-        array_range<type> get_types() const RTTR_NOEXCEPT;
+        std::span<const type> get_types() const RTTR_NOEXCEPT;
 
         /*!
          * Returns the list of newly registered global properties in the current state.
          */
-        array_range<property> get_global_properties() const RTTR_NOEXCEPT;
+        std::span<const property> get_global_properties() const RTTR_NOEXCEPT;
 
         /*!
          * Returns the list of newly registered global methods in the current state.
          */
-        array_range<method> get_global_methods() const RTTR_NOEXCEPT;
+        std::span<const method> get_global_methods() const RTTR_NOEXCEPT;
 
     private:
         std::size_t                 m_old_type_size     = 0;

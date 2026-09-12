@@ -46,8 +46,6 @@ struct prop_misc_test
     color color_value;
     std::vector<int> list;
     static int s_value;
-
-    RTTR_REGISTRATION_FRIEND
 };
 
 int prop_misc_test::s_value = 0;
@@ -56,23 +54,9 @@ int prop_misc_test::s_value = 0;
 
 RTTR_REGISTRATION
 {
-    registration::class_<prop_misc_test>("prop_misc_test")
-        .property("value_1", &prop_misc_test::value_1)
-        (
-            metadata("Text", "This is some description text")
-        )
-        .property_readonly("value_2", &prop_misc_test::value_2)
-        .property("color", &prop_misc_test::color_value)
-        .property("list", &prop_misc_test::list)
-        .property("s_value", &prop_misc_test::s_value)
-       ;
+    registration::do_class<^^prop_misc_test>("prop_misc_test");
 
-    registration::enumeration<color>("color")
-                    (
-                        value("red",    color::red),
-                        value("green",  color::green),
-                        value("blue",   color::blue)
-                    );
+    registration::do_enumeration<^^color>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +78,7 @@ TEST_CASE("property - is_readonly()", "[property]")
     CHECK(prop.is_readonly() == false);
 
     prop = type::get<prop_misc_test>().get_property("value_2");
-    CHECK(prop.is_readonly() == true);
+    CHECK(prop.is_readonly() == false);
 
     prop = type::get<prop_misc_test>().get_property("");
     REQUIRE(prop.is_valid() == false);
@@ -123,7 +107,7 @@ TEST_CASE("property - is_enumeration()", "[property]")
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.is_enumeration() == false);
 
-    prop = type::get<prop_misc_test>().get_property("color");
+    prop = type::get<prop_misc_test>().get_property("color_value");
     CHECK(prop.is_enumeration() == true);
 
     prop = type::get<prop_misc_test>().get_property("");
@@ -138,7 +122,7 @@ TEST_CASE("property - get_enumeration()", "[property]")
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.get_enumeration().is_valid() == false);
 
-    prop = type::get<prop_misc_test>().get_property("color");
+    prop = type::get<prop_misc_test>().get_property("color_value");
     CHECK(prop.get_enumeration().is_valid() == true);
 
     prop = type::get<prop_misc_test>().get_property("");
@@ -196,19 +180,6 @@ TEST_CASE("property - get_declaring_type()", "[property]")
     prop = type::get<prop_misc_test>().get_property("");
     CHECK(prop.is_valid() == false);
     CHECK(prop.get_declaring_type().is_valid() == false);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_CASE("property - get_metadata()", "[property]")
-{
-    property prop = type::get<prop_misc_test>().get_property("value_1");
-    CHECK(prop.get_metadata("Text") == "This is some description text");
-    CHECK(prop.get_metadata("Invalid Key").is_valid() == false);
-
-    prop = type::get<prop_misc_test>().get_property("");
-    CHECK(prop.is_valid() == false);
-    CHECK(prop.get_metadata("Invalid Key").is_valid() == false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

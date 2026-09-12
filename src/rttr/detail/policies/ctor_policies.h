@@ -36,13 +36,11 @@ namespace rttr
 namespace detail
 {
 
-struct as_raw_pointer {};
-
-struct as_object {};
-
-struct as_std_shared_ptr {};
-
-using constructor_policy_list = type_list<as_raw_pointer, as_object, as_std_shared_ptr>;
+enum class ctor_policy {
+    as_raw_ptr,
+    as_std_shared_ptr,
+    as_object,
+};
 
 } // end namespace detail;
 

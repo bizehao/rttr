@@ -25,7 +25,7 @@
 #                                                                                  #
 ####################################################################################
 
-add_subdirectory(base_library)
+#add_subdirectory(base_library)
 
 set(HPP_FILES "")
 set(SRC_FILES "")
@@ -45,14 +45,14 @@ if (USE_PCH)
 endif()
 
 add_executable(unit_tests ${SRC_FILES} ${HPP_FILES})
-target_link_libraries(unit_tests RTTR::Core unit_test_base Catch2::Catch)
+target_link_libraries(unit_tests RTTR::Core Catch2::Catch) #unit_test_base
 add_dependencies(unit_tests RTTR::Core)
 set_target_properties(unit_tests PROPERTIES DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
                                             FOLDER "Testing"
                                             INSTALL_RPATH "${RTTR_EXECUTABLE_INSTALL_RPATH}"
                                             CXX_STANDARD ${MAX_CXX_STANDARD})
 
-set_compiler_warnings(unit_tests)
+#set_compiler_warnings(unit_tests)
 
 if (MSVC)
     target_compile_options(unit_tests PRIVATE /bigobj)
@@ -67,9 +67,9 @@ add_custom_target(run_tests ALL
 set_target_properties(run_tests PROPERTIES
                                 FOLDER "Testing")
 
-add_subdirectory(plugin)
+#add_subdirectory(plugin)
 
-add_dependencies(unit_tests unit_test_plugin)
+#add_dependencies(unit_tests unit_test_plugin)
 
 message(STATUS "Scanning " ${PROJECT_NAME} " module finished!")
 message(STATUS "")

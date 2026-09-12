@@ -31,12 +31,12 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/class_item_mapper.h"
 #include "rttr/parameter_info.h"
-#include "rttr/access_levels.h"
-#include "rttr/array_range.h"
-
+#include "rttr/type.h"
 #include <string>
 #include <vector>
 #include <string_view>
+#include <span>
+
 
 namespace rttr
 {
@@ -46,7 +46,6 @@ class type;
 class instance;
 class argument;
 class method;
-class visitor;
 
 namespace detail
 {
@@ -143,16 +142,6 @@ class RTTR_API method
         std::string_view get_name() const RTTR_NOEXCEPT;
 
         /*!
-         * \brief Returns the access level with which this method was
-         *        \ref registration::class_<T>::method() "registered".
-         *
-         * \remark When the method is not valid, this function will return level \ref access_levels::public_access.
-         *
-         * \return \ref access_levels of the method.
-         */
-        access_levels get_access_level() const RTTR_NOEXCEPT;
-
-        /*!
          * \brief Returns true if this method is static method, otherwise false.
          *        A static method does not need an instance for performing an invoke.
          *
@@ -184,7 +173,7 @@ class RTTR_API method
          *
          * \return A range of parameter_info objects of the method signature.
          */
-        array_range<parameter_info> get_parameter_infos() const RTTR_NOEXCEPT;
+        std::span<const parameter_info> get_parameter_infos() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns the signature of this method as readable string.
@@ -192,16 +181,6 @@ class RTTR_API method
          * \return The signature as readable string.
          */
         std::string_view get_signature() const RTTR_NOEXCEPT;
-
-        /*!
-         * \brief Returns the meta data for the given key \p key.
-         *
-         * \remark When no meta data is registered with the given \p key,
-         *         an invalid \ref variant object is returned (see \ref variant::is_valid).
-         *
-         * \return A variant object, containing arbitrary data.
-         */
-        variant get_metadata(const variant& key) const;
 
         /*!
          * \brief Invokes the method represented by the current instance \p object.
@@ -340,13 +319,10 @@ class RTTR_API method
     private:
         method(const detail::method_wrapper_base* wrapper) RTTR_NOEXCEPT;
 
-        void visit(visitor& visitor) const RTTR_NOEXCEPT;
-
         template<typename T>
         friend T detail::create_item(const detail::class_item_to_wrapper_t<T>* wrapper);
         template<typename T>
         friend T detail::create_invalid_item();
-        friend class visitor;
 
     private:
         const detail::method_wrapper_base* m_wrapper;

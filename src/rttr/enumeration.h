@@ -158,23 +158,13 @@ class RTTR_API enumeration
         type get_declaring_type() const RTTR_NOEXCEPT;
 
         /*!
-         * \brief Returns the meta data for the given key \p key.
-         *
-         * \remark When no meta data is registered with the given \p key,
-         *         an invalid \ref variant object is returned (see \ref variant::is_valid).
-         *
-         * \return A variant object, containing arbitrary data.
-         */
-        variant get_metadata(const variant& key) const;
-
-        /*!
          * \brief Returns all enum names registered for this enumeration.
          *
          * \remark When the enumeration is invalid then an empty range is returned.
          *
          * \return A range of enumeration names.
          */
-        array_range<std::string_view> get_names() const RTTR_NOEXCEPT;
+        std::span<const std::string_view> get_names() const RTTR_NOEXCEPT;
 
 
          /*!
@@ -184,7 +174,7 @@ class RTTR_API enumeration
          *
          * \return A range of enumeration values.
          */
-        array_range<variant> get_values() const RTTR_NOEXCEPT;
+        std::span<const variant> get_values() const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns the string_view that is used as the name of the given enumeration \p value,

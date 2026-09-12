@@ -34,7 +34,7 @@
 #include <catch/catch.hpp>
 
 using namespace rttr;
-using namespace std;
+
 
 
 struct property_wrapper_test_base
@@ -56,15 +56,9 @@ struct property_wrapper_test : property_wrapper_test_base
 
 RTTR_REGISTRATION
 {
-    registration::class_<property_wrapper_test_base>("property_wrapper_test_base")
-        .constructor<>()
-        .property("p1", &property_wrapper_test_base::p1)
-        ;
+    registration::do_class<^^property_wrapper_test_base>("property_wrapper_test_base");
 
-    registration::class_<property_wrapper_test>("property_wrapper_test")
-        .constructor<>()
-        .property("p2", &property_wrapper_test::p2)
-        ;
+    registration::do_class<^^property_wrapper_test>("property_wrapper_test");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +92,7 @@ TEST_CASE("property - class - get/set - std::shared_ptr in variant", "[property]
 {
     variant var = std::make_shared<property_wrapper_test_base>();
     CHECK(var.get_type().is_wrapper() == true);
-    CHECK(var.get_type() == type::get<shared_ptr<property_wrapper_test_base>>());
+    CHECK(var.get_type() == type::get<std::shared_ptr<property_wrapper_test_base>>());
     CHECK(var.get_type().get_wrapped_type() == type::get<property_wrapper_test_base*>());
 
     type wrapper_t = var.get_type().get_wrapped_type();

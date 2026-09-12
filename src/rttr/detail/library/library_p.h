@@ -120,11 +120,11 @@ public:
 
     /////////////////////////////////////////////////////////////
 
-    array_range<type> get_types() const RTTR_NOEXCEPT { return m_state_saver.get_types(); }
+    std::span<const type> get_types() const RTTR_NOEXCEPT { return m_state_saver.get_types(); }
 
-    array_range<property> get_global_properties() const RTTR_NOEXCEPT { return m_state_saver.get_global_properties(); }
+    std::span<const property> get_global_properties() const RTTR_NOEXCEPT { return m_state_saver.get_global_properties(); }
 
-    array_range<method> get_global_methods() const RTTR_NOEXCEPT { return m_state_saver.get_global_methods(); }
+    std::span<const method> get_global_methods() const RTTR_NOEXCEPT { return m_state_saver.get_global_methods(); }
 
     int get_load_count() const RTTR_NOEXCEPT { return m_load_count.load(); }
 

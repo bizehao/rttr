@@ -27,7 +27,7 @@
 
 #include "rttr/detail/constructor/constructor_wrapper_base.h"
 
-using namespace std;
+
 
 static RTTR_CONSTEXPR const char* is_ref_list[] = {"", " &"};
 static RTTR_CONSTEXPR const char* is_const_list[] = {"", " const"};
@@ -103,21 +103,14 @@ bool constructor_wrapper_base::is_valid() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-type constructor_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
+rttr::type constructor_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
 {
     return get_invalid_type();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-access_levels constructor_wrapper_base::get_access_level() const RTTR_NOEXCEPT
-{
-    return access_levels::public_access;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-type constructor_wrapper_base::get_instantiated_type() const RTTR_NOEXCEPT
+rttr::type constructor_wrapper_base::get_instantiated_type() const RTTR_NOEXCEPT
 {
     return get_invalid_type();
 }
@@ -138,16 +131,9 @@ std::vector<bool> constructor_wrapper_base::get_is_const() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-array_range<parameter_info> constructor_wrapper_base::get_parameter_infos() const RTTR_NOEXCEPT
+std::span<const parameter_info> constructor_wrapper_base::get_parameter_infos() const RTTR_NOEXCEPT
 {
-    return array_range<parameter_info>();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor_wrapper_base::get_metadata(const variant& key) const
-{
-    return variant();
+    return std::span<const parameter_info>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -206,12 +192,6 @@ variant constructor_wrapper_base::invoke(argument& arg1, argument& arg2, argumen
 variant constructor_wrapper_base::invoke_variadic(std::vector<argument>& args) const
 {
     return variant();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void constructor_wrapper_base::visit(visitor& visitor, const constructor& ctor) const RTTR_NOEXCEPT
-{
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -34,8 +34,6 @@ using namespace rttr;
 
 RTTR_PLUGIN_REGISTRATION
 {
-    registration::class_<base_test_class>("base_test_class")
-            .constructor<>()()
-           ;
+    registration::do_class<^^base_test_class>();
 }
 
