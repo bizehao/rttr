@@ -12,9 +12,37 @@ void testfun(int a = 1, double b = 3.14, float c = 66.6f, std::string d = "hello
     std::cout << std::format("a: {}, b: {}, c: {}, d: {}, e: {}\n", a, b, c, d, e);
 }
 
+struct TestOperator
+{
+    void operator()(int a)
+    {
+        constexpr auto info = std::meta::current_function();
+        constexpr auto a_info = std::meta::parameters_of(info)[0];
+
+        const int& x = [:std::meta::variable_of(a_info):]; // OK，x 指代 int_arg
+
+        std::cout << std::format("{}", std::meta::display_string_of(info));
+    }
+
+    void operator+(int a) const
+    {
+        constexpr auto info = std::meta::current_function();
+        std::cout << std::format("{}", std::meta::display_string_of(info));
+    }
+
+    operator int() const
+    {
+        return 100;
+    }
+};
+
+
+
+
 RTTR_REGISTRATION
 {
     registration::do_method<^^testfun>();
+    registration::do_class<^^TestOperator>();
 }
 //不支持模板函数
 //会忽略const
@@ -23,18 +51,28 @@ RTTR_REGISTRATION
 //会排除&&函数
 int main()
 {
-    using namespace std::string_literals;
-    auto md = type::get_global_method("testfun");
+    // using namespace std::string_literals;
+    // auto md = type::get_global_method("testfun");
+    //
+    // md.invoke({});
+    // md.invoke({}, 2);
+    // md.invoke({}, 3, 6.24);
+    // md.invoke({}, 4, 6.24, 33.3f);
+    // md.invoke({}, 5, 6.24, 33.3f, "world"s);
+    // md.invoke({}, 6, 6.24, 33.3f, "world"s, 'Z');
+    //
+    //
+    // md.invoke({}, 7, 6.24, 33.3f, "world"s, 'Z', 'H');
 
-    md.invoke({});
-    md.invoke({}, 2);
-    md.invoke({}, 3, 6.24);
-    md.invoke({}, 4, 6.24, 33.3f);
-    md.invoke({}, 5, 6.24, 33.3f, "world"s);
-    md.invoke({}, 6, 6.24, 33.3f, "world"s, 'Z');
+    auto type_TestOperator = type::get<TestOperator>();
+    auto mm = type_TestOperator.get_method("()");
+    TestOperator obj;
+    mm.invoke(obj, 55);
 
 
-    md.invoke({}, 7, 6.24, 33.3f, "world"s, 'Z', 'H');
+    variant vv = obj;
+    int kk = 0;
+    bool bb = vv.convert(kk);
 
     return 0;
 }

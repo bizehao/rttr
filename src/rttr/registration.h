@@ -41,6 +41,11 @@
 namespace rttr
 {
 
+namespace detail
+{
+
+}
+
 /*!
  * The \ref registration class is the entry point for the manual registration of reflection information
  * to the type system. It is possible to register *constructors*, *properties*, *methods* and *enumerations*.
@@ -207,7 +212,7 @@ public:
         }
 
         //check ctor policy,  op_as_object and copy_constructible_type
-        constexpr auto check_ctor_policy = [](detail::ctor_policy policy) consteval{
+        constexpr auto check_ctor_policy = [](detail::ctor_policy policy) static consteval{
             if (policy == detail::ctor_policy::as_object && !std::meta::is_copy_constructible_type(ClassRefl)) {
                 throw std::invalid_argument{std::string{"is not copy_constructible_type, only policy need to as_raw_ptr or as_std_shared_ptr of "} + std::meta::display_string_of(ClassRefl)};
             }
@@ -226,10 +231,24 @@ public:
                         detail::store_item<Clazz>(std::make_unique<detail::destructor_wrapper<member>>());
                     }
                     else if constexpr (std::meta::is_operator_function(member)) {
-                        //todo
+                        constexpr auto operator_name = []() static consteval
+                        {
+                            auto ss = std::meta::display_string_of(member);
+                            auto b = ss.find("operator") + 8;
+                            auto e = ss.find_last_of("(");
+                            return ss.substr(b, e - b);
+                        }();
+
+                        do_method<member, get_policy<policy::method>(member)>(operator_name);
                     }
                     else if constexpr (std::meta::is_conversion_function(member)) {
-                        //todo
+                        constexpr auto rt = std::meta::return_type_of(member);
+                        auto convert_fun = [](const Clazz& obj, bool& ok) static -> [:rt:]
+                        {
+                            ok = true;
+                            return static_cast<[:rt:]>(obj);
+                        };
+                        type::register_converter_func(convert_fun);
                     }
                     else {
                         //normal mem function
