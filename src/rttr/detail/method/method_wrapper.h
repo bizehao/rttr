@@ -158,7 +158,7 @@ class method_wrapper : public method_wrapper_base
     private:
 
         template<std::size_t... Is>
-        static variant override_fun(const instance& obj, std::vector<argument> args)
+        static variant override_fun(const instance& obj, std::vector<argument> args, std::index_sequence<Is...>)
         {
             //check args type
             bool check = detail::check_all_true(args[Is].template is_type<typename[:std::meta::type_of(params[Is]):]>()...);
@@ -225,26 +225,11 @@ class method_wrapper : public method_wrapper_base
                 return variant{};
             }
 
-            auto make_override_fun = []<std::size_t N> static{
-                return []<std::size_t... Ns>(std::index_sequence<Ns...>)
-                {
-                    return override_fun<Ns...>;
-                }(std::make_index_sequence<N>{});
-            };
-
-            //default_args_num
-            //有所有默认参数 ~ 没有任何默认参数
-            auto override_funs = [make_override_fun]<std::size_t... Ns>(std::index_sequence<Ns...>)
+            template for (constexpr std::size_t Js : std::views::iota(at_most_args_num, params.size() + 1))
             {
-                return std::make_tuple(make_override_fun.template operator()<at_most_args_num + Ns>()...);
-            }(std::make_index_sequence<default_args_num+1>{});
-
-            std::size_t index = args.size() - at_most_args_num;
-            template for (constexpr std::size_t Js : std::views::indices(std::tuple_size_v<std::decay_t<decltype(override_funs)>>))
-            {
-                if (Js == index)
+                if (Js == args.size())
                 {
-                    return std::get<Js>(override_funs)(obj, std::move(args));
+                    return override_fun(obj, std::move(args), std::make_index_sequence<Js>{});
                 }
             }
             return variant{};
