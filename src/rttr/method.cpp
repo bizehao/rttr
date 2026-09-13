@@ -92,6 +92,13 @@ bool method::is_static() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+variant method::get_metadata(const std::string_view& key) const
+{
+    return m_wrapper->get_metadata(key);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 type method::get_return_type() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_return_type();

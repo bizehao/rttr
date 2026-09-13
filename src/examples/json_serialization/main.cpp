@@ -48,6 +48,7 @@ enum class color
 
 struct point2d
 {
+    [[=rttr::class_op::ctor_policy(policy::ctor::op_as_object)]]
     point2d() {}
     point2d(int x_, int y_) : x(x_), y(y_) {}
     int x = 0;
@@ -58,17 +59,16 @@ struct shape
 {
     shape(std::string n) : name(n) {}
 
-    void set_visible(bool v) { visible = v; }
-    bool get_visible() const { return visible; }
+    virtual ~shape() = default;
 
+    [[=rttr::class_op::rename("color")]]
     color color_ = color::blue;
     std::string name = "";
     point2d position;
     std::map<color, point2d> dictionary;
+    bool visible = false;
 
     RTTR_ENABLE()
-private:
-    bool visible = false;
 };
 
 struct circle : shape
@@ -78,43 +78,23 @@ struct circle : shape
     double radius = 5.2;
     std::vector<point2d> points;
 
+    [[=metadata("NO_SERIALIZE", true)]]
     int no_serialize = 100;
 
-    RTTR_ENABLE(shape)
+    RTTR_ENABLE()
 };
 
 RTTR_REGISTRATION
 {
-    rttr::registration::class_<shape>("shape")
-        .property("visible", &shape::get_visible, &shape::set_visible)
-        .property("color", &shape::color_)
-        .property("name", &shape::name)
-        .property("position", &shape::position)
-        .property("dictionary", &shape::dictionary)
-    ;
+    rttr::registration::do_class<^^shape>("shape");
 
-    rttr::registration::class_<circle>("circle")
-        .property("radius", &circle::radius)
-        .property("points", &circle::points)
-        .property("no_serialize", &circle::no_serialize)
-        (
-            metadata("NO_SERIALIZE", true)
-        )
-        ;
+    //NO_SERIALIZE
+    rttr::registration::do_class<^^circle>("circle");
 
-    rttr::registration::class_<point2d>("point2d")
-        .constructor()(rttr::policy::ctor::as_object)
-        .property("x", &point2d::x)
-        .property("y", &point2d::y)
-        ;
+    rttr::registration::do_class<^^point2d>("point2d");
 
 
-    rttr::registration::enumeration<color>("color")
-        (
-            value("red", color::red),
-            value("blue", color::blue),
-            value("green", color::green)
-        );
+    rttr::registration::do_enumeration<^^color>("color");
 }
 
 int main(int argc, char** argv)
@@ -125,7 +105,7 @@ int main(int argc, char** argv)
         circle c_1("Circle #1");
         shape& my_shape = c_1;
 
-        c_1.set_visible(true);
+        c_1.visible = true;
         c_1.points = std::vector<point2d>(2, point2d(1, 1));
         c_1.points[1].x = 23;
         c_1.points[1].y = 42;

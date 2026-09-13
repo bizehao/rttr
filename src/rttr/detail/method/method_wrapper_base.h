@@ -63,6 +63,7 @@ class RTTR_API method_wrapper_base
         std::string_view get_name() const RTTR_NOEXCEPT;
         rttr::type get_declaring_type() const RTTR_NOEXCEPT;
 
+        virtual variant get_metadata(const std::string_view& key) const;
         virtual bool is_valid() const RTTR_NOEXCEPT;
         virtual std::string_view get_signature() const RTTR_NOEXCEPT;
         virtual rttr::type get_return_type() const RTTR_NOEXCEPT;

@@ -34,6 +34,7 @@
 #include "rttr/detail/policies/meth_policies.h"
 #include "rttr/detail/policies/prop_policies.h"
 #include <meta>
+#include <rttr/detail/misc/ctp.h>
 
 namespace rttr
 {
@@ -166,6 +167,30 @@ struct ignore_tag
 };
 constexpr ignore_tag ignore{};
 } // namespace class_op
+
+template<class T>
+struct metadata_tag {
+    const char *key;
+    ctp::Param<T> data;
+};
+
+template<class T>
+consteval auto metadata_impl(std::string_view key, ctp::Param<T> data) {
+    return metadata_tag{std::define_static_string(key), std::move(data)};
+}
+
+template<class T>
+consteval auto metadata(std::string_view key, T data) {
+    ctp::Param pdata = data;
+    return metadata_impl(key, pdata);
+}
+
+template<std::convertible_to<std::string_view> T>
+consteval auto metadata(std::string_view key, T data) {
+    ctp::Param pdata = std::define_static_string(std::string_view{data});
+    return metadata_impl(key, pdata);
+}
+
 
 } // end namespace rttr
 

@@ -68,6 +68,8 @@ class RTTR_API property_wrapper_base
 
         virtual rttr::type get_type() const RTTR_NOEXCEPT;
 
+        virtual variant get_metadata(const std::string_view& key) const;
+
         virtual bool set_value(instance& object, argument& arg) const;
 
         virtual variant get_value(instance& object) const;

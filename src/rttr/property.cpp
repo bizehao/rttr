@@ -121,6 +121,13 @@ type property::get_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+variant property::get_metadata(const std::string_view& key) const
+{
+    return m_wrapper->get_metadata(key);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 type property::get_declaring_type() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_declaring_type();

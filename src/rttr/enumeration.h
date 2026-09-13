@@ -140,6 +140,8 @@ class RTTR_API enumeration
          */
         type get_underlying_type() const RTTR_NOEXCEPT;
 
+        variant get_metadata(const std::string_view& key) const;
+
         /*!
          * \brief Returns the type object of this \ref enumeration.
          *

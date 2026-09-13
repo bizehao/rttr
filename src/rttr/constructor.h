@@ -125,6 +125,8 @@ class RTTR_API constructor
          */
         std::string_view get_signature() const RTTR_NOEXCEPT;
 
+        variant get_metadata(const std::string_view& key) const;
+
         /*!
          * \brief Returns an ordered range of \ref parameter_info objects, which matches the signature of the constructor.
          *

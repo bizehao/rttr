@@ -36,7 +36,7 @@
 #include "rttr/policy.h"
 #include "rttr/detail/misc/utility.h"
 #include "rttr/detail/property/property_accessor.h"
-
+#include "rttr/detail/metadata/metadata_handler.h"
 #include <functional>
 #include <meta>
 

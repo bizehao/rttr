@@ -511,6 +511,14 @@ constexpr bool is_mem_fun_rv_qualifier<R (Args...) && noexcept> = true;
 template<typename R, typename... Args>
 constexpr bool is_mem_fun_rv_qualifier<R (Args...) const && noexcept> = true;
 
+template <typename... Map>
+inline std::unordered_map<std::string_view, variant> concat_metadata(Map... data)
+{
+    std::unordered_map<std::string_view, variant> result;
+    (result.merge(std::move(data)), ...);
+    return result;
+}
+
 } // end namespace detail
 } // end namespace rttr
 

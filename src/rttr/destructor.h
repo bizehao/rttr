@@ -102,6 +102,8 @@ class RTTR_API destructor
          */
         type get_destructed_type() const RTTR_NOEXCEPT;
 
+        variant get_metadata(const std::string_view& key) const;
+
         /*!
          * \brief Destroys the contained object in the variant \p obj.
          *

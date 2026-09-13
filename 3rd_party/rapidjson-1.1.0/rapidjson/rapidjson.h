@@ -522,7 +522,7 @@ RAPIDJSON_NAMESPACE_END
 #if defined(__clang__)                                                                             \
     || (defined(RAPIDJSON_GNUC) && RAPIDJSON_GNUC >= RAPIDJSON_VERSION_CODE(4, 2, 0))
 
-#define RAPIDJSON_PRAGMA(x) _Pragma(RAPIDJSON_STRINGIFY(x))
+#define RAPIDJSON_PRAGMA(x) //_Pragma(RAPIDJSON_STRINGIFY(x))
 #define RAPIDJSON_DIAG_PRAGMA(x) RAPIDJSON_PRAGMA(GCC diagnostic x)
 #define RAPIDJSON_DIAG_OFF(x)                                                                      \
     RAPIDJSON_DIAG_PRAGMA(ignored RAPIDJSON_STRINGIFY(RAPIDJSON_JOIN(-W, x)))

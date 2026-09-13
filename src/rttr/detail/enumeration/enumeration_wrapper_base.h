@@ -57,6 +57,8 @@ class RTTR_API enumeration_wrapper_base
 
         rttr::type get_declaring_type() const RTTR_NOEXCEPT;
 
+        virtual variant get_metadata(const std::string_view& key) const;
+
         virtual bool is_valid() const RTTR_NOEXCEPT;
 
         virtual rttr::type get_underlying_type() const RTTR_NOEXCEPT;

@@ -64,6 +64,13 @@ constructor::constructor(const detail::constructor_wrapper_base* wrapper) RTTR_N
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+variant constructor::get_metadata(const std::string_view& key) const
+{
+    return m_wrapper->get_metadata(key);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 bool constructor::is_valid() const RTTR_NOEXCEPT
 {
     return m_wrapper->is_valid();

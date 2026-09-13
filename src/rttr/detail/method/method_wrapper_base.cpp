@@ -114,6 +114,13 @@ void method_wrapper_base::create_signature_string() RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+variant method_wrapper_base::get_metadata(const std::string_view& key) const
+{
+    return {};
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 bool method_wrapper_base::is_valid() const RTTR_NOEXCEPT
 {
     return false;

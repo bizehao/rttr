@@ -62,6 +62,13 @@ rttr::type enumeration_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+variant enumeration_wrapper_base::get_metadata(const std::string_view& key) const
+{
+    return {};
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 bool enumeration_wrapper_base::is_valid() const RTTR_NOEXCEPT
 {
     return false;

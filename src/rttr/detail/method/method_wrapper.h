@@ -37,6 +37,7 @@
 #include  "rttr/detail/policies/meth_policies.h"
 #include "rttr/detail/parameter_info/parameter_info_wrapper.h"
 #include "rttr/type.h"
+#include "rttr/detail/metadata/metadata_handler.h"
 
 #include <functional>
 #include <string>
@@ -51,7 +52,7 @@ namespace detail
 {
 
 template<std::meta::info Fun, method_policy op>
-class method_wrapper : public method_wrapper_base
+class method_wrapper : public method_wrapper_base, public metadata_handler
 {
     using Declaring_Type = [: std::meta::is_class_member(Fun) ? std::meta::parent_of(Fun) : ^^invalid_type :];
     using Return_Type = [: is_lambda(Fun) ? std::meta::return_type_of(get_lambda_fun(Fun)) : std::meta::return_type_of(Fun) :];
@@ -66,8 +67,8 @@ class method_wrapper : public method_wrapper_base
     }();
     static constexpr auto default_args_num = std::ranges::count_if(params, [](std::meta::info const& i) { return std::meta::has_default_argument(i);});
     public:
-        method_wrapper(std::string_view name) RTTR_NOEXCEPT
-        :   method_wrapper_base(name, type::get<Declaring_Type>())
+        method_wrapper(std::string_view name, metadata_list meta_datas) RTTR_NOEXCEPT
+        :   method_wrapper_base(name, type::get<Declaring_Type>()), metadata_handler{std::move(meta_datas)}
         {
             if constexpr (op == method_policy::return_as_ptr) {
                 static_assert(std::is_reference_v<Return_Type>, "op is return_ref_as_ptr, return result need is left reference");
@@ -80,6 +81,11 @@ class method_wrapper : public method_wrapper_base
             }
 
             init();
+        }
+
+        variant get_metadata(const std::string_view& key) const override
+        {
+            return metadata_handler::get_metadata(key);
         }
 
         bool is_valid()                                     const RTTR_NOEXCEPT { return true;                                            }

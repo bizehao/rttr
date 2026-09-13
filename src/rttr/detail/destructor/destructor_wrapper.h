@@ -31,39 +31,59 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/destructor/destructor_wrapper_base.h"
 #include "rttr/variant.h"
+#include "rttr/detail/metadata/metadata_handler.h"
 
 namespace rttr
 {
 namespace detail
 {
 
-template<std::meta::info Dector>
-class destructor_wrapper : public destructor_wrapper_base
+template <std::meta::info Dector>
+class destructor_wrapper : public destructor_wrapper_base, public metadata_handler
 {
     using Class_Type = [:std::meta::parent_of(Dector):];
-    public:
-        type get_declaring_type() const RTTR_NOEXCEPT { return type::get<Class_Type>(); }
 
-        type get_destructed_type() const RTTR_NOEXCEPT { return type::get<Class_Type*>(); }
+public:
+    destructor_wrapper(metadata_list meta_datas) : metadata_handler{std::move(meta_datas)}
+    {
+    }
 
-        bool is_valid() const RTTR_NOEXCEPT { return true; }
+    type get_declaring_type() const RTTR_NOEXCEPT
+    {
+        return type::get<Class_Type>();
+    }
 
-        bool invoke(variant& obj) const RTTR_NOEXCEPT
+    type get_destructed_type() const RTTR_NOEXCEPT
+    {
+        return type::get<Class_Type*>();
+    }
+
+    variant get_metadata(const std::string_view& key) const override
+    {
+        return metadata_handler::get_metadata(key);
+    }
+
+    bool is_valid() const RTTR_NOEXCEPT
+    {
+        return true;
+    }
+
+    bool invoke(variant& obj) const RTTR_NOEXCEPT
+    {
+        if (obj.is_type<Class_Type*>())
         {
-            if (obj.is_type<Class_Type*>())
-            {
-                // although an exception can occur when calling 'delete',
-                // nobody should throw an exception in destructor, so we don't catch the exception
-                // and just terminate the application
-                delete obj.get_value<Class_Type*>();
-                obj = variant();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            // although an exception can occur when calling 'delete',
+            // nobody should throw an exception in destructor, so we don't catch the exception
+            // and just terminate the application
+            delete obj.get_value<Class_Type*>();
+            obj = variant();
+            return true;
         }
+        else
+        {
+            return false;
+        }
+    }
 };
 
 } // end namespace detail

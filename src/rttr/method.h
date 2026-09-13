@@ -151,6 +151,8 @@ class RTTR_API method
          */
         bool is_static() const RTTR_NOEXCEPT;
 
+        variant get_metadata(const std::string_view& key) const;
+
         /*!
          * Returns the type object of the return type.
          *

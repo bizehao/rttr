@@ -52,6 +52,7 @@ class RTTR_API destructor_wrapper_base
         destructor_wrapper_base() RTTR_NOEXCEPT;
         virtual ~destructor_wrapper_base();
 
+        virtual variant get_metadata(const std::string_view& key) const;
         virtual bool is_valid() const RTTR_NOEXCEPT;
         virtual type get_declaring_type() const RTTR_NOEXCEPT;
         virtual type get_destructed_type() const RTTR_NOEXCEPT;

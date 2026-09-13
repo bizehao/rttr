@@ -97,6 +97,13 @@ rttr::type property_wrapper_base::get_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+variant property_wrapper_base::get_metadata(const std::string_view& key) const
+{
+    return {};
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 bool property_wrapper_base::set_value(instance& object, argument& arg) const
 {
     return false;

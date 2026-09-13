@@ -42,6 +42,7 @@ endif()
 add_executable(json_example ${SRC_FILES} ${HPP_FILES})
 target_link_libraries(json_example RTTR::Core)
 target_include_directories(json_example PUBLIC ${RAPID_JSON_DIR})
+target_compile_definitions(json_example PUBLIC RAPIDJSON_NOMEMBERITERATORCLASS)
 set_target_properties(json_example PROPERTIES 
                       DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
                       FOLDER "Examples"

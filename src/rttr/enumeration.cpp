@@ -91,6 +91,13 @@ type enumeration::get_underlying_type() const RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+variant enumeration::get_metadata(const std::string_view& key) const
+{
+    return m_wrapper->get_metadata(key);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 type enumeration::get_type() const RTTR_NOEXCEPT
 {
     return m_wrapper->get_type();

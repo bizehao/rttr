@@ -184,6 +184,8 @@ class RTTR_API property
          */
         type get_type() const RTTR_NOEXCEPT;
 
+        variant get_metadata(const std::string_view& key) const;
+
         /*!
          * \brief Returns the \ref type of the class or struct that declares this property.
          *

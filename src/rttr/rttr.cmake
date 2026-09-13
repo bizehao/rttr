@@ -82,6 +82,7 @@ set(HEADER_FILES
                  detail/impl/sequential_mapper_impl.h
                  detail/impl/wrapper_mapper_impl.h
                  detail/library/library_p.h
+        detail/metadata/metadata_handler.h
                  detail/method/method_wrapper.h
                  detail/method/method_wrapper_base.h
                  detail/misc/argument_wrapper.h
@@ -97,6 +98,7 @@ set(HEADER_FILES
                  detail/misc/template_type_trait.h
                  detail/misc/template_type_trait_impl.h
                  detail/misc/utility.h
+        detail/misc/ctp.h
         detail/parameter_info/parameter_infos_compare.h
         detail/parameter_info/parameter_info_wrapper_base.h
                  detail/parameter_info/parameter_info_wrapper.h

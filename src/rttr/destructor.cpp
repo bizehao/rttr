@@ -61,6 +61,13 @@ destructor::destructor(const detail::destructor_wrapper_base* wrapper) RTTR_NOEX
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+variant destructor::get_metadata(const std::string_view& key) const
+{
+    return m_wrapper->get_metadata(key);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 bool destructor::is_valid() const RTTR_NOEXCEPT
 {
     return m_wrapper->is_valid();

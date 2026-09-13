@@ -33,7 +33,7 @@
 #include "rttr/detail/enumeration/enum_data.h"
 #include "rttr/argument.h"
 #include "rttr/variant.h"
-
+#include "rttr/detail/metadata/metadata_handler.h"
 #include <utility>
 #include <type_traits>
 #include <string_view>
@@ -44,13 +44,13 @@ namespace detail
 {
 
 template<std::meta::info Enum>
-class enumeration_wrapper : public enumeration_wrapper_base
+class enumeration_wrapper : public enumeration_wrapper_base, public metadata_handler
 {
     static constexpr auto enumerators = std::define_static_array(std::meta::enumerators_of(Enum));
     static constexpr auto N = enumerators.size();
     using Enum_Type = [:Enum:];
     public:
-        enumeration_wrapper() RTTR_NOEXCEPT
+        enumeration_wrapper(metadata_list meta_datas) RTTR_NOEXCEPT : metadata_handler{std::move(meta_datas)}
         {
             static_assert(std::is_enum_v<Enum_Type>, "No enum type provided, please create an instance of this class only for enum types!");
 
@@ -64,6 +64,11 @@ class enumeration_wrapper : public enumeration_wrapper_base
             if constexpr(std::meta::is_type(parent) && std::meta::is_class_type(parent)) {
                 set_declaring_type(type::get<typename[:parent:]>());
             }
+        }
+
+        variant get_metadata(const std::string_view& key) const override
+        {
+            return metadata_handler::get_metadata(key);
         }
 
         bool is_valid() const RTTR_NOEXCEPT { return true; }
