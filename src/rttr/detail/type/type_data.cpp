@@ -37,21 +37,23 @@ namespace detail
 
 static type_data& get_invalid_type_data_impl() RTTR_NOEXCEPT
 {
-    static type_data instance{ nullptr, nullptr,
-                               nullptr,
-                               std::string(""), std::string(""),
-                               0, 0,
-                               &create_invalid_variant_policy::create_variant,
-                               &base_classes<void>::get_types,
-                               nullptr,
-                               get_create_wrapper_func<void>(),
-                               false,
-                               type_trait_value{0},
-                               class_data(nullptr, std::vector<type>())
-                              };
+    static type_data instance{nullptr,
+                              nullptr,
+                              nullptr,
+                              std::string(""), std::string(""),
+                              0, 0,
+                              &create_invalid_variant_policy::create_variant,
+                              &base_classes<void>::get_types,
+                              nullptr,
+                              nullptr,
+                              get_create_wrapper_func<void>(),
+                              false,
+                              type_trait_value{0},
+                              class_data(nullptr, std::vector<type>())
+    };
 
-    instance.raw_type_data  = &instance;
-    instance.wrapped_type   = &instance;
+    instance.raw_type_data = &instance;
+    instance.wrapped_type = &instance;
     instance.array_raw_type = &instance;
 
     return instance;
@@ -69,5 +71,3 @@ type_data* get_invalid_type_data() RTTR_NOEXCEPT
 
 } // end namespace detail
 } // end namespace rttr
-
-

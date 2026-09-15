@@ -34,6 +34,7 @@
 #include <string>
 #include <vector>
 #include <string_view>
+#include <unordered_map>
 
 namespace rttr
 {
@@ -97,7 +98,8 @@ public:
     static bool register_enumeration(enumeration_wrapper_base* enum_data);
     static bool unregister_enumeration(enumeration_wrapper_base* enum_data);
 
-    static void custom_name(type& t, std::string_view name);
+    static void custom_name(rttr::type& t, std::string_view name);
+    static void metadata( const rttr::type& t, std::unordered_map<std::string_view, variant> data);
 
     static bool register_converter(const type_converter_base* converter);
     static bool unregister_converter(const type_converter_base* converter);
@@ -108,7 +110,7 @@ public:
     static bool register_less_than_comparator(type_comparator_base* comparator);
     static bool unregister_less_than_comparator(const type_comparator_base* converter);
 
-    static void register_base_class(const type& derived_type, const base_class_info& base_info);
+    static void register_base_class(const rttr::type& derived_type, const base_class_info& base_info);
 
     static void register_reg_manager(registration_manager* manager);
     static void unregister_reg_manager(registration_manager* manager);

@@ -206,7 +206,7 @@ private:
                 using T = [:t:];
                 constexpr auto obj = std::meta::extract<T>(it);
                 constexpr auto key = obj.key;
-                constexpr auto value = obj.data.get();
+                auto value = obj.data.reduction();
                 result.insert(std::make_pair(key, value));
             }
         }
@@ -221,13 +221,15 @@ public:
         requires (std::meta::is_class_type(ClassRefl))
     static void do_class(std::string_view name = get_full_identifier(ClassRefl))
     {
-        //todo: meta data
-        //unprivileged unchecked
-        constexpr auto access_context = std::meta::access_context::unprivileged();
-
         using Clazz = [:ClassRefl:];
         auto t = type::get<Clazz>();
         detail::type_register::custom_name(t, name);
+
+        std::unordered_map<std::string_view, variant> metadata = get_target_metadata<ClassRefl>();
+        detail::type_register::metadata(t, std::move(metadata));
+
+        //unprivileged unchecked
+        constexpr auto access_context = std::meta::access_context::unprivileged();
 
         template for (constexpr std::meta::info member : std::define_static_array(
             std::meta::nonstatic_data_members_of(ClassRefl, access_context)))

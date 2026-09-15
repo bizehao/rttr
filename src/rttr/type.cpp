@@ -153,18 +153,23 @@ type type::get_derived_type(void* ptr, const type& source_type) RTTR_NOEXCEPT
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-std::span<type> type::get_base_classes() const RTTR_NOEXCEPT
+std::span<const type> type::get_base_classes() const RTTR_NOEXCEPT
 {
-    return std::span<type>{m_type_data->m_class_data.m_base_types.data(),
+    return std::span<const type>{m_type_data->m_class_data.m_base_types.data(),
         m_type_data->m_class_data.m_base_types.size()};
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-std::span<type> type::get_derived_classes() const RTTR_NOEXCEPT
+std::span<const type> type::get_derived_classes() const RTTR_NOEXCEPT
 {
-    return std::span<type>{m_type_data->m_class_data.m_derived_types.data(),
+    return std::span<const type>{m_type_data->m_class_data.m_derived_types.data(),
                              m_type_data->m_class_data.m_derived_types.size()};
+}
+
+variant type::get_metadata(const std::string_view& key) const
+{
+    return detail::type_register_private::get_metadata(*this, key);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

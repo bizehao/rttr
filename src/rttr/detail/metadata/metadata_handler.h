@@ -30,7 +30,8 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/variant.h"
-
+#include <unordered_map>
+#include  <string_view>
 #include <array>
 
 namespace rttr

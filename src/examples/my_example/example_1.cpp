@@ -16,9 +16,10 @@ void testfun(int a = 1, double b = 3.14, float c = 66.6f, std::string d = "hello
     std::cout << std::format("a: {}, b: {}, c: {}, d: {}, e: {}\n", a, b, c, d, e);
 }
 
-//todo: 为class添加metadata
+struct
 [[=metadata("test4", "123213")]]
-struct TestOperator
+[[=metadata("test2", std::vector{5,6,7,8})]]
+TestOperator
 {
     void operator()(int a)
     {
@@ -65,7 +66,7 @@ int main()
 {
 
     // using namespace std::string_literals;
-    auto md = type::get_global_method("testfun");
+    auto md = type::get<TestOperator>();
 
     std::vector<int> arr{1,2,3};
     rttr::variant vv = md.get_metadata("test2");
@@ -74,7 +75,7 @@ int main()
 
     //bool b = vv.is_sequential_container();
 
-    std::span<const int> barr;
+    std::vector<int> barr;
     vv.convert(barr);
 
     // std::span<int> vec;

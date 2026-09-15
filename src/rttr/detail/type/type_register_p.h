@@ -121,6 +121,9 @@ public:
     const type_comparator_base* get_less_than_comparator(const type& t);
 
     /////////////////////////////////////////////////////////////////////////////////////
+    static variant get_metadata(const rttr::type& t, const std::string_view& key);
+    static variant get_metadata(const std::string_view& key, const std::unordered_map<std::string_view, variant>& data);
+    /////////////////////////////////////////////////////////////////////////////////////
 
     static type_register_private& get_instance();
 

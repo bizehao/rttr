@@ -144,9 +144,15 @@ bool type_register::unregister_enumeration(enumeration_wrapper_base* enum_data)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void type_register::custom_name(type& t, std::string_view custom_name)
+void type_register::custom_name(rttr::type& t, std::string_view custom_name)
 {
      type_register_private::get_instance().register_custom_name(t, custom_name);
+}
+
+void type_register::metadata(const rttr::type& t, std::unordered_map<std::string_view, variant> data)
+{
+    auto& vec_to_insert = t.m_type_data->get_metadata();
+    vec_to_insert.merge(data);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -193,11 +199,11 @@ bool type_register::unregister_less_than_comparator(const type_comparator_base* 
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void type_register::register_base_class(const type& derived_type, const base_class_info& base_info)
+void type_register::register_base_class(const rttr::type& derived_type, const base_class_info& base_info)
 {
     auto& class_data = derived_type.m_type_data->m_class_data;
     auto itr = std::find_if(class_data.m_base_types.begin(), class_data.m_base_types.end(),
-    [base_info](const type& t)
+    [base_info](const rttr::type& t)
     {
         return (t == base_info.m_base_type);
     });
@@ -974,6 +980,24 @@ const type_comparator_base* type_register_private::get_equal_comparator(const ty
 const type_comparator_base* type_register_private::get_less_than_comparator(const type& t)
 {
     return get_type_comparator_impl(t, m_type_less_than_cmp_list);
+}
+
+variant type_register_private::get_metadata(const rttr::type& t, const std::string_view& key)
+{
+    auto& meta_vec = t.m_type_data->get_metadata();
+    return get_metadata(key, meta_vec);
+}
+
+variant type_register_private::get_metadata(const std::string_view& key, const std::unordered_map<std::string_view, variant>& data)
+{
+    if (const auto target = data.find(key); target == data.end())
+    {
+        return {};
+    }
+    else
+    {
+        return target->second;
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
