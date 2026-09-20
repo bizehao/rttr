@@ -30,14 +30,13 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/variant.h"
+#include "rttr/detail/metadata/metadata.h"
 #include <unordered_map>
 #include  <string_view>
 #include <array>
 
 namespace rttr
 {
-
-using metadata_list = std::unordered_map<std::string_view, variant>;
 
 namespace detail
 {
@@ -49,24 +48,25 @@ namespace detail
 class metadata_handler
 {
 public:
-    RTTR_FORCE_INLINE metadata_handler(metadata_list meta_datas) : m_metadata_list(std::move(meta_datas))
+    RTTR_FORCE_INLINE metadata_handler(std::vector<metadata> meta_datas) : m_metadata_list(std::move(meta_datas))
     {
     }
 
     RTTR_INLINE variant get_metadata(const std::string_view& key) const
     {
-        if (const auto target = m_metadata_list.find(key); target == m_metadata_list.end())
+        if (const auto target = std::ranges::find_if(m_metadata_list, [&key](auto& v){ return v.get_key() == key; });
+        target != m_metadata_list.end())
         {
-            return {};
+            return target->get_value();
         }
         else
         {
-            return target->second;
+            return {};
         }
     }
 
 private:
-    metadata_list m_metadata_list;
+    std::vector<metadata> m_metadata_list;
 };
 
 } // end namespace detail

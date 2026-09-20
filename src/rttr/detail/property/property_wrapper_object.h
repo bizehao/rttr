@@ -41,7 +41,7 @@ class property_wrapper_object : public property_wrapper_base, public metadata_ha
     using VarType = [:std::meta::type_of(Var):];
 
 public:
-    property_wrapper_object(std::string_view name, metadata_list meta_datas) RTTR_NOEXCEPT
+    property_wrapper_object(std::string_view name, std::vector<metadata> meta_datas) RTTR_NOEXCEPT
         : property_wrapper_base(name, type::get<ParentType>()),
           metadata_handler{std::move(meta_datas)}
     {

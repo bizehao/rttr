@@ -149,10 +149,17 @@ void type_register::custom_name(rttr::type& t, std::string_view custom_name)
      type_register_private::get_instance().register_custom_name(t, custom_name);
 }
 
-void type_register::metadata(const rttr::type& t, std::unordered_map<std::string_view, variant> data)
+void type_register::metadata(const rttr::type& t, std::vector<detail::metadata> data)
 {
     auto& vec_to_insert = t.m_type_data->get_metadata();
-    vec_to_insert.merge(data);
+    for (auto& it : data)
+    {
+        auto iterator = std::ranges::find_if(vec_to_insert, [&it](detail::metadata& v){ return v.get_key() == it.get_key(); });
+        if (iterator == vec_to_insert.end())
+        {
+            vec_to_insert.push_back(std::move(it));
+        }
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -231,15 +238,11 @@ void type_register::register_base_class(const rttr::type& derived_type, const ba
     class_data.m_base_types.clear();
     class_data.m_conversion_list.clear();
 
-    std::transform(tmp_sort_vec.begin(),
-                   tmp_sort_vec.end(),
-                   std::back_inserter(class_data.m_base_types),
-                   [](const sorted_pair& item)-> type { return item.first; });
-
-    std::transform(tmp_sort_vec.begin(),
-                   tmp_sort_vec.end(),
-                   std::back_inserter(class_data.m_conversion_list),
-                   [](const sorted_pair& item)-> rttr_cast_func { return item.second; });
+    for (auto& [f, s] : tmp_sort_vec)
+    {
+        class_data.m_base_types.push_back(f);
+        class_data.m_conversion_list.push_back(s);
+    }
 
     auto r_type = base_info.m_base_type.get_raw_type();
     r_type.m_type_data->m_class_data.m_derived_types.push_back(type(derived_type.m_type_data));
@@ -988,15 +991,16 @@ variant type_register_private::get_metadata(const rttr::type& t, const std::stri
     return get_metadata(key, meta_vec);
 }
 
-variant type_register_private::get_metadata(const std::string_view& key, const std::unordered_map<std::string_view, variant>& data)
+variant type_register_private::get_metadata(const std::string_view& key, const std::vector<metadata>& data)
 {
-    if (const auto target = data.find(key); target == data.end())
+    if (const auto target = std::ranges::find_if(data, [&key](auto& v){ return v.get_key() == key; });
+        target != data.end())
     {
-        return {};
+        return target->get_value();
     }
     else
     {
-        return target->second;
+        return {};
     }
 }
 

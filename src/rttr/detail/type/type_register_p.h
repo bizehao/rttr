@@ -122,7 +122,7 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////
     static variant get_metadata(const rttr::type& t, const std::string_view& key);
-    static variant get_metadata(const std::string_view& key, const std::unordered_map<std::string_view, variant>& data);
+    static variant get_metadata(const std::string_view& key, const std::vector<metadata>& data);
     /////////////////////////////////////////////////////////////////////////////////////
 
     static type_register_private& get_instance();

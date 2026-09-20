@@ -50,7 +50,7 @@ class enumeration_wrapper : public enumeration_wrapper_base, public metadata_han
     static constexpr auto N = enumerators.size();
     using Enum_Type = [:Enum:];
     public:
-        enumeration_wrapper(metadata_list meta_datas) RTTR_NOEXCEPT : metadata_handler{std::move(meta_datas)}
+        enumeration_wrapper(std::vector<metadata> meta_datas) RTTR_NOEXCEPT : metadata_handler{std::move(meta_datas)}
         {
             static_assert(std::is_enum_v<Enum_Type>, "No enum type provided, please create an instance of this class only for enum types!");
 

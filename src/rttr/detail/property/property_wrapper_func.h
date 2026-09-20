@@ -58,7 +58,7 @@ class property_wrapper_function : public property_wrapper_base, public metadata_
     }():];
 
 public:
-    property_wrapper_function(std::string_view name, metadata_list meta_datas) RTTR_NOEXCEPT
+    property_wrapper_function(std::string_view name, std::vector<metadata> meta_datas) RTTR_NOEXCEPT
         : property_wrapper_base(name, type::get<invalid_type>()),
           metadata_handler{std::move(meta_datas)}
     {

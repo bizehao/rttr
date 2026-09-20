@@ -70,7 +70,7 @@ class constructor_wrapper : public constructor_wrapper_base, public metadata_han
         });
 
 public:
-    constructor_wrapper(metadata_list meta_datas) RTTR_NOEXCEPT : metadata_handler{
+    constructor_wrapper(std::vector<metadata> meta_datas) RTTR_NOEXCEPT : metadata_handler{
         std::move(meta_datas)}
     {
         template for (constexpr auto I : std::views::indices(params.size()))
@@ -104,7 +104,6 @@ public:
     }
 
     std::vector<bool> get_is_reference() const override RTTR_NOEXCEPT {
-        //todo
         auto result = []() consteval
         {
             auto tmp = std::views::transform(params,

@@ -82,6 +82,7 @@ set(HEADER_FILES
                  detail/impl/sequential_mapper_impl.h
                  detail/impl/wrapper_mapper_impl.h
                  detail/library/library_p.h
+        detail/metadata/metadata.h
         detail/metadata/metadata_handler.h
                  detail/method/method_wrapper.h
                  detail/method/method_wrapper_base.h

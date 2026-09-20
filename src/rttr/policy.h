@@ -185,13 +185,6 @@ consteval auto metadata(std::string_view key, T data) {
     return metadata_impl(key, pdata);
 }
 
-template<std::convertible_to<std::string_view> T>
-consteval auto metadata(std::string_view key, T data) {
-    ctp::Param pdata = std::define_static_string(std::string_view{data});
-    return metadata_impl(key, pdata);
-}
-
-
 } // end namespace rttr
 
 #endif // RTTR_POLICY_H_

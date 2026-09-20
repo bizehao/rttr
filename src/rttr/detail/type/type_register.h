@@ -29,7 +29,6 @@
 #define RTTR_TYPE_REGISTER_H_
 
 #include "rttr/detail/base/core_prerequisites.h"
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -67,6 +66,7 @@ struct type_getter;
 struct type_data;
 struct class_data;
 
+class metadata;
 class registration_manager;
 
 /*!
@@ -99,7 +99,7 @@ public:
     static bool unregister_enumeration(enumeration_wrapper_base* enum_data);
 
     static void custom_name(rttr::type& t, std::string_view name);
-    static void metadata( const rttr::type& t, std::unordered_map<std::string_view, variant> data);
+    static void metadata( const rttr::type& t, std::vector<detail::metadata> data);
 
     static bool register_converter(const type_converter_base* converter);
     static bool unregister_converter(const type_converter_base* converter);

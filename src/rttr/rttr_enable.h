@@ -78,7 +78,7 @@
 
 #else
 
-#define RTTR_ENABLE(...) \
+#define RTTR_ENABLE() \
 public:\
 RTTR_BEGIN_DISABLE_OVERRIDE_WARNING \
     [[=rttr::class_op::ignore]] \

@@ -44,7 +44,7 @@ class destructor_wrapper : public destructor_wrapper_base, public metadata_handl
     using Class_Type = [:std::meta::parent_of(Dector):];
 
 public:
-    destructor_wrapper(metadata_list meta_datas) : metadata_handler{std::move(meta_datas)}
+    destructor_wrapper(std::vector<metadata> meta_datas) : metadata_handler{std::move(meta_datas)}
     {
     }
 

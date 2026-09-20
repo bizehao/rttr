@@ -67,7 +67,7 @@ class method_wrapper : public method_wrapper_base, public metadata_handler
     }();
     static constexpr auto default_args_num = std::ranges::count_if(params, [](std::meta::info const& i) { return std::meta::has_default_argument(i);});
     public:
-        method_wrapper(std::string_view name, metadata_list meta_datas) RTTR_NOEXCEPT
+        method_wrapper(std::string_view name, std::vector<metadata> meta_datas) RTTR_NOEXCEPT
         :   method_wrapper_base(name, type::get<Declaring_Type>()), metadata_handler{std::move(meta_datas)}
         {
             if constexpr (op == method_policy::return_as_ptr) {

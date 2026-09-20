@@ -28,6 +28,7 @@
 #ifndef RTTR_TYPE_DATA_H_
 #define RTTR_TYPE_DATA_H_
 
+#include "rttr/detail/metadata/metadata.h"
 #include "rttr/detail/misc/misc_type_traits.h"
 #include "rttr/detail/misc/function_traits.h"
 #include "rttr/detail/misc/template_type_trait.h"
@@ -42,6 +43,7 @@
 #include "rttr/constructor.h"
 #include "rttr/destructor.h"
 #include "rttr/variant.h"
+
 
 #include <type_traits>
 #include <bitset>
@@ -114,7 +116,7 @@ namespace impl
 using create_variant_func = decltype(&create_invalid_variant_policy::create_variant);
 using get_base_types_func = decltype(&base_classes<int>::get_types);
 using create_wrapper_func = void(*)(const argument& arg, variant& var);
-using get_metadata_func = std::unordered_map<std::string_view, variant>& (*) ();
+using get_metadata_func = std::vector<detail::metadata>& (*) ();
 using get_class_data_func = class_data& (*) ();
 
 } // end namespace impl
@@ -135,7 +137,7 @@ struct RTTR_LOCAL type_data
 
     impl::create_variant_func create_variant;
 
-    // FIXME: this info should not be stored, its just temporarily,
+    // this info should not be stored, its just temporarily,
     // thats why we store it as function pointer
     impl::get_base_types_func get_base_types;
 
@@ -187,9 +189,9 @@ RTTR_LOCAL RTTR_INLINE impl::create_wrapper_func get_create_wrapper_func()
 }
 
 template <typename T>
-RTTR_LOCAL RTTR_INLINE std::unordered_map<std::string_view, variant>& get_metadata_func_impl()
+RTTR_LOCAL RTTR_INLINE std::vector<detail::metadata>& get_metadata_func_impl()
 {
-    static std::unique_ptr<std::unordered_map<std::string_view, variant>> obj = std::make_unique<std::unordered_map<std::string_view, variant>>();
+    static std::unique_ptr<std::vector<detail::metadata>> obj = std::make_unique<std::vector<detail::metadata>>();
     return (*obj.get());
 }
 

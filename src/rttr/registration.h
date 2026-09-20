@@ -36,6 +36,7 @@
 #include "rttr/detail/enumeration/enumeration_wrapper.h"
 #include "rttr/detail/constructor/constructor_wrapper.h"
 #include "rttr/detail/destructor/destructor_wrapper.h"
+#include "rttr/detail/metadata/metadata.h"
 #include <meta>
 
 namespace rttr
@@ -193,9 +194,9 @@ private:
     }
 
     template <std::meta::info info>
-    static std::unordered_map<std::string_view, variant> get_target_metadata()
+    static std::vector<detail::metadata> get_target_metadata()
     {
-        std::unordered_map<std::string_view, variant> result;
+        std::vector<detail::metadata> result;
         static constexpr auto metadata_tag_vec = std::define_static_array(
             std::meta::annotations_of(info));
         template for (constexpr auto it : metadata_tag_vec)
@@ -206,8 +207,16 @@ private:
                 using T = [:t:];
                 constexpr auto obj = std::meta::extract<T>(it);
                 constexpr auto key = obj.key;
-                auto value = obj.data.reduction();
-                result.insert(std::make_pair(key, value));
+                auto r = std::ranges::find_if(result, [](detail::metadata& it){ return it.get_key() == key; });
+                if (r == result.end())
+                {
+                    auto value = obj.data.reduction();
+                    result.emplace_back(key, value);
+                }
+                else
+                {
+                    //重复key会被排除
+                }
             }
         }
         return result;
@@ -225,8 +234,10 @@ public:
         auto t = type::get<Clazz>();
         detail::type_register::custom_name(t, name);
 
-        std::unordered_map<std::string_view, variant> metadata = get_target_metadata<ClassRefl>();
-        detail::type_register::metadata(t, std::move(metadata));
+        if (auto metadata = get_target_metadata<ClassRefl>(); !metadata.empty())
+        {
+            detail::type_register::metadata(t, std::move(metadata));
+        }
 
         //unprivileged unchecked
         constexpr auto access_context = std::meta::access_context::unprivileged();
@@ -471,7 +482,7 @@ public:
     //默认参数和参数名字会失效
     template <auto Fun, policy::method PolicyOp = policy::method::op_default, typename MetaT = void>
         requires (detail::is_function_ptr<decltype(Fun)>::value)
-    static void do_method_overload(std::string_view name, std::in_place_type_t<MetaT> = {})
+    static void do_method_overload(std::string_view name, std::in_place_type_t<MetaT> = std::in_place_type_t<MetaT>{})
     {
         constexpr auto p = policy::transform(PolicyOp);
         using Cur_Fun = detail::function_traits<decltype(Fun)>;
@@ -479,7 +490,7 @@ public:
         {
             return [](std::tuple_element_t<Is, typename Cur_Fun::arg_types>... args)
             {
-                Fun(std::forward<std::tuple_element_t<Is, typename Cur_Fun::arg_types> >(args)...);
+                return Fun(std::forward<std::tuple_element_t<Is, typename Cur_Fun::arg_types> >(args)...);
             };
         }(std::make_index_sequence<Cur_Fun::arg_count>{});
 
