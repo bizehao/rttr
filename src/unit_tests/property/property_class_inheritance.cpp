@@ -64,7 +64,7 @@ namespace ns_property {
         [[=rttr::class_op::rename("left")]]
         bool _p2;
 
-        RTTR_ENABLE(top)
+        RTTR_ENABLE()
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ namespace ns_property {
         [[=rttr::class_op::rename("right")]]
         bool _p3;
 
-        RTTR_ENABLE(top)
+        RTTR_ENABLE()
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ namespace ns_property {
         [[=rttr::class_op::rename("bottom")]]
         double _p5;
 
-        RTTR_ENABLE(left, right, right_2)
+        RTTR_ENABLE()
     };
 }
 

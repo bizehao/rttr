@@ -66,7 +66,7 @@ struct base_class_with_methods {
 };
 
 struct derived_class_without_registered_methods : base_class_with_methods {
-    RTTR_ENABLE(base_class_with_methods)
+    RTTR_ENABLE()
 };
 
 
@@ -209,6 +209,11 @@ TEST_CASE (
     // base class has registered methodes, the derived class not
     type t = type::get<derived_class_without_registered_methods>();
     auto meth_range = t.get_methods();
+    for (auto p : meth_range)
+    {
+        auto ss = p.get_name();
+        int _d = 0;
+    }
     REQUIRE(meth_range.size() == 1);
 
     CHECK((*meth_range.begin()).get_name() == "some_method");

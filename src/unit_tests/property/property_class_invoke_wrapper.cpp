@@ -48,7 +48,7 @@ struct property_wrapper_test_base {
 struct property_wrapper_test : property_wrapper_test_base {
     bool p2;
 
-    RTTR_ENABLE(property_wrapper_test_base)
+    RTTR_ENABLE()
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -199,20 +199,20 @@ struct DiamondTop {
 struct DiamondLeft : virtual DiamondTop {
     bool _left_var = true;
 
-    RTTR_ENABLE(DiamondTop)
+    RTTR_ENABLE()
 };
 
 struct DiamondRight : virtual DiamondTop {
     std::string _text = "Hello World";
 
-    RTTR_ENABLE(DiamondTop)
+    RTTR_ENABLE()
 };
 
 
 struct DiamondBottom : DiamondLeft, DiamondRight {
     int _finalVar = 42;
 
-    RTTR_ENABLE(DiamondLeft, DiamondRight)
+    RTTR_ENABLE()
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////

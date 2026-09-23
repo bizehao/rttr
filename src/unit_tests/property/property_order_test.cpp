@@ -53,7 +53,7 @@ struct property_order_test_derived : property_order_test_base {
     // member with SAME name as base
     std::string _whoami;
 
-    RTTR_ENABLE(property_order_test_base)
+    RTTR_ENABLE()
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////

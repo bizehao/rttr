@@ -274,7 +274,10 @@ namespace rttr {
                                 return ss.substr(b, e - b);
                             }();
 
-                            do_method<member, get_policy<policy::method>(member)>(operator_name);
+                            if constexpr(!std::meta::is_defaulted(member))
+                            {
+                                do_method<member, get_policy<policy::method>(member)>(operator_name);
+                            }
                         }
                         else if constexpr (std::meta::is_conversion_function(member)) {
                             constexpr auto rt = std::meta::return_type_of(member);
@@ -385,12 +388,14 @@ namespace rttr {
                           check_get_set_fun(SetVar) || detail::is_lambda(SetVar)))
         static void do_property(std::string_view name) {
             constexpr auto pair = policy::transform(PolicyOp);
+
+            auto l_metadata= get_target_metadata<GetVar>();
+            auto r_metadata = get_target_metadata<SetVar>();
+            l_metadata.insert(l_metadata.end(), r_metadata.begin(), r_metadata.end());
+
             detail::store_item<detail::invalid_type>(
                 std::make_unique<detail::property_wrapper_function<
-                    GetVar, SetVar, pair.first, pair.second> >(name,
-                                                               detail::concat_metadata(
-                                                                   get_target_metadata<GetVar>(),
-                                                                   get_target_metadata<SetVar>())));
+                    GetVar, SetVar, pair.first, pair.second> >(name, l_metadata));
         }
 
         template<std::meta::info GetVar, policy::prop PolicyOp = policy::prop::op_default>

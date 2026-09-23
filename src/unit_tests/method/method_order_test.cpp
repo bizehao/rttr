@@ -50,7 +50,7 @@ struct method_order_test_derived : method_order_test_base {
     std::string whoami() { return "I am a non-virtual derived method with same name"; }
     std::string vwhoami() override { return "I am a virtual derived method with same name"; }
 
-    RTTR_ENABLE(method_order_test_base)
+    RTTR_ENABLE()
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////

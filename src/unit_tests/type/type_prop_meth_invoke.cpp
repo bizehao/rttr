@@ -37,7 +37,7 @@ struct type_prop_invoke_test_base {
 struct type_prop_invoke_test : type_prop_invoke_test_base {
     std::string p2 = "text";
 
-    RTTR_ENABLE(type_prop_invoke_test_base)
+    RTTR_ENABLE()
 };
 
 static int g_prop_invoke = 42;

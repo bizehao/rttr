@@ -28,15 +28,11 @@
 project(example_1 LANGUAGES CXX)
 
 set(HPP_FILES)
-set(SRC_FILES "example_1.cpp" "other_impl.cpp")
-
-#if (USE_PCH)
-#  activate_precompiled_headers("pch.h" SRC_FILES)
-#endif()
+set(SRC_FILES "example_1.cpp")
 
 add_executable(example_1 ${SRC_FILES} ${HPP_FILES})
 target_link_libraries(example_1 rttr_core_lib stdc++exp)
-target_include_directories(example_1 PUBLIC ${RAPID_JSON_DIR})
+#target_include_directories(example_1)
 set_target_properties(example_1 PROPERTIES
         DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
         FOLDER "Examples"
