@@ -1,7 +1,8 @@
 Enums {#register_enums_page}
 =====
 
-RTTR allows also to register enumerated constants (enums). Therefore use the function @ref rttr::registration::enumeration() "registration::enumeration()".
+RTTR allows also to register enumerated constants (enums). Therefore use the function @ref rttr::registration::
+enumeration () "registration::enumeration ()".
 
 It has following synopsis:
 
@@ -35,10 +36,13 @@ RTTR_REGISTRATION
                   );
 }
 ~~~~
-In order to add the individual enumerators you have to use the `()` operator of the returned @ref rttr::registration::bind "bind" object.
-Then you call for every enumerator you want to add, the function @ref rttr::value() "value()".
+
+In order to add the individual enumerators you have to use the `()` operator of the returned @ref rttr::registration::
+bind "bind" object.
+Then you call for every enumerator you want to add, the function @ref rttr::value () "value ()".
 
 It has following synopsis:
+
 ~~~~{.cpp}
     template<typename Enum_Type>
     detail::enum_data<Enum_Type> value(string_view name, Enum_Type value);
@@ -46,10 +50,11 @@ It has following synopsis:
 
 The *name* is a `string_view` and the *value* is the enum value.
 
-The class @ref rttr::enumeration "enumeration" contains several meta information about an enum with conversion 
+The class @ref rttr::enumeration "enumeration" contains several meta information about an enum with conversion
 functions between the value representation and its literal representation.
 
 How to use the enumeration class shows following example:
+
 ~~~~{.cpp}
     using namespace rttr;  
     type enum_type = type::get_by_name("E_Alignment");
@@ -64,12 +69,15 @@ How to use the enumeration class shows following example:
     }
 ~~~~
 
-@remark You can also use the @ref rttr::variant "variant" class to convert from an enum value to is integral or string representation.
+@remark You can also use the @ref rttr::variant "variant" class to convert from an enum value to is integral or string
+representation.
+
 ~~~~{.cpp}
     variant var = E_Alignment::AlignHCenter;
     std::cout << var.to_int() << std::endl; // prints '4'
     std::cout << var.to_string() << std::endl; // prints 'AlignHCenter'
 ~~~~
+
 <hr>
 
 <div type="button" class="btn btn-default doxy-button">[previous](@ref register_properties_page "Register Properties")</div><div class="btn btn-default doxy-button">[next](@ref register_variant_page "Variant")</div>

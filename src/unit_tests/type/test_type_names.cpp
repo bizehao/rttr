@@ -33,7 +33,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("type get_name", "[type]")
+TEST_CASE (
+"type get_name"
+,
+"[type]"
+)
 {
    CHECK(type::get<int*>().get_name() == "int*");
    CHECK(type::get<const int*>().get_name() == "const int*");
@@ -43,7 +47,11 @@ TEST_CASE("type get_name", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - type::get_by_name", "[type]")
+TEST_CASE (
+"Test rttr::type - type::get_by_name"
+,
+"[type]"
+)
 {
     CHECK(type::get_by_name("std::string").is_valid()   == true);
     CHECK(type::get_by_name("std::string*").is_valid()  == true);

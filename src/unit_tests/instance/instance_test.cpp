@@ -30,21 +30,25 @@
 
 using namespace rttr;
 
-struct instance_base
-{
-    virtual ~instance_base() {}
+struct instance_base {
+    virtual ~instance_base() {
+    }
+
     RTTR_ENABLE();
 };
 
-struct instance_derived : instance_base
-{
+struct instance_derived : instance_base {
     RTTR_ENABLE();
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("instance - empty", "[instance]")
+TEST_CASE (
+"instance - empty"
+,
+"[instance]"
+)
 {
     instance obj;
     CHECK(obj.is_valid() == false);
@@ -56,7 +60,11 @@ TEST_CASE("instance - empty", "[instance]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("instance - valid", "[instance]")
+TEST_CASE (
+"instance - valid"
+,
+"[instance]"
+)
 {
     std::string text = "test";
     instance obj = text;
@@ -69,7 +77,11 @@ TEST_CASE("instance - valid", "[instance]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("instance - derived", "[instance]")
+TEST_CASE (
+"instance - derived"
+,
+"[instance]"
+)
 {
     instance_derived d;
     instance_base& base = d;
@@ -83,7 +95,11 @@ TEST_CASE("instance - derived", "[instance]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("instance - wrapped derived type", "[instance]")
+TEST_CASE (
+"instance - wrapped derived type"
+,
+"[instance]"
+)
 {
     std::shared_ptr<instance_base> b = std::make_shared<instance_derived>();
     instance obj = b;

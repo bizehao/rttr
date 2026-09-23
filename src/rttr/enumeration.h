@@ -36,18 +36,16 @@
 #include <string>
 #include <string_view>
 
-namespace rttr
-{
-class type;
-class variant;
-class argument;
+namespace rttr {
+    class type;
+    class variant;
+    class argument;
 
-namespace detail
-{
-    class enumeration_wrapper_base;
-}
+    namespace detail {
+        class enumeration_wrapper_base;
+    }
 
-/*!
+    /*!
  * The \ref enumeration class provides several meta information about an enum.
  *
  * A instance of an enumeration class can only be obtained from the \ref type class or the \ref property class.
@@ -109,8 +107,7 @@ namespace detail
  *
  * \see method, property, constructor and type
  */
-class RTTR_API enumeration
-{
+    class RTTR_API enumeration {
     public:
         /*!
          * \brief Returns true if this \ref enumeration is valid, otherwise false.
@@ -140,7 +137,7 @@ class RTTR_API enumeration
          */
         type get_underlying_type() const RTTR_NOEXCEPT;
 
-        variant get_metadata(const std::string_view& key) const;
+        variant get_metadata(const std::string_view &key) const;
 
         /*!
          * \brief Returns the type object of this \ref enumeration.
@@ -169,7 +166,7 @@ class RTTR_API enumeration
         std::span<const std::string_view> get_names() const RTTR_NOEXCEPT;
 
 
-         /*!
+        /*!
          * \brief Returns all enum values registered for this enumeration.
          *
          * \remark When the enumeration is invalid then an empty range is returned.
@@ -198,26 +195,27 @@ class RTTR_API enumeration
          *
          * \return True if both enumerations are equal, otherwise false.
          */
-        bool operator==(const enumeration& other) const RTTR_NOEXCEPT;
+        bool operator==(const enumeration &other) const RTTR_NOEXCEPT;
 
         /*!
          * Returns true if this enumeration is the not the same like the \p other.
          *
          * \return True if both enumerations are different, otherwise false.
          */
-        bool operator!=(const enumeration& other) const RTTR_NOEXCEPT;
+        bool operator!=(const enumeration &other) const RTTR_NOEXCEPT;
 
     private:
-        enumeration(const detail::enumeration_wrapper_base* wrapper) RTTR_NOEXCEPT;
+        enumeration(const detail::enumeration_wrapper_base *wrapper) RTTR_NOEXCEPT;
 
         template<typename T>
-        friend T detail::create_item(const detail::class_item_to_wrapper_t<T>* wrapper);
+        friend T detail::create_item(const detail::class_item_to_wrapper_t<T> *wrapper);
+
         template<typename T>
         friend T detail::create_invalid_item();
-    private:
-        const detail::enumeration_wrapper_base* m_wrapper;
-};
 
+    private:
+        const detail::enumeration_wrapper_base *m_wrapper;
+    };
 } // end namespace rttr
 
 #endif // RTTR_ENUMERATION_H_

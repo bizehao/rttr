@@ -31,26 +31,27 @@
 
 using namespace rttr;
 
-struct type_with_equal_operator
-{
+struct type_with_equal_operator {
     int i;
 
-    bool operator ==(const type_with_equal_operator& other) const { return (i == other.i); }
+    bool operator ==(const type_with_equal_operator &other) const { return (i == other.i); }
 };
 
-struct type_with_no_equal_operator
-{
+struct type_with_no_equal_operator {
     int i;
 };
 
-struct other_type_with_no_equal_operator
-{
+struct other_type_with_no_equal_operator {
     int i;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - empty", "[variant]")
+TEST_CASE (
+"variant::operator==() - empty"
+,
+"[variant]"
+)
 {
     SECTION("empty type")
     {
@@ -82,7 +83,11 @@ TEST_CASE("variant::operator==() - empty", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - basic", "[variant]")
+TEST_CASE (
+"variant::operator==() - basic"
+,
+"[variant]"
+)
 {
     SECTION("int - equal")
     {
@@ -168,14 +173,17 @@ TEST_CASE("variant::operator==() - basic", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class COLOR
-{
+enum class COLOR {
     RED,
     GREEN,
     BLUE
 };
 
-TEST_CASE("variant::operator==() - enums", "[variant]")
+TEST_CASE (
+"variant::operator==() - enums"
+,
+"[variant]"
+)
 {
     variant a = COLOR::RED;
     variant b = 0;
@@ -199,7 +207,11 @@ TEST_CASE("variant::operator==() - enums", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - raw arrays", "[variant]")
+TEST_CASE (
+"variant::operator==() - raw arrays"
+,
+"[variant]"
+)
 {
     SECTION("int - pos.")
     {
@@ -266,7 +278,11 @@ TEST_CASE("variant::operator==() - raw arrays", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - custom type with equal operator", "[variant]")
+TEST_CASE (
+"variant::operator==() - custom type with equal operator"
+,
+"[variant]"
+)
 {
     SECTION("equal - type_with_equal_operator")
     {
@@ -293,7 +309,11 @@ TEST_CASE("variant::operator==() - custom type with equal operator", "[variant]"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - std::string", "[variant]")
+TEST_CASE (
+"variant::operator==() - std::string"
+,
+"[variant]"
+)
 {
     SECTION("equal")
     {
@@ -316,26 +336,33 @@ TEST_CASE("variant::operator==() - std::string", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-struct point
-{
-    point(int x, int y) : _x(x), _y(y) {}
+struct point {
+    point(int x, int y) : _x(x), _y(y) {
+    }
 
-    point(const point& other) : _x(other._x), _y(other._y) { }
+    point(const point &other) : _x(other._x), _y(other._y) {
+    }
 
-    point(point&& other) : _x(other._x), _y(other._y) { other._x = 0; other._y = 0; }
+    point(point &&other) : _x(other._x), _y(other._y) {
+        other._x = 0;
+        other._y = 0;
+    }
 
-    bool operator ==(const point& other) const { return (_x == other._x && _y == other._y); }
+    bool operator ==(const point &other) const { return (_x == other._x && _y == other._y); }
     int _x;
     int _y;
 };
 
-static std::string convert_to_string(const point& p, bool& ok)
-{
+static std::string convert_to_string(const point &p, bool &ok) {
     ok = true;
     return "[" + std::to_string(p._x) + ", " + std::to_string(p._y) + "]";
 }
 
-TEST_CASE("variant::operator==() - custom", "[variant]")
+TEST_CASE (
+"variant::operator==() - custom"
+,
+"[variant]"
+)
 {
     type::register_converter_func(convert_to_string);
 
@@ -384,7 +411,11 @@ TEST_CASE("variant::operator==() - custom", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - no build in == operator", "[variant]")
+TEST_CASE (
+"variant::operator==() - no build in == operator"
+,
+"[variant]"
+)
 {
     SECTION("no equal operator, same types, same values")
     {
@@ -416,7 +447,11 @@ TEST_CASE("variant::operator==() - no build in == operator", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - template type - comparator registered", "[variant]")
+TEST_CASE (
+"variant::operator==() - template type - comparator registered"
+,
+"[variant]"
+)
 {
     SECTION("same types, same content")
     {
@@ -452,7 +487,11 @@ TEST_CASE("variant::operator==() - template type - comparator registered", "[var
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - nullptr type", "[variant]")
+TEST_CASE (
+"variant::operator==() - nullptr type"
+,
+"[variant]"
+)
 {
     SECTION("nullptr == nullptr")
     {
@@ -501,7 +540,11 @@ TEST_CASE("variant::operator==() - nullptr type", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator==() - pointer type", "[variant]")
+TEST_CASE (
+"variant::operator==() - pointer type"
+,
+"[variant]"
+)
 {
     SECTION("valid pointer compare")
     {

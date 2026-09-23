@@ -39,22 +39,25 @@ namespace detail
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-    template<typename T>
-    struct remove_reference_wrapper_impl {
-        using type = T;
-    };
-    template<typename T>
-    struct remove_reference_wrapper_impl<std::reference_wrapper<T>> {
-        using type = remove_reference_wrapper_impl<T>::type;
-    };
+template <typename T>
+struct remove_reference_wrapper_impl
+{
+    using type = T;
+};
 
-    template<typename T>
-    using remove_reference_wrapper = remove_reference_wrapper_impl<T>::type;
+template <typename T>
+struct remove_reference_wrapper_impl<std::reference_wrapper<T> >
+{
+    using type = remove_reference_wrapper_impl<T>::type;
+};
+
+template <typename T>
+using remove_reference_wrapper = remove_reference_wrapper_impl<T>::type;
 //todo:bzh mingw:bug requires() { array == array }; 数组比较
-template<typename T>
+template <typename T>
 RTTR_INLINE bool compare_less_than(const T& lhs, const T& rhs, int& result)
 {
-    if constexpr (is_less_than_comparable<remove_reference_wrapper<T>>::value)
+    if constexpr (is_less_than_comparable<remove_reference_wrapper<T> >::value)
     {
         result = (lhs < rhs ? -1 : ((rhs < lhs) ? 1 : 0));
         return true;
@@ -66,7 +69,7 @@ RTTR_INLINE bool compare_less_than(const T& lhs, const T& rhs, int& result)
             result = compare_array_less(lhs, rhs) ? -1 : 1;
             return true;
         }
-        else 
+        else
         {
             return compare_types_less_than(&lhs, &rhs, type::get<T>(), result);
         }

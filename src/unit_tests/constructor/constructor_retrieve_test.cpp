@@ -31,30 +31,37 @@
 
 using namespace rttr;
 
-struct ctor_test
-{
+struct ctor_test {
     [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
-    ctor_test(){}
-
-    [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
-    ctor_test(const ctor_test& other) {}
+    ctor_test() {
+    }
 
     [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
-    ctor_test(int, double) {}
+    ctor_test(const ctor_test &other) {
+    }
 
-    ctor_test(int, double, float) {}
+    [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
+    ctor_test(int, double) {
+    }
 
-    ctor_test(int, double, float, float) {}
+    ctor_test(int, double, float) {
+    }
+
+    ctor_test(int, double, float, float) {
+    }
 };
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_class<^^ctor_test>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - retrieve", "[constructor]")
+TEST_CASE (
+"constructor - retrieve"
+,
+"[constructor]"
+)
 {
     type t = type::get<ctor_test>();
     REQUIRE(t.is_valid() == true);

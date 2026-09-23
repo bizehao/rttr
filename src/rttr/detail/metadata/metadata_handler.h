@@ -35,41 +35,34 @@
 #include  <string_view>
 #include <array>
 
-namespace rttr
-{
-
-namespace detail
-{
-
-/*!
+namespace rttr {
+    namespace detail {
+        /*!
  * This class holds an index to possible meta data.
  * This can be also a name or the declaring type of a property or method.
  */
-class metadata_handler
-{
-public:
-    RTTR_FORCE_INLINE metadata_handler(std::vector<metadata> meta_datas) : m_metadata_list(std::move(meta_datas))
-    {
-    }
+        class metadata_handler {
+        public:
+            RTTR_FORCE_INLINE metadata_handler(std::vector<metadata> meta_datas) : m_metadata_list(
+                std::move(meta_datas)) {
+            }
 
-    RTTR_INLINE variant get_metadata(const std::string_view& key) const
-    {
-        if (const auto target = std::ranges::find_if(m_metadata_list, [&key](auto& v){ return v.get_key() == key; });
-        target != m_metadata_list.end())
-        {
-            return target->get_value();
-        }
-        else
-        {
-            return {};
-        }
-    }
+    RTTR_INLINE variant get_metadata(const std::string_view &key) const {
+                if (const auto target = std::ranges::find_if(m_metadata_list, [&key](auto &v) {
+                        return v.get_key() == key;
+                    });
+                    target != m_metadata_list.end()) {
+                    return target->get_value();
+                }
+                else {
+                    return {};
+                }
+            }
 
-private:
-    std::vector<metadata> m_metadata_list;
-};
-
-} // end namespace detail
+        private:
+            std::vector<metadata> m_metadata_list;
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_METADATA_HANDLER_H_

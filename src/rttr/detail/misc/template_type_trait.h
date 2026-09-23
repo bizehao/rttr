@@ -35,24 +35,20 @@
 #include <ranges>
 #include <meta>
 
-namespace rttr
-{
-class type;
+namespace rttr {
+    class type;
 
-namespace detail
-{
+    namespace detail {
+        template<typename T>
+        struct template_type_trait;
 
-template<typename T>
-struct template_type_trait;
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        constexpr bool is_template_instance = template_type_trait<T>::value;
 
-template<typename T>
-constexpr bool is_template_instance = template_type_trait<T>::value;
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-}   // end namespace detail
-}   // end namespace rttr
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
+} // end namespace rttr
 
 #endif // RTTR_TEMPLATE_TYPE_TRAIT_H_

@@ -34,21 +34,19 @@
 #include <string>
 #include <string_view>
 
-namespace rttr
-{
-class variant;
-class type;
-class enumeration;
-class instance;
-class argument;
-class property;
+namespace rttr {
+    class variant;
+    class type;
+    class enumeration;
+    class instance;
+    class argument;
+    class property;
 
-namespace detail
-{
-    class property_wrapper_base;
-}
+    namespace detail {
+        class property_wrapper_base;
+    }
 
-/*!
+    /*!
  * The \ref property class provides several meta information about a property and gives read/write access to its value.
  *
  * A instance of a property class can only be obtained from the \ref type class.
@@ -111,8 +109,7 @@ namespace detail
  *
  * \see method, enumeration, constructor and type
  */
-class RTTR_API property
-{
+    class RTTR_API property {
     public:
         /*!
          * \brief Returns true if this property is valid, otherwise false.
@@ -156,7 +153,7 @@ class RTTR_API property
          */
         bool is_enumeration() const RTTR_NOEXCEPT;
 
-       /*!
+        /*!
          * \brief Returns the enumerator if this property is an enum type;
          *        otherwise the returned value is \ref enumeration::is_valid "not valid".
          *
@@ -184,7 +181,7 @@ class RTTR_API property
          */
         type get_type() const RTTR_NOEXCEPT;
 
-        variant get_metadata(const std::string_view& key) const;
+        variant get_metadata(const std::string_view &key) const;
 
         /*!
          * \brief Returns the \ref type of the class or struct that declares this property.
@@ -225,28 +222,28 @@ class RTTR_API property
          *
          * \return True if both properties are equal, otherwise false.
          */
-        bool operator==(const property& other) const RTTR_NOEXCEPT;
+        bool operator==(const property &other) const RTTR_NOEXCEPT;
 
         /*!
          * Returns true if this property is the not the same like the \p other.
          *
          * \return True if both properties are different, otherwise false.
          */
-        bool operator!=(const property& other) const RTTR_NOEXCEPT;
+        bool operator!=(const property &other) const RTTR_NOEXCEPT;
 
     private:
         //! Constructs a property from a property_wrapper_base.
-        property(const detail::property_wrapper_base* wrapper) RTTR_NOEXCEPT;
+        property(const detail::property_wrapper_base *wrapper) RTTR_NOEXCEPT;
 
         template<typename T>
-        friend T detail::create_item(const detail::class_item_to_wrapper_t<T>* wrapper);
+        friend T detail::create_item(const detail::class_item_to_wrapper_t<T> *wrapper);
+
         template<typename T>
         friend T detail::create_invalid_item();
 
     private:
-        const detail::property_wrapper_base* m_wrapper;
-};
-
+        const detail::property_wrapper_base *m_wrapper;
+    };
 } // end namespace rttr
 
 #endif // RTTR_PROPERTY_H_

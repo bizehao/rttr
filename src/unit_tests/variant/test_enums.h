@@ -30,8 +30,7 @@
 
 #include <cstdint>
 
-enum class variant_enum_test : uint8_t
-{
+enum class variant_enum_test : uint8_t {
     VALUE_0 = 0,
     VALUE_1 = 1,
     VALUE_2 = 2
@@ -39,8 +38,7 @@ enum class variant_enum_test : uint8_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class variant_enum_test_big : int32_t
-{
+enum class variant_enum_test_big : int32_t {
     VALUE_0 = 500,
     VALUE_1 = 501,
     VALUE_2 = 502
@@ -48,16 +46,14 @@ enum class variant_enum_test_big : int32_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_bool : bool
-{
+enum class enum_bool : bool {
     ON = true,
     OFF = false
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_int8_t : int8_t
-{
+enum class enum_int8_t : int8_t {
     VALUE_1 = 100,
     VALUE_2,
     VALUE_3,
@@ -67,8 +63,7 @@ enum class enum_int8_t : int8_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_int16_t : int16_t
-{
+enum class enum_int16_t : int16_t {
     VALUE_1 = 32760,
     VALUE_2,
     VALUE_3,
@@ -78,8 +73,7 @@ enum class enum_int16_t : int16_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_int32_t : int32_t
-{
+enum class enum_int32_t : int32_t {
     VALUE_1 = 2147483630,
     VALUE_2,
     VALUE_3,
@@ -89,8 +83,7 @@ enum class enum_int32_t : int32_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_int64_t : int64_t
-{
+enum class enum_int64_t : int64_t {
     VALUE_1 = 8223372036854775807L,
     VALUE_2,
     VALUE_3,
@@ -100,8 +93,7 @@ enum class enum_int64_t : int64_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_uint8_t : uint8_t
-{
+enum class enum_uint8_t : uint8_t {
     VALUE_1 = 200U,
     VALUE_2,
     VALUE_3,
@@ -110,8 +102,7 @@ enum class enum_uint8_t : uint8_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_uint16_t : uint16_t
-{
+enum class enum_uint16_t : uint16_t {
     VALUE_1 = 65530,
     VALUE_2,
     VALUE_3,
@@ -120,8 +111,7 @@ enum class enum_uint16_t : uint16_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_uint32_t : uint32_t
-{
+enum class enum_uint32_t : uint32_t {
     VALUE_1 = 4147483630U,
     VALUE_2,
     VALUE_3,
@@ -130,8 +120,7 @@ enum class enum_uint32_t : uint32_t
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum class enum_uint64_t : uint64_t
-{
+enum class enum_uint64_t : uint64_t {
     VALUE_1 = 17446744073709551615U,
     VALUE_2,
     VALUE_3,

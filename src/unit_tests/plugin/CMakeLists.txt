@@ -27,32 +27,32 @@
 
 project(unit_test_plugin LANGUAGES CXX)
 
-message(STATUS "Scanning "  ${PROJECT_NAME} " module.")
+message(STATUS "Scanning " ${PROJECT_NAME} " module.")
 message(STATUS "===========================")
 
 set(HPP_FILES "")
 set(SRC_FILES "")
 
 generateLibraryVersionVariables(${RTTR_VERSION_MAJOR} ${RTTR_VERSION_MINOR} ${RTTR_VERSION_PATCH}
-                                "RTTR Unit-Tests: unit_test_plugin" "Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>" "MIT License")
+        "RTTR Unit-Tests: unit_test_plugin" "Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>" "MIT License")
 
 loadFolder("plugin" HPP_FILES SRC_FILES)
 
 if (USE_PCH)
-  activate_precompiled_headers("pch.h" SRC_FILES)
-endif()
+    activate_precompiled_headers("pch.h" SRC_FILES)
+endif ()
 
 add_library(unit_test_plugin SHARED ${SRC_FILES} ${HPP_FILES})
 target_link_libraries(unit_test_plugin RTTR::Core unit_test_base)
-set_target_properties(unit_test_plugin PROPERTIES 
-                                       DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
-                                       FOLDER "Testing")
+set_target_properties(unit_test_plugin PROPERTIES
+        DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
+        FOLDER "Testing")
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     # we have to use this flag, otherwise dlclose does not call the destructor function
     # of the library
     target_compile_options(unit_test_plugin PRIVATE "-fno-gnu-unique")
-endif()
+endif ()
 
 message(STATUS "Scanning " ${PROJECT_NAME} " module finished!")
 message(STATUS "")

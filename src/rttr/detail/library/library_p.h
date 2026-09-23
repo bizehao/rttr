@@ -36,122 +36,112 @@
 #include "rttr/detail/registration/registration_state_saver.h"
 
 #if RTTR_PLATFORM == RTTR_PLATFORM_WINDOWS
-    #include <windows.h>
+#include <windows.h>
 #endif
 
 #include <atomic>
 #include <string_view>
 
-namespace rttr
-{
-namespace detail
-{
-
-/*!
+namespace rttr {
+    namespace detail {
+        /*!
  * This class contains the private implementation of the \ref library class.
  *
  */
-class RTTR_LOCAL library_private
-{
-public:
-    library_private(std::string_view file_name, std::string_view version)
-    :   m_file_name(file_name),
-        m_version(version),
-        m_load_count(0),
-        m_handle(nullptr)
-    {
-
-    }
-
-    ~library_private() = default;
-
-    bool load()
-    {
-        if (m_handle)
-        {
-            ++m_load_count;
-            return true;
-        }
-        m_state_saver.save_state_begin();
-
-        auto result = load_native();
-        if (result)
-        {
-            ++m_load_count;
-            m_state_saver.save_state_end();
-        }
-        else
-        {
-            m_state_saver.reset();
-        }
-
-        return result;
-    }
-
-    bool unload()
-    {
-        if (!m_handle)
-            return false;
-
-        --m_load_count;
-
-        if (m_load_count.load() == 0)
-        {
-            auto ret = unload_native();
-            if (ret)
-            {
-                m_error_string.clear();
-                m_state_saver.reset();
-                m_handle = nullptr;
+        class RTTR_LOCAL library_private {
+        public:
+            library_private(std::string_view file_name, std::string_view version)
+                : m_file_name(file_name),
+                  m_version(version),
+                  m_load_count(0),
+                  m_handle(nullptr) {
             }
-        }
 
-        return (m_handle == nullptr);
-    }
+            ~library_private() = default;
 
-    /////////////////////////////////////////////////////////////
+            bool load() {
+                if (m_handle) {
+                    ++m_load_count;
+                    return true;
+                }
+                m_state_saver.save_state_begin();
+
+                auto result = load_native();
+                if (result) {
+                    ++m_load_count;
+                    m_state_saver.save_state_end();
+                }
+                else {
+                    m_state_saver.reset();
+                }
+
+                return result;
+            }
+
+            bool unload() {
+                if (!m_handle)
+                    return false;
+
+                --m_load_count;
+
+                if (m_load_count.load() == 0) {
+                    auto ret = unload_native();
+                    if (ret) {
+                        m_error_string.clear();
+                        m_state_saver.reset();
+                        m_handle = nullptr;
+                    }
+                }
+
+                return (m_handle == nullptr);
+            }
+
+            /////////////////////////////////////////////////////////////
 
 
+            bool is_loaded() const RTTR_NOEXCEPT { return (m_handle != nullptr); }
+            std::string_view get_error_string() const RTTR_NOEXCEPT { return m_error_string; }
+            std::string_view get_file_name() const RTTR_NOEXCEPT { return m_file_name; }
+            std::string_view get_qualified_filename() const RTTR_NOEXCEPT { return m_qualifed_file_name; }
 
-    bool is_loaded() const RTTR_NOEXCEPT { return (m_handle != nullptr); }
-    std::string_view get_error_string() const RTTR_NOEXCEPT { return m_error_string; }
-    std::string_view get_file_name() const RTTR_NOEXCEPT { return m_file_name; }
-    std::string_view get_qualified_filename() const RTTR_NOEXCEPT { return m_qualifed_file_name; }
+            /////////////////////////////////////////////////////////////
 
-    /////////////////////////////////////////////////////////////
+            std::span<const type> get_types() const RTTR_NOEXCEPT { return m_state_saver.get_types(); }
 
-    std::span<const type> get_types() const RTTR_NOEXCEPT { return m_state_saver.get_types(); }
+            std::span<const property> get_global_properties() const RTTR_NOEXCEPT {
+                return m_state_saver.get_global_properties();
+            }
 
-    std::span<const property> get_global_properties() const RTTR_NOEXCEPT { return m_state_saver.get_global_properties(); }
+            std::span<const method> get_global_methods() const RTTR_NOEXCEPT {
+                return m_state_saver.get_global_methods();
+            }
 
-    std::span<const method> get_global_methods() const RTTR_NOEXCEPT { return m_state_saver.get_global_methods(); }
+            int get_load_count() const RTTR_NOEXCEPT { return m_load_count.load(); }
 
-    int get_load_count() const RTTR_NOEXCEPT { return m_load_count.load(); }
+            void set_load_count(int count) { m_load_count.store(count); }
 
-    void set_load_count(int count) { m_load_count.store(count); }
+        private:
+            bool load_native();
 
-private:
-    bool load_native();
-    bool unload_native();
+            bool unload_native();
 
-private:
-    std::string                 m_file_name;
-    std::string                 m_version;
-    std::string                 m_qualifed_file_name;
-    std::string                 m_error_string;
-    registration_state_saver    m_state_saver;
+        private:
+            std::string m_file_name;
+            std::string m_version;
+            std::string m_qualifed_file_name;
+            std::string m_error_string;
+            registration_state_saver m_state_saver;
 
-    std::atomic_int             m_load_count;
+            std::atomic_int m_load_count;
 
 #if RTTR_PLATFORM == RTTR_PLATFORM_WINDOWS
-    HMODULE
+            HMODULE
 #else
-    void*
+            void *
 #endif
-    m_handle;
-};
-
-} // end namespace detail
+            m_handle;
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_LIBRARY_P_H_

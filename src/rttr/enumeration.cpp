@@ -32,126 +32,103 @@
 #include <utility>
 
 
+namespace rttr {
+    namespace detail {
+        template<>
+        enumeration create_item(const enumeration_wrapper_base *wrapper) {
+            return enumeration(wrapper);
+        }
 
-namespace rttr
-{
+        template<>
+        enumeration create_invalid_item() {
+            static const enumeration_wrapper_base invalid_wrapper;
+            return enumeration(&invalid_wrapper);
+        }
+    } // end namespace detail
 
-namespace detail
-{
-template<>
-enumeration create_item(const enumeration_wrapper_base* wrapper)
-{
-    return enumeration(wrapper);
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-template<>
-enumeration create_invalid_item()
-{
-    static const enumeration_wrapper_base invalid_wrapper;
-    return enumeration(&invalid_wrapper);
-}
+    enumeration::enumeration(const detail::enumeration_wrapper_base *wrapper) RTTR_NOEXCEPT
+        : m_wrapper(wrapper) {
+    }
 
-} // end namespace detail
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    bool enumeration::is_valid() const RTTR_NOEXCEPT {
+        return m_wrapper->is_valid();
+    }
 
-enumeration::enumeration(const detail::enumeration_wrapper_base* wrapper) RTTR_NOEXCEPT
-:   m_wrapper(wrapper)
-{
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-}
+    enumeration::operator bool() const RTTR_NOEXCEPT {
+        return m_wrapper->is_valid();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool enumeration::is_valid() const RTTR_NOEXCEPT
-{
-    return m_wrapper->is_valid();
-}
+    std::string_view enumeration::get_name() const RTTR_NOEXCEPT {
+        return m_wrapper->get_type().get_name();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-enumeration::operator bool() const RTTR_NOEXCEPT
-{
-    return m_wrapper->is_valid();
-}
+    type enumeration::get_underlying_type() const RTTR_NOEXCEPT {
+        return m_wrapper->get_underlying_type();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string_view enumeration::get_name() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_type().get_name();
-}
+    variant enumeration::get_metadata(const std::string_view &key) const {
+        return m_wrapper->get_metadata(key);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-type enumeration::get_underlying_type() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_underlying_type();
-}
+    type enumeration::get_type() const RTTR_NOEXCEPT {
+        return m_wrapper->get_type();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant enumeration::get_metadata(const std::string_view& key) const
-{
-    return m_wrapper->get_metadata(key);
-}
+    type enumeration::get_declaring_type() const RTTR_NOEXCEPT {
+        return m_wrapper->get_declaring_type();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-type enumeration::get_type() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_type();
-}
+    std::span<const std::string_view> enumeration::get_names() const RTTR_NOEXCEPT {
+        return m_wrapper->get_names();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-type enumeration::get_declaring_type() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_declaring_type();
-}
+    std::span<const variant> enumeration::get_values() const RTTR_NOEXCEPT {
+        return m_wrapper->get_values();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::span<const std::string_view> enumeration::get_names() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_names();
-}
+    std::string_view enumeration::value_to_name(argument value) const {
+        return m_wrapper->value_to_name(value);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::span<const variant> enumeration::get_values() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_values();
-}
+    variant enumeration::name_to_value(std::string_view name) const {
+        return m_wrapper->name_to_value(name);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string_view enumeration::value_to_name(argument value) const
-{
-    return m_wrapper->value_to_name(value);
-}
+    bool enumeration::operator==(const enumeration &other) const RTTR_NOEXCEPT {
+        return (m_wrapper == other.m_wrapper);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant enumeration::name_to_value(std::string_view name) const
-{
-    return m_wrapper->name_to_value(name);
-}
+    bool enumeration::operator!=(const enumeration &other) const RTTR_NOEXCEPT {
+        return (m_wrapper != other.m_wrapper);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool enumeration::operator==(const enumeration& other) const RTTR_NOEXCEPT
-{
-    return (m_wrapper == other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool enumeration::operator!=(const enumeration& other) const RTTR_NOEXCEPT
-{
-    return (m_wrapper != other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////////////////////////////
 } // end namespace rttr

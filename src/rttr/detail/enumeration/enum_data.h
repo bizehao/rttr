@@ -30,41 +30,41 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 
-namespace rttr
-{
-namespace detail
-{
-
-/*!
+namespace rttr {
+    namespace detail {
+        /*!
  * This class holds one enum data.
  *
  */
-template<typename Enum_Type>
-class enum_data
-{
-    public:
-        enum_data() {}
-        enum_data(std::string_view name, Enum_Type value) : m_name(name), m_value(value) { }
+        template<typename Enum_Type>
+        class enum_data {
+        public:
+            enum_data() {
+            }
 
-        std::string_view get_name() const    { return m_name;  }
-        Enum_Type get_value() const     { return m_value; }
+            enum_data(std::string_view name, Enum_Type value) : m_name(name), m_value(value) {
+            }
 
-    private:
-        std::string m_name;
-        Enum_Type   m_value;
-};
+            std::string_view get_name() const { return m_name; }
+            Enum_Type get_value() const { return m_value; }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        private:
+            std::string m_name;
+            Enum_Type m_value;
+        };
 
-template<typename T>
-struct is_enum_data : std::false_type { };
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-struct is_enum_data<enum_data<T>> : std::true_type { };
+        template<typename T>
+        struct is_enum_data : std::false_type {
+        };
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        struct is_enum_data<enum_data<T> > : std::true_type {
+        };
 
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_ENUM_DATA_H_

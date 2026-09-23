@@ -30,26 +30,23 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 
-namespace rttr
-{
+namespace rttr {
+    class variant;
+    class type;
 
-class variant;
-class type;
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-namespace detail
-{
+RTTR_API bool variant_compare_equal(const variant &lhs, const type &lhs_type, const variant &rhs, const type &rhs_type,
+                                    bool &ok);
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_API bool variant_compare_equal(const variant& lhs, const type& lhs_type, const variant& rhs, const type& rhs_type, bool& ok);
+RTTR_API bool variant_compare_less(const variant &lhs, const type &lhs_type, const variant &rhs, const type &rhs_type,
+                                   bool &ok);
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-RTTR_API bool variant_compare_less(const variant& lhs, const type& lhs_type, const variant& rhs, const type& rhs_type, bool& ok);
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_VARIANT_COMPARE_LESS_H_

@@ -30,17 +30,12 @@
 
 using namespace rttr;
 
-struct dtor_misc_test
-{
-    dtor_misc_test()
-    {
-
+struct dtor_misc_test {
+    dtor_misc_test() {
     }
-
 };
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_class<^^dtor_misc_test>();
     // registration::class_<dtor_misc_test>("dtor_misc_test")
     //     .constructor<>() (policy::ctor::as_raw_ptr)
@@ -49,7 +44,11 @@ RTTR_REGISTRATION
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("destructor - general test", "[destructor]")
+TEST_CASE (
+"destructor - general test"
+,
+"[destructor]"
+)
 {
     destructor dtor = type::get_by_name("dtor_misc_test").get_destructor();
     CHECK(dtor.is_valid() == true);
@@ -63,7 +62,11 @@ TEST_CASE("destructor - general test", "[destructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("destructor - get_destructed_type()", "[destructor]")
+TEST_CASE (
+"destructor - get_destructed_type()"
+,
+"[destructor]"
+)
 {
     CHECK(type::get<dtor_misc_test>().get_destructor().get_destructed_type() == type::get<dtor_misc_test*>());
 
@@ -74,7 +77,11 @@ TEST_CASE("destructor - get_destructed_type()", "[destructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("destructor - compare operator", "[destructor]")
+TEST_CASE (
+"destructor - compare operator"
+,
+"[destructor]"
+)
 {
     destructor dtor1 = type::get_by_name("dtor_misc_test").get_destructor();
     destructor dtor1a = type::get_by_name("dtor_misc_test").get_destructor();
@@ -86,7 +93,11 @@ TEST_CASE("destructor - compare operator", "[destructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("destructor::get_declaring_type()", "[destructor]")
+TEST_CASE (
+"destructor::get_declaring_type()"
+,
+"[destructor]"
+)
 {
     destructor dtor = type::get_by_name("dtor_misc_test").get_destructor();
 

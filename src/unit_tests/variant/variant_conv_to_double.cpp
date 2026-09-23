@@ -34,7 +34,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from empty", "[variant]")
+TEST_CASE (
+"variant::to_double() - from empty"
+,
+"[variant]"
+)
 {
     variant var;
     bool ok = false;
@@ -44,7 +48,11 @@ TEST_CASE("variant::to_double() - from empty", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from bool", "[variant]")
+TEST_CASE (
+"variant::to_double() - from bool"
+,
+"[variant]"
+)
 {
     variant var = true;
     REQUIRE(var.is_valid() == true);
@@ -73,7 +81,11 @@ TEST_CASE("variant::to_double() - from bool", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from char", "[variant]")
+TEST_CASE (
+"variant::to_double() - from char"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {
@@ -107,7 +119,11 @@ RTTR_END_DISABLE_CONDITIONAL_EXPR_WARNING
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from std::string", "[variant]")
+TEST_CASE (
+"variant::to_double() - from std::string"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -166,7 +182,11 @@ TEST_CASE("variant::to_double() - from std::string", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from int", "[variant]")
+TEST_CASE (
+"variant::to_double() - from int"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -192,7 +212,11 @@ TEST_CASE("variant::to_double() - from int", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from float", "[variant]")
+TEST_CASE (
+"variant::to_double() - from float"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -218,7 +242,11 @@ TEST_CASE("variant::to_double() - from float", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from double", "[variant]")
+TEST_CASE (
+"variant::to_double() - from double"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -244,7 +272,11 @@ TEST_CASE("variant::to_double() - from double", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from int8_t", "[variant]")
+TEST_CASE (
+"variant::to_double() - from int8_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -270,7 +302,11 @@ TEST_CASE("variant::to_double() - from int8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from int16_t", "[variant]")
+TEST_CASE (
+"variant::to_double() - from int16_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -296,7 +332,11 @@ TEST_CASE("variant::to_double() - from int16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from int32_t", "[variant]")
+TEST_CASE (
+"variant::to_double() - from int32_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -322,7 +362,11 @@ TEST_CASE("variant::to_double() - from int32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from int64_t", "[variant]")
+TEST_CASE (
+"variant::to_double() - from int64_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -348,7 +392,11 @@ TEST_CASE("variant::to_double() - from int64_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from uint8_t", "[variant]")
+TEST_CASE (
+"variant::to_double() - from uint8_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -365,7 +413,11 @@ TEST_CASE("variant::to_double() - from uint8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from uint16_t", "[variant]")
+TEST_CASE (
+"variant::to_double() - from uint16_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -382,7 +434,11 @@ TEST_CASE("variant::to_double() - from uint16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from uint32_t", "[variant]")
+TEST_CASE (
+"variant::to_double() - from uint32_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -399,7 +455,11 @@ TEST_CASE("variant::to_double() - from uint32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from uint64_t", "[variant]")
+TEST_CASE (
+"variant::to_double() - from uint64_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -416,7 +476,11 @@ TEST_CASE("variant::to_double() - from uint64_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_double() - from enum", "[variant]")
+TEST_CASE (
+"variant::to_double() - from enum"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {

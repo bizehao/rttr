@@ -34,7 +34,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - misc", "[variant]")
+TEST_CASE (
+"variant - misc"
+,
+"[variant]"
+)
 {
     SECTION("empty type")
     {
@@ -49,7 +53,11 @@ TEST_CASE("variant - misc", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - swap", "[variant]")
+TEST_CASE (
+"variant - swap"
+,
+"[variant]"
+)
 {
     SECTION("self")
     {
@@ -101,7 +109,11 @@ TEST_CASE("variant - swap", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - get_value()", "[variant]")
+TEST_CASE (
+"variant - get_value()"
+,
+"[variant]"
+)
 {
     SECTION("check get_value() non-const version")
     {
@@ -132,7 +144,11 @@ TEST_CASE("variant - get_value()", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - get_wrapped_value", "[variant]")
+TEST_CASE (
+"variant - get_wrapped_value"
+,
+"[variant]"
+)
 {
     int foo = 12;
     variant var = std::ref(foo);

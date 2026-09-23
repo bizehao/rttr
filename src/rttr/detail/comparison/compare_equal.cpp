@@ -32,26 +32,20 @@
 
 #include <cstring>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        bool compare_types_equal(const void *lhs, const void *rhs, const type &t, bool &ok) {
+            if (auto cmp_f = t.get_equal_comparator()) {
+                ok = true;
+                return cmp_f->cmp(lhs, rhs);
+            }
 
-bool compare_types_equal(const void* lhs, const void* rhs, const type& t, bool& ok)
-{
-    if (auto cmp_f = t.get_equal_comparator())
-    {
-        ok = true;
-        return cmp_f->cmp(lhs, rhs);
-    }
+            ok = false;
+            return false;
+        }
 
-    ok = false;
-    return false;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr

@@ -30,10 +30,8 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 
-namespace rttr
-{
-
-/*!
+namespace rttr {
+    /*!
  * The \ref associative_container_mapper class is a class template to access an associative container via one common interface.
  *
  * This class will be only used internally by RTTR via the variant_associative_view class to get access to elements of an associative container.
@@ -184,180 +182,162 @@ namespace rttr
  * The best place for this code, is below the declaration of your custom associative container type.
  * When this is not possible, include your specialization code before registering your types to RTTR.
  */
-template<typename T>
-struct associative_container_mapper
-{
+    template<typename T>
+    struct associative_container_mapper {
 #ifndef DOXYGEN
-    using is_valid = std::false_type;
+        using is_valid = std::false_type;
 #else
-    using container_t = T;                          //!< An alias declaration to the container type itself.
-    using key_t       = typename T::key_type;       //!< An alias to the key type.
-    using value_t     = typename T::mapped_type;    //!< An alias to the value type.
+        using container_t = T; //!< An alias declaration to the container type itself.
+        using key_t = typename T::key_type; //!< An alias to the key type.
+        using value_t = typename T::mapped_type;
+        //!< An alias to the value type.
                                                     //!< \remark When you have a key only container use `void` as value type.
                                                     //!< Then you also dont need to add a insert_key_value() function
-    using itr_t       = typename T::iterator;       //!< An alias delcaration to the iterator.
-    using const_itr_t = typename T::const_iterator; //!< An alias delcaration to the const iterator.
+        using itr_t = typename T::iterator; //!< An alias delcaration to the iterator.
+        using const_itr_t = typename T::const_iterator; //!< An alias delcaration to the const iterator.
 
-    /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
-    /*!
+        /*!
      * \brief Returns the current iterator's key as a const reference.
      */
-    static const key_t& get_key(const const_itr_t& itr)
-    {
-        return itr->first;
-    }
+        static const key_t &get_key(const const_itr_t &itr) {
+            return itr->first;
+        }
 
-    /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
-    /*!
+        /*!
      * \brief Returns the current iterator's value as reference.
      */
-    static value_t& get_value(itr_t& itr)
-    {
-        return itr->second;
-    }
+        static value_t &get_value(itr_t &itr) {
+            return itr->second;
+        }
 
-    /*!
+        /*!
      * \brief Returns the current iterator's value as const reference.
      */
-    static const value_t& get_value(const const_itr_t& itr)
-    {
-        return itr->second;
-    }
+        static const value_t &get_value(const const_itr_t &itr) {
+            return itr->second;
+        }
 
-    /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
-    /*!
+        /*!
      * \brief Returns an iterator to the first element of the container.
      */
-    static itr_t begin(container_t& container)
-    {
-        return container.begin();
-    }
+        static itr_t begin(container_t &container) {
+            return container.begin();
+        }
 
-    /*!
+        /*!
      * \brief Returns an iterator to the first element of the container.
      */
-    static const_itr_t begin(const container_t& container)
-    {
-        return container.begin();
-    }
+        static const_itr_t begin(const container_t &container) {
+            return container.begin();
+        }
 
-    /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
-    /*!
+        /*!
      * \brief Returns an iterator to the element following the last element of the container.
      */
-    static itr_t end(container_t& container)
-    {
-        return container.end();
-    }
+        static itr_t end(container_t &container) {
+            return container.end();
+        }
 
-    /*!
+        /*!
      * \brief Returns an iterator to the element following the last element of the container.
      */
-    static const_itr_t end(const container_t& container)
-    {
-        return container.end();
-    }
+        static const_itr_t end(const container_t &container) {
+            return container.end();
+        }
 
-    /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
-    /*!
+        /*!
      * \brief Finds an element with key equivalent to key and returns its iterator.
      */
-    static itr_t find(container_t& container, const key_t& key)
-    {
-        return container.find(key);
-    }
+        static itr_t find(container_t &container, const key_t &key) {
+            return container.find(key);
+        }
 
-    /*!
+        /*!
      * \brief Finds an element with key equivalent to key and returns its iterator.
      */
-    static const_itr_t find(const container_t& container, const key_t& key)
-    {
-        return container.find(key);
-    }
+        static const_itr_t find(const container_t &container, const key_t &key) {
+            return container.find(key);
+        }
 
-    /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
-    /*!
+        /*!
      * \brief Returns a range containing all elements with the given key in the container.
      *        The range is defined by two iterators, one pointing to the first element that
      *        is not less than key and another pointing to the first element greater than key.
      */
-    static std::pair<itr_t, itr_t> equal_range(container_t& container, const key_t& key)
-    {
-        return container.equal_range(key);
-    }
+        static std::pair<itr_t, itr_t> equal_range(container_t &container, const key_t &key) {
+            return container.equal_range(key);
+        }
 
-    /*!
+        /*!
      * \brief Returns a range containing all elements with the given key in the container.
      *        The range is defined by two constant iterators, one pointing to the first element that
      *        is not less than key and another pointing to the first element greater than key.
      */
-    static std::pair<const_itr_t, const_itr_t> equal_range(const container_t& container, const key_t& key)
-    {
-        return container.equal_range(key);
-    }
+        static std::pair<const_itr_t, const_itr_t> equal_range(const container_t &container, const key_t &key) {
+            return container.equal_range(key);
+        }
 
-    /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
-    /*!
+        /*!
      * \brief Removes all elements from the container.
      */
-    static void clear(container_t& container)
-    {
-        container.clear();
-    }
+        static void clear(container_t &container) {
+            container.clear();
+        }
 
-    /*!
+        /*!
      * \brief Returns the number of elements in the container.
      */
-    static bool is_empty(const container_t& container)
-    {
-        return container.empty();
-    }
+        static bool is_empty(const container_t &container) {
+            return container.empty();
+        }
 
-    /*!
+        /*!
      * \brief Returns the number of elements in the container.
      */
-    static std::size_t get_size(const container_t& container)
-    {
-        return container.size();
-    }
+        static std::size_t get_size(const container_t &container) {
+            return container.size();
+        }
 
-    /*!
+        /*!
      * \brief Removes the element (if one exists) with the key equivalent to key.
      */
-    static std::size_t erase(container_t& container, const key_t& key)
-    {
-        return container.erase(key);
-    }
+        static std::size_t erase(container_t &container, const key_t &key) {
+            return container.erase(key);
+        }
 
-    /*!
+        /*!
      * \brief Inserts a key into the container.
      * \remark This method is only necessary, when you have a key-only container. Like `std::set<T>`.
      *          Otherwise you don't need to declare it.
      */
-    static std::pair<itr_t, bool> insert_key(container_t& container, const key_t& key)
-    {
-        return { container.end(), false };
-    }
+        static std::pair<itr_t, bool> insert_key(container_t &container, const key_t &key) {
+            return {container.end(), false};
+        }
 
-    /*!
+        /*!
      * \brief Inserts a key-value into the container.
      * \remark This method is only necessary, when you have a key-value container. Like `std::map<T>`.
      *         Otherwise you don't need to declare it.
      */
-    static std::pair<itr_t, bool> insert_key_value(container_t& container, const key_t& key, const value_t& value)
-    {
-        return container.insert(std::make_pair(key, value));
-    }
+        static std::pair<itr_t, bool> insert_key_value(container_t &container, const key_t &key, const value_t &value) {
+            return container.insert(std::make_pair(key, value));
+        }
 #endif
-};
-
+    };
 } // end namespace rttr
 
 #include "rttr/detail/impl/associative_mapper_impl.h"

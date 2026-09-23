@@ -17,41 +17,41 @@
 #include "boxed_cast.hpp"
 
 namespace chaiscript {
-class Boxed_Value;
-namespace exception {
-class bad_boxed_cast;
-}  // namespace exception
-}  // namespace chaiscript
+    class Boxed_Value;
 
-namespace chaiscript
-{
-  namespace detail
-  {
-    struct Exception_Handler_Base
-    {
-      virtual void handle(const Boxed_Value &bv, const Dispatch_Engine &t_engine) = 0;
+    namespace exception {
+        class bad_boxed_cast;
+    } // namespace exception
+} // namespace chaiscript
 
-      virtual ~Exception_Handler_Base() = default;
+namespace chaiscript {
+    namespace detail {
+        struct Exception_Handler_Base {
+            virtual void handle(const Boxed_Value &bv, const Dispatch_Engine &t_engine) = 0;
 
-      protected:
-        template<typename T>
-        static void throw_type(const Boxed_Value &bv, const Dispatch_Engine &t_engine)
-        {
-          try { T t = t_engine.boxed_cast<T>(bv); throw t; } catch (const chaiscript::exception::bad_boxed_cast &) {}
-        }
-    };
+            virtual ~Exception_Handler_Base() = default;
 
-    template<typename ... T>
-      struct Exception_Handler_Impl : Exception_Handler_Base
-      {
-        void handle(const Boxed_Value &bv, const Dispatch_Engine &t_engine) override
-        {
-          (void)std::initializer_list<int>{(throw_type<T>(bv, t_engine), 0)...};
-        }
-      };
-  }
+        protected:
+            template<typename T>
+            static void throw_type(const Boxed_Value &bv, const Dispatch_Engine &t_engine) {
+                try {
+                    T t = t_engine.boxed_cast<T>(bv);
+                    throw t;
+                }
+                catch (const chaiscript::exception::bad_boxed_cast &) {
+                }
+            }
+        };
 
-  /// \brief Used in the automatic unboxing of exceptions thrown during script evaluation
+        template<typename... T>
+        struct Exception_Handler_Impl : Exception_Handler_Base {
+            void handle(const Boxed_Value &bv, const Dispatch_Engine &t_engine) override {
+                (void) std::initializer_list<int>{(throw_type<T>(bv, t_engine), 0)...};
+            }
+        };
+    }
+
+    /// \brief Used in the automatic unboxing of exceptions thrown during script evaluation
   ///
   /// Exception specifications allow the user to tell ChaiScript what possible exceptions are expected from the script
   /// being executed. Exception_Handler objects are created with the chaiscript::exception_specification() function.
@@ -86,7 +86,7 @@ namespace chaiscript
   ///
   /// Similarly, if you are using the ChaiScript::eval form that unboxes the return value, then chaiscript::exception::bad_boxed_cast
   /// should be handled as well.
-  /// 
+  ///
   /// \code
   /// try {
   ///   chai.eval<int>("1.0", chaiscript::exception_specification<const std::exception &>());
@@ -101,15 +101,14 @@ namespace chaiscript
   ///
   /// \sa chaiscript::exception_specification for creation of chaiscript::Exception_Handler objects
   /// \sa \ref exceptions
-  typedef std::shared_ptr<detail::Exception_Handler_Base> Exception_Handler;
+    typedef std::shared_ptr<detail::Exception_Handler_Base> Exception_Handler;
 
-  /// \brief creates a chaiscript::Exception_Handler which handles one type of exception unboxing
+    /// \brief creates a chaiscript::Exception_Handler which handles one type of exception unboxing
   /// \sa \ref exceptions
-  template<typename ... T>
-  Exception_Handler exception_specification()
-  {
-    return std::make_shared<detail::Exception_Handler_Impl<T...>>();
-  }
+    template<typename... T>
+    Exception_Handler exception_specification() {
+        return std::make_shared<detail::Exception_Handler_Impl<T...> >();
+    }
 }
 
 

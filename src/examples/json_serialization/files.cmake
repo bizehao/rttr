@@ -26,11 +26,11 @@
 ####################################################################################
 
 set(HEADER_FILES to_json.h
-                 from_json.h
-                 version.rc.in
-                 )
+        from_json.h
+        version.rc.in
+)
 
 set(SOURCE_FILES main.cpp
-                 to_json.cpp
-                 from_json.cpp
-                 )
+        to_json.cpp
+        from_json.cpp
+)

@@ -37,8 +37,7 @@
 // __always_inline__)) in std::string
 template class std::basic_string<char>;
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     using namespace rttr;
 
     type::get<std::nullptr_t>();

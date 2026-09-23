@@ -35,52 +35,42 @@
 #include <type_traits>
 #include <cstring>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // default impl, compares per type
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// default impl, compares per type
+        template<typename ElementType>
+        struct compare_array_equal_impl {
+            bool operator()(const ElementType &lhs, const ElementType &rhs, bool &ok) {
+                return compare_equal(lhs, rhs, ok);
+            }
+        };
 
-template<typename ElementType>
-struct compare_array_equal_impl
-{
-    bool operator()(const ElementType &lhs, const ElementType &rhs, bool& ok)
-    {
-        return compare_equal(lhs, rhs, ok);
-    }
-};
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename ElementType, std::size_t Count>
+        struct compare_array_equal_impl<ElementType[Count]> {
+            bool operator()(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count], bool &ok) {
+                for (std::size_t i = 0; i < Count; ++i) {
+                    if (!compare_array_equal_impl<ElementType>()(lhs[i], rhs[i], ok))
+                        return false;
+                }
 
-template<typename ElementType, std::size_t Count>
-struct compare_array_equal_impl<ElementType[Count]>
-{
-    bool operator()(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count], bool& ok)
-    {
-        for(std::size_t i = 0; i < Count; ++i)
-        {
-            if (!compare_array_equal_impl<ElementType>()(lhs[i], rhs[i], ok))
-                return false;
+                return true;
+            }
+        };
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        template<typename ElementType, std::size_t Count>
+RTTR_INLINE bool compare_array_equal(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count], bool &ok) {
+            return compare_array_equal_impl<ElementType[Count]>()(lhs, rhs, ok);
         }
 
-        return true;
-    }
-};
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename ElementType, std::size_t Count>
-RTTR_INLINE bool compare_array_equal(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count], bool& ok)
-{
-    return compare_array_equal_impl<ElementType[Count]>()(lhs, rhs, ok);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_COMPARE_ARRAY_EQUAL_IMPL_H_

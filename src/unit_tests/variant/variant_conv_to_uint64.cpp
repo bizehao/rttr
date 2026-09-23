@@ -34,7 +34,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from empty", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from empty"
+,
+"[variant]"
+)
 {
     variant var;
     bool ok = false;
@@ -44,7 +48,11 @@ TEST_CASE("variant::to_uint64() - from empty", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from bool", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from bool"
+,
+"[variant]"
+)
 {
     variant var = true;
     REQUIRE(var.is_valid() == true);
@@ -73,7 +81,11 @@ TEST_CASE("variant::to_uint64() - from bool", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from char", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from char"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {
@@ -107,7 +119,11 @@ RTTR_END_DISABLE_CONDITIONAL_EXPR_WARNING
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from std::string", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from std::string"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -158,7 +174,11 @@ TEST_CASE("variant::to_uint64() - from std::string", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from int", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from int"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -184,7 +204,11 @@ TEST_CASE("variant::to_uint64() - from int", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from float", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from float"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -219,7 +243,11 @@ TEST_CASE("variant::to_uint64() - from float", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from double", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from double"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -255,7 +283,11 @@ TEST_CASE("variant::to_uint64() - from double", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from int8_t", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from int8_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -281,7 +313,11 @@ TEST_CASE("variant::to_uint64() - from int8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from int16_t", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from int16_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -307,7 +343,11 @@ TEST_CASE("variant::to_uint64() - from int16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from int32_t", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from int32_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -333,7 +373,11 @@ TEST_CASE("variant::to_uint64() - from int32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from int64_t", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from int64_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -359,7 +403,11 @@ TEST_CASE("variant::to_uint64() - from int64_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from uint8_t", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from uint8_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -376,7 +424,11 @@ TEST_CASE("variant::to_uint64() - from uint8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from uint16_t", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from uint16_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -393,7 +445,11 @@ TEST_CASE("variant::to_uint64() - from uint16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from uint32_t", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from uint32_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -410,7 +466,11 @@ TEST_CASE("variant::to_uint64() - from uint32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from uint64_t", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from uint64_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -427,7 +487,11 @@ TEST_CASE("variant::to_uint64() - from uint64_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_uint64() - from enum", "[variant]")
+TEST_CASE (
+"variant::to_uint64() - from enum"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {

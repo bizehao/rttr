@@ -35,56 +35,46 @@
 #include <type_traits>
 #include <cstring>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename ElementType>
+        struct compare_array_less_impl {
+            int operator()(const ElementType &lhs, const ElementType &rhs) {
+                int result = 0;
+                compare_less_than(lhs, rhs, result);
+                return result;
+            }
+        };
 
-template<typename ElementType>
-struct compare_array_less_impl
-{
-    int operator()(const ElementType &lhs, const ElementType &rhs)
-    {
-        int result = 0;
-        compare_less_than(lhs, rhs, result);
-        return result;
-    }
-};
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename ElementType, std::size_t Count>
+        struct compare_array_less_impl<ElementType[Count]> {
+            int operator()(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count]) {
+                int flag = 0;
+                for (std::size_t i = 0; i < Count; ++i) {
+                    if ((flag = compare_array_less_impl<ElementType>()(lhs[i], rhs[i])) != 0)
+                        return flag;
+                }
 
-template<typename ElementType, std::size_t Count>
-struct compare_array_less_impl<ElementType[Count]>
-{
-    int operator()(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count])
-    {
-        int flag = 0;
-        for(std::size_t i = 0; i < Count; ++i)
-        {
-            if ((flag = compare_array_less_impl<ElementType>()(lhs[i], rhs[i])) != 0)
-                return flag;
+                return 0;
+            }
+        };
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        template<typename ElementType, std::size_t Count>
+RTTR_INLINE bool compare_array_less(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count]) {
+            if (compare_array_less_impl<ElementType[Count]>()(lhs, rhs) == -1)
+                return true;
+
+            return false;
         }
 
-        return 0;
-    }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename ElementType, std::size_t Count>
-RTTR_INLINE bool compare_array_less(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count])
-{
-    if (compare_array_less_impl<ElementType[Count]>()(lhs, rhs) == -1)
-        return true;
-
-    return false;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_COMPARE_ARRAY_LESS_IMPL_H_

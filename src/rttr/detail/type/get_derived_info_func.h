@@ -28,61 +28,48 @@
 #ifndef RTTR_DERIVED_INFO_FUNC_H_
 #define RTTR_DERIVED_INFO_FUNC_H_
 
-namespace rttr
-{
-
-namespace detail
-{
-
- /*!
+namespace rttr {
+    namespace detail {
+        /*!
   * \brief A helper struct, which contains data about a class type.
   * This is used for the casting mechanism.
   */
-struct derived_info
-{
-    void* m_ptr;    //!< A void pointer, which contains the address to an arbitrary instance.
-    type m_type;    //!< The corresponding typ object to the \ref m_ptr
-};
+        struct derived_info {
+            void *m_ptr; //!< A void pointer, which contains the address to an arbitrary instance.
+            type m_type; //!< The corresponding typ object to the \ref m_ptr
+        };
 
-template<typename T>
-static derived_info get_most_derived_info_impl(void* ptr)
-{
-    return (static_cast<T*>(ptr)->get_derived_info());
-}
+        template<typename T>
+        static derived_info get_most_derived_info_impl(void *ptr) {
+            return (static_cast<T *>(ptr)->get_derived_info());
+        }
 
-template<typename T>
-static derived_info get_most_derived_info_impl_none(void* ptr)
-{
-    return {ptr, type::get<T>()};
-}
+        template<typename T>
+        static derived_info get_most_derived_info_impl_none(void *ptr) {
+            return {ptr, type::get<T>()};
+        }
 
-using derived_func = derived_info(*)(void*);
+        using derived_func = derived_info(*)(void *);
 
-/*!
+        /*!
  * \brief This function returns a function pointer to a function for retrieving the infos
  *        about the most derived type of an given instance.
  *
  */
-template<typename T>
-static derived_func get_most_derived_info_func()
-{
-    using MT = typename detail::raw_type<T>::type;
-    if constexpr (has_get_derived_info_func<MT>::value)
-    {
-        return get_most_derived_info_impl<MT>;
-    }
-    else
-    {
-        /*!
+        template<typename T>
+        static derived_func get_most_derived_info_func() {
+            using MT = typename detail::raw_type<T>::type;
+            if constexpr (has_get_derived_info_func<MT>::value) {
+                return get_most_derived_info_impl<MT>;
+            }
+            else {
+                /*!
          * This is the case where the type T has not put necessary macro `RTTR_ENABLE` inside the class.
          */
-        return get_most_derived_info_impl_none<MT>;
-    }
-}
-
-
-} // end namespace detail
-
+                return get_most_derived_info_impl_none<MT>;
+            }
+        }
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_DERIVED_INFO_FUNC_H_

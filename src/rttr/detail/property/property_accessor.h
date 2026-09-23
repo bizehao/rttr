@@ -28,53 +28,42 @@
 #ifndef RTTR_PROPERTY_ACCESSOR_H_
 #define RTTR_PROPERTY_ACCESSOR_H_
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // We have to use this property_accessor helper struct, because of a bug in MSVC compiler
+        // "ambiguous call to overloaded function when using raw arrays"
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// We have to use this property_accessor helper struct, because of a bug in MSVC compiler
-// "ambiguous call to overloaded function when using raw arrays"
+        template<typename T>
+        struct property_accessor {
+            static bool set_value(T &prop, const T &arg) {
+                prop = arg;
+                return true;
+            }
+        };
 
-template<typename T>
-struct property_accessor
-{
-    static bool set_value(T& prop, const T& arg)
-    {
-        prop = arg;
-        return true;
-    }
-};
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T, std::size_t N>
+        struct property_accessor<T[N]> {
+            static bool set_value(T (&target)[N], const T (&src)[N]) {
+                copy_array(src, target);
+                return true;
+            }
+        };
 
-template<typename T, std::size_t N>
-struct property_accessor<T[N]>
-{
-    static bool set_value(T (& target)[N], const T (& src)[N])
-    {
-        copy_array(src, target);
-        return true;
-    }
-};
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T, std::size_t N>
+        struct property_accessor<T(*)[N]> {
+            static bool set_value(T (*target)[N], const T (*src)[N]) {
+                copy_array(src, target);
+                return true;
+            }
+        };
 
-template<typename T, std::size_t N>
-struct property_accessor<T(*)[N]>
-{
-
-    static bool set_value(T (*target)[N], const T (*src)[N])
-    {
-        copy_array(src, target);
-        return true;
-    }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_PROPERTY_ACCESSOR_H_

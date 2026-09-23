@@ -34,7 +34,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - variant_cast<T>(variant*)", "[variant]")
+TEST_CASE (
+"variant - variant_cast<T>(variant*)"
+,
+"[variant]"
+)
 {
     SECTION("empty cast")
     {
@@ -80,7 +84,11 @@ TEST_CASE("variant - variant_cast<T>(variant*)", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - variant_cast<T>(const variant*)", "[variant]")
+TEST_CASE (
+"variant - variant_cast<T>(const variant*)"
+,
+"[variant]"
+)
 {
     SECTION("empty cast")
     {
@@ -116,7 +124,11 @@ TEST_CASE("variant - variant_cast<T>(const variant*)", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - variant_cast<T>(variant&)", "[variant]")
+TEST_CASE (
+"variant - variant_cast<T>(variant&)"
+,
+"[variant]"
+)
 {
     SECTION("by value")
     {
@@ -163,7 +175,11 @@ TEST_CASE("variant - variant_cast<T>(variant&)", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - variant_cast<T>(const variant&)", "[variant]")
+TEST_CASE (
+"variant - variant_cast<T>(const variant&)"
+,
+"[variant]"
+)
 {
     SECTION("by value")
     {
@@ -197,20 +213,27 @@ TEST_CASE("variant - variant_cast<T>(const variant&)", "[variant]")
 
 static int move_count = 0;
 
-struct moveable_class
-  {
-    moveable_class(moveable_class&&)
-    {
-      ++move_count;
+struct moveable_class {
+    moveable_class(moveable_class &&) {
+        ++move_count;
     }
-    moveable_class() {}
-    moveable_class(const moveable_class&) {}
+
+    moveable_class() {
+    }
+
+    moveable_class(const moveable_class &) {
+    }
+
     int value = 12;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - variant_cast<T>(variant&&)", "[variant]")
+TEST_CASE (
+"variant - variant_cast<T>(variant&&)"
+,
+"[variant]"
+)
 {
     SECTION("move test - string")
     {

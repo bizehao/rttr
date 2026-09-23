@@ -34,30 +34,25 @@
 
 #include <rttr/registration>
 
-struct MyPluginClass
-{
-    MyPluginClass(){}
+struct MyPluginClass {
+    MyPluginClass() {
+    }
 
-    void perform_calculation()
-    {
+    void perform_calculation() {
         value += 12;
     }
 
-    void perform_calculation(int new_value)
-    {
+    void perform_calculation(int new_value) {
         value += new_value;
     }
 
     int value = 0;
 };
 
-RTTR_PLUGIN_REGISTRATION
-{
-
-   rttr::registration::class_<MyPluginClass>("MyPluginClass")
-        .constructor<>()
-        .property("value", &MyPluginClass::value)
-        .method("perform_calculation", rttr::select_overload<void(void)>(&MyPluginClass::perform_calculation))
-        .method("perform_calculation", rttr::select_overload<void(int)>(&MyPluginClass::perform_calculation))
-        ;
+RTTR_PLUGIN_REGISTRATION {
+    rttr::registration::class_<MyPluginClass>("MyPluginClass")
+            .constructor<>()
+            .property("value", &MyPluginClass::value)
+            .method("perform_calculation", rttr::select_overload < void(void) > (&MyPluginClass::perform_calculation))
+            .method("perform_calculation", rttr::select_overload < void(int) > (&MyPluginClass::perform_calculation));
 }

@@ -39,52 +39,44 @@ using namespace rttr;
 
 #include <catch/catch.hpp>
 
-enum E_MetaData
-{
-    SCRIPTABLE  = 0,
-    TOOL_TIP    = 1,
+enum E_MetaData {
+    SCRIPTABLE = 0,
+    TOOL_TIP = 1,
     DESCRIPTION = 2
 };
 
 static bool free_function_called = false;
 
-void free_function(bool value)
-{
+void free_function(bool value) {
     free_function_called = value;
 }
 
-void free_function(int& value)
-{
+void free_function(int &value) {
     value = 42;
 }
 
-std::string& get_global_string()
-{
+std::string &get_global_string() {
     static std::string text = "hello world";
     return text;
 }
 
-struct base_not_registered
-{
-    bool some_method()
-    {
+struct base_not_registered {
+    bool some_method() {
         return true;
     }
 
-    void other_method(int i)
-    {
+    void other_method(int i) {
     }
+
     RTTR_ENABLE()
 };
 
-struct derive_registered : base_not_registered
-{
+struct derive_registered : base_not_registered {
     RTTR_ENABLE()
 };
 
 
-struct derive_registered_with_base_class_list : base_not_registered
-{
+struct derive_registered_with_base_class_list : base_not_registered {
     RTTR_ENABLE() // but forgot the base class to insert in the macro
 };
 
@@ -93,38 +85,41 @@ struct derive_registered_with_base_class_list : base_not_registered
 
 bool method_test::method_7_called = false;
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_class<^^method_test>();
 
-    registration::do_class<^^method_test_derived>("method_test_derived");
+    registration::do_class < ^^method_test_derived > ("method_test_derived");
 
-    registration::do_class<^^method_test_right>("method_test_right");
+    registration::do_class < ^^method_test_right > ("method_test_right");
 
-    registration::do_class<^^method_test_final>("method_test_final");
+    registration::do_class < ^^method_test_final > ("method_test_final");
 
     // test free functions
-    registration::do_method_overload<static_cast<void(*)(bool)>(&free_function)>("free_function");
-    registration::do_method_overload<static_cast<void(*)(int&)>(&free_function)>("free_function");
+    registration::do_method_overload < static_cast<void(*)(bool)>(&free_function) > ("free_function");
+    registration::do_method_overload < static_cast<void(*)(int &)>(&free_function) > ("free_function");
 
-    registration::do_method<^^get_global_string, policy::method::op_return_ref_as_ptr>("get_global_string_ptr");
-    registration::do_method<^^get_global_string, policy::method::op_discard_return>("get_global_string_void");
+    registration::do_method < ^^get_global_string, policy::method::op_return_ref_as_ptr > ("get_global_string_ptr");
+    registration::do_method < ^^get_global_string, policy::method::op_discard_return > ("get_global_string_void");
 
     // register same method again, should not register anything
-    registration::do_method<^^get_global_string>("get_global_string_void");
+    registration::do_method < ^^get_global_string > ("get_global_string_void");
 
     // the class 'derive_registered' has a base class 'base_not_registered'
     // which is not registered explictely via rttr, however the base-derived relationship
     // will be established by rttr internaly
-    registration::do_class<^^base_not_registered>("base_not_registered");
-    registration::do_class<^^derive_registered>("derive_registered");
+    registration::do_class < ^^base_not_registered > ("base_not_registered");
+    registration::do_class < ^^derive_registered > ("derive_registered");
 
-    registration::do_class<^^derive_registered_with_base_class_list>("derive_registered_with_base_class_list");
+    registration::do_class < ^^derive_registered_with_base_class_list > ("derive_registered_with_base_class_list");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test method", "[method]")
+TEST_CASE (
+"Test method"
+,
+"[method]"
+)
 {
     type t_meth = type::get<method_test>();
     REQUIRE(t_meth.is_valid() == true);
@@ -285,7 +280,11 @@ TEST_CASE("Test method", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("global methods", "[method]")
+TEST_CASE (
+"global methods"
+,
+"[method]"
+)
 {
     free_function_called = false;
     method global_meth_1 = type::get_global_method("free_function", {type::get<bool>()});
@@ -314,7 +313,11 @@ TEST_CASE("global methods", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("ShortCut via type - method invoke", "[method]")
+TEST_CASE (
+"ShortCut via type - method invoke"
+,
+"[method]"
+)
 {
     // with instance
     method_test_final obj;
@@ -337,7 +340,11 @@ TEST_CASE("ShortCut via type - method invoke", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test method arrays", "[method]")
+TEST_CASE (
+"Test method arrays"
+,
+"[method]"
+)
 {
     method_test obj;
     method meth_array = type::get(obj).get_method("method_raw_array");
@@ -356,7 +363,11 @@ TEST_CASE("Test method arrays", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test method signature", "[method]")
+TEST_CASE (
+"Test method signature"
+,
+"[method]"
+)
 {
     const auto meth_range = type::get<method_test_final>().get_methods();
     std::vector<method> methods(meth_range.cbegin(), meth_range.cend());
@@ -371,7 +382,11 @@ TEST_CASE("Test method signature", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method policies", "[method]")
+TEST_CASE (
+"method policies"
+,
+"[method]"
+)
 {
     method_test obj;
     type meth_type = type::get(obj);
@@ -403,7 +418,11 @@ TEST_CASE("method policies", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Invoke method via wrapper", "[method]")
+TEST_CASE (
+"Invoke method via wrapper"
+,
+"[method]"
+)
 {
     SECTION("test method invoke via shared_ptr wrapper")
     {
@@ -462,7 +481,11 @@ TEST_CASE("Invoke method via wrapper", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke with nullptr", "[method]")
+TEST_CASE (
+"method - invoke with nullptr"
+,
+"[method]"
+)
 {
     type t_meth = type::get<method_test>();
     method meth = t_meth.get_method("method_with_ptr");
@@ -475,7 +498,11 @@ TEST_CASE("method - invoke with nullptr", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke with variant as argument", "[method]")
+TEST_CASE (
+"method - invoke with variant as argument"
+,
+"[method]"
+)
 {
     type t_meth = type::get<method_test>();
     method meth = t_meth.get_method("variant_func");
@@ -489,7 +516,11 @@ TEST_CASE("method - invoke with variant as argument", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke func with noexcept in signature", "[method]")
+TEST_CASE (
+"method - invoke func with noexcept in signature"
+,
+"[method]"
+)
 {
     method meth = type::get<method_test>().get_method("func_with_noexcept");
     method_test obj;
@@ -503,7 +534,11 @@ TEST_CASE("method - invoke func with noexcept in signature", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke base method, which is not registerd", "[method]")
+TEST_CASE (
+"method - invoke base method, which is not registerd"
+,
+"[method]"
+)
 {
     type t_meth = type::get<derive_registered>();
 

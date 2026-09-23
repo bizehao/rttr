@@ -40,61 +40,58 @@
 #include <compare>
 #include <span>
 
-namespace rttr
-{
+namespace rttr {
+    class variant;
+    class constructor;
+    class destructor;
+    class method;
+    class property;
+    class enumeration;
+    class type;
+    class instance;
+    class argument;
 
-class variant;
-class constructor;
-class destructor;
-class method;
-class property;
-class enumeration;
-class type;
-class instance;
-class argument;
+    template<typename Target_Type, typename Source_Type>
+    Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT;
 
-template <typename Target_Type, typename Source_Type>
-Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT;
+    namespace detail {
+        struct derived_info;
+        struct base_class_info;
+        struct type_converter_base;
+        class type_register;
+        class type_register_private;
 
-namespace detail
-{
-struct derived_info;
-struct base_class_info;
-struct type_converter_base;
-class type_register;
-class type_register_private;
+        static type get_invalid_type() RTTR_NOEXCEPT;
 
-static type get_invalid_type() RTTR_NOEXCEPT;
+        struct invalid_type {
+        };
 
-struct invalid_type
-{
-};
+        struct type_data;
+        struct class_data;
+        class destructor_wrapper_base;
+        class property_wrapper_base;
 
-struct type_data;
-struct class_data;
-class destructor_wrapper_base;
-class property_wrapper_base;
-RTTR_LOCAL RTTR_INLINE type create_type(type_data*) RTTR_NOEXCEPT;
+RTTR_LOCAL RTTR_INLINE type create_type(type_data *) RTTR_NOEXCEPT;
 
-template <typename T>
-RTTR_LOCAL std::unique_ptr<type_data> make_type_data();
+        template<typename T>
+        RTTR_LOCAL std::unique_ptr<type_data> make_type_data();
 
-template <typename T, typename Tp, typename Converter>
-struct variant_data_base_policy;
+        template<typename T, typename Tp, typename Converter>
+        struct variant_data_base_policy;
 
-struct type_comparator_base;
+        struct type_comparator_base;
 
-enum class type_of_visit : bool;
+        enum class type_of_visit : bool;
 
-RTTR_API bool compare_types_less_than(const void*, const void*, const type&, int&);
+RTTR_API bool compare_types_less_than(const void *, const void *, const type &, int &);
 
-RTTR_API bool compare_types_equal(const void*, const void*, const type&, bool&);
+RTTR_API bool compare_types_equal(const void *, const void *, const type &, bool &);
 
-template <typename T>
-RTTR_LOCAL RTTR_INLINE type get_type_from_instance(const T*) RTTR_NOEXCEPT;
-} // end namespace detail
+        template<typename T>
+RTTR_LOCAL RTTR_INLINE type get_type_from_instance(const T *) RTTR_NOEXCEPT;
+    } // end namespace detail
 
-/*!
+    /*!
  * The \ref type class holds the type information for any arbitrary object.
  *
  * Every class or primitive data type can have an unique type object.
@@ -179,71 +176,70 @@ RTTR_LOCAL RTTR_INLINE type get_type_from_instance(const T*) RTTR_NOEXCEPT;
  * A \ref type object is lightweight and can be copied by value. However, each copy will refer to the same underlying type.
  *
  */
-class RTTR_API type
-{
-public:
-    using type_id = uintptr_t;
+    class RTTR_API type {
+    public:
+        using type_id = uintptr_t;
 
-    /*!
+        /*!
      * \brief Assigns a type to another one.
      *
      */
-    RTTR_INLINE type(const type& other) RTTR_NOEXCEPT;
+        RTTR_INLINE type(const type &other) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Assigns a type to another one.
      *
      * \return A type object.
      */
-    RTTR_INLINE type& operator=(const type& other) RTTR_NOEXCEPT;
+    RTTR_INLINE type &operator=(const type &other) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Comparison operator for sorting the type data according to some internal criterion.
      *
      * \return True if this type is less than the \a other.
      */
-    //RTTR_INLINE bool operator<(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator<(const type& other) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Comparison operator for sorting the type data according to some internal criterion.
      *
      * \return True if this type is greater than the \a other.
      */
-    //RTTR_INLINE bool operator>(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator>(const type& other) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Comparison operator for sorting the type data according to some internal criterion.
      *
      * \return True if this type is greater than or equal to \a other.
      */
-    //RTTR_INLINE bool operator>=(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator>=(const type& other) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Comparison operator for sorting the type data according to some internal criterion.
      *
      * \return True if this type is less than or equal to \a other.
      */
-    //RTTR_INLINE bool operator<=(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator<=(const type& other) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Compares this type with the \a other type and returns true
      *        if both describe the same type, otherwise returns false.
      *
      * \return True if both type are equal, otherwise false.
      */
-    //RTTR_INLINE bool operator==(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator==(const type& other) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Compares this type with the \a other type and returns true
      *        if both describe different types, otherwise returns false.
      *
      * \return True if both type are \b not equal, otherwise false.
      */
-    //RTTR_INLINE bool operator!=(const type& other) const RTTR_NOEXCEPT;
+        //RTTR_INLINE bool operator!=(const type& other) const RTTR_NOEXCEPT;
 
-    std::strong_ordering operator<=>(const type& other) const RTTR_NOEXCEPT = default;
+        std::strong_ordering operator<=>(const type &other) const RTTR_NOEXCEPT = default;
 
-    /*!
+        /*!
      * \brief Returns the id of this type.
      *
      * \note This id is unique at process runtime,
@@ -253,30 +249,30 @@ public:
      */
     RTTR_INLINE type_id get_id() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the unique and human-readable name of the type.
      *
      * \remark The content of this string is compiler depended.
      *
      * \return The type name.
      */
-    RTTR_INLINE std::string_view get_name() const RTTR_NOEXCEPT;
+        RTTR_INLINE std::string_view get_name() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true if this type is valid, that means the type holds valid data to a type.
      *
      * \return True if this type is valid, otherwise false.
      */
     RTTR_INLINE bool is_valid() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Convenience function to check if this \ref type is valid or not.
      *
      * \return True if this \ref type is valid, otherwise false.
      */
-    RTTR_INLINE explicit operator bool() const RTTR_NOEXCEPT;
+        RTTR_INLINE explicit operator bool() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a type object which represent the raw type.
      *        A raw type, is a type type without any qualifiers (const and volatile) nor any pointer.
      *
@@ -286,7 +282,7 @@ public:
      */
     RTTR_INLINE type get_raw_type() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a type object which represent the wrapped type.
      *        A wrapper type is a class which encapsulate an instance of another type.
      *        This encapsulate type is also called *wrapped type*.
@@ -308,15 +304,15 @@ public:
      */
     RTTR_INLINE type get_wrapped_type() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a type object for the given template type \a T.
      *
      * \return type for the template type \a T.
      */
-    template <typename T>
+        template<typename T>
     RTTR_LOCAL static type get() RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a type object for the given instance \a object.
      *
      * \remark If the type of the expression is a cv-qualified type, the result of the type::get() expression refers to a
@@ -326,10 +322,10 @@ public:
      *
      * \return type for an \a object of type \a T.
      */
-    template <typename T>
-    RTTR_LOCAL static type get(T&& object) RTTR_NOEXCEPT;
+        template<typename T>
+    RTTR_LOCAL static type get(T &&object) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the type object with the given name \p name.
      *
      * \remark The search for the type is case sensitive. White spaces will be ignored.
@@ -339,32 +335,32 @@ public:
      *
      * \return \ref type object with the name \p name.
      */
-    static type get_by_name(std::string_view name) RTTR_NOEXCEPT;
+        static type get_by_name(std::string_view name) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a range of all registered type objects.
      *
      * \remark The order of the type object is unspecified.
      *
      * \return A range of type objects.
      */
-    static std::span<type> get_types() RTTR_NOEXCEPT;
+        static std::span<type> get_types() RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the size in bytes of the object representation of the current type (i.e. `sizeof(T)`).
      *
      * \return The size of the type in bytes.
      */
-    RTTR_INLINE std::size_t get_sizeof() const RTTR_NOEXCEPT;
+        RTTR_INLINE std::size_t get_sizeof() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type is class; that is not an atomic type or a method.
      *
      * \return True if the type is a class, otherwise false.
      */
     RTTR_INLINE bool is_class() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
     * \brief Returns true whether the given type is an instantiation of a class template.
     *
     * See following example code:
@@ -384,7 +380,7 @@ public:
     */
     RTTR_INLINE bool is_template_instantiation() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a list of type objects that represents the template arguments.
      *        An empty list is returned when this type is not an instantiation of a template
      *        or contains no template arguments at all.
@@ -405,16 +401,16 @@ public:
      *
      * \see is_template_instantiation()
      */
-    std::span<type> get_template_arguments() const RTTR_NOEXCEPT;
+        std::span<type> get_template_arguments() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents an enumeration.
      *
      * \return True if the type is an enumeration, otherwise false.
      */
     RTTR_INLINE bool is_enumeration() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the enumerator if this type is an enum type;
      *        otherwise the returned value is \ref enumeration::is_valid "not valid".
      *
@@ -422,9 +418,9 @@ public:
      *
      * \return A enumeration object.
      */
-    enumeration get_enumeration() const RTTR_NOEXCEPT;
+        enumeration get_enumeration() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents a wrapper type.
      *        A wrapper type is a class which encapsulate an instance of another type.
      *        RTTR recognize automatically following wrapper types:
@@ -443,7 +439,7 @@ public:
      */
     RTTR_INLINE bool is_wrapper() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns `true` whether the given type represents an array.
      *        An array is always also a sequential container.
      *        The check will return `true` only for raw C-Style arrays:
@@ -460,7 +456,7 @@ public:
      */
     RTTR_INLINE bool is_array() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents an
      *        <a target="_blank" href=https://en.wikipedia.org/wiki/Associative_containers>associative container</a>.
      *
@@ -470,7 +466,7 @@ public:
      */
     RTTR_INLINE bool is_associative_container() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents an
      *        <a target="_blank" href=https://en.wikipedia.org/wiki/Sequence_container_(C%2B%2B)>sequence container</a>.
      *
@@ -480,7 +476,7 @@ public:
      */
     RTTR_INLINE bool is_sequential_container() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents a pointer.
      *        e.g. `int*`, or `bool*`
      *
@@ -488,7 +484,7 @@ public:
      */
     RTTR_INLINE bool is_pointer() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents an arithmetic type.
      *        An arithmetic type is a integral type or a floating point type.
      *        e.g. `bool`, `int`, `float`, etc...
@@ -497,7 +493,7 @@ public:
      */
     RTTR_INLINE bool is_arithmetic() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents a pointer to a function
      *        e.g. `void (*)(void)`
      *
@@ -505,7 +501,7 @@ public:
      */
     RTTR_INLINE bool is_function_pointer() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents a pointer to a member object.
      *        e.g. `int (MyClass::*)`
      *
@@ -513,7 +509,7 @@ public:
      */
     RTTR_INLINE bool is_member_object_pointer() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true whether the given type represents a pointer to a member function.
      *        e.g. `void (MyClass::*)(void)`
      *
@@ -521,7 +517,7 @@ public:
      */
     RTTR_INLINE bool is_member_function_pointer() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true if this type is derived from the given type \p other, otherwise false.
      *
      * \remark Make sure that the complete class hierarchy has the macro RTTR_ENABLE
@@ -530,9 +526,9 @@ public:
      *
      * \return Returns true if this type is a derived type from \p other, otherwise false.
      */
-    bool is_derived_from(const type& other) const RTTR_NOEXCEPT;
+        bool is_derived_from(const type &other) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true if this type is derived from the given type \a T, otherwise false.
      *
      * \remark Make sure that the complete class hierarchy has the macro RTTR_ENABLE
@@ -541,10 +537,10 @@ public:
      *
      * \return Returns true if this type is a derived type from \a T, otherwise false.
      */
-    template <typename T>
-    bool is_derived_from() const RTTR_NOEXCEPT;
+        template<typename T>
+        bool is_derived_from() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true if this type is the base class from the given type \p other, otherwise false.
      *
      * \remark Make sure that the complete class hierarchy has the macro RTTR_ENABLE
@@ -553,9 +549,9 @@ public:
      *
      * \return Returns true if this type is a base class type from \p other, otherwise false.
      */
-    bool is_base_of(const type& other) const RTTR_NOEXCEPT;
+        bool is_base_of(const type &other) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
     * \brief Returns true if this type is the base class from the given type \a T, otherwise false.
     *
     * \remark Make sure that the complete class hierarchy has the macro RTTR_ENABLE
@@ -564,10 +560,10 @@ public:
     *
     * \return Returns true if this type is a base class type from \a T, otherwise false.
     */
-    template <typename T>
-    bool is_base_of() const RTTR_NOEXCEPT;
+        template<typename T>
+        bool is_base_of() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a range of all base classes of this type.
      *
      * \remark Make sure that the complete class hierarchy has the macro RTTR_ENABLE
@@ -578,9 +574,9 @@ public:
      *
      * \return A range of types.
      */
-    std::span<const type> get_base_classes() const RTTR_NOEXCEPT;
+        std::span<const type> get_base_classes() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a range of all derived classes of this type.
      *
      * \remark Make sure that the complete class hierarchy has the macro RTTR_ENABLE
@@ -590,10 +586,10 @@ public:
      *
      * \return A range of type objects.
      */
-    std::span<const type> get_derived_classes() const RTTR_NOEXCEPT;
+        std::span<const type> get_derived_classes() const RTTR_NOEXCEPT;
 
-    /////////////////////////////////////////////////////////////////////////////////////////
-    /*!
+        /////////////////////////////////////////////////////////////////////////////////////////
+        /*!
     * \brief Returns the meta data for the given key \p key.
     *
     * \remark When no meta data is registered with the given \p key,
@@ -601,12 +597,12 @@ public:
     *
     * \return A variant object, containing arbitrary data.
     */
-    variant get_metadata(const std::string_view& key) const;
+        variant get_metadata(const std::string_view &key) const;
 
-    /////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////
 
-    /*!
+        /*!
      * \brief Returns a public constructor whose parameters match the types in the specified list.
      *
      * \remark When no parameter list is given, it will be searched for the default constructor.
@@ -614,10 +610,11 @@ public:
      * \return A valid constructor will be returned when the parameter matches the registered constructor;
      *         otherwise an invalid constructor.
      */
-    constructor get_constructor(const std::vector<type>& params = std::vector<type>()) const
-    RTTR_NOEXCEPT;
+        constructor get_constructor(const std::vector<type> &params = std::vector<type>()) const
 
-    /*!
+        RTTR_NOEXCEPT;
+
+        /*!
      * \brief Returns a range of all registered *public* constructors for this type.
      *
      * \remark In order to retrieve *private* constructors, use \ref type::get_constructors(filter_items) const
@@ -626,9 +623,9 @@ public:
      *
      * \return A range of constructors.
      */
-    std::span<constructor> get_constructors() const RTTR_NOEXCEPT;
+        std::span<constructor> get_constructors() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Creates an instance of the current type, with the given arguments \p args for the constructor.
      *
      * \remark When the argument types does not match the parameter list of the constructor then the he will not be invoked.
@@ -636,9 +633,9 @@ public:
      *
      * \return Returns an instance of the given type.
      */
-    variant create(std::vector<argument> args = std::vector<argument>()) const;
+        variant create(std::vector<argument> args = std::vector<argument>()) const;
 
-    /*!
+        /*!
      * \brief Returns the corresponding destructor for this type.
      *
      * \remark When there is no constructor registered for this type, then also the destructor is not available.
@@ -646,9 +643,9 @@ public:
      *
      * \return Returns the destructor for this type.
      */
-    destructor get_destructor() const RTTR_NOEXCEPT;
+        destructor get_destructor() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Destroys the contained object in the variant \p obj.
      *
      * \remark When the \p obj could be destroyed the given \p obj is invalid after calling this method;
@@ -656,19 +653,19 @@ public:
      *
      * \return True if the destructor of the object could be invoked, otherwise false.
      */
-    bool destroy(variant& obj) const RTTR_NOEXCEPT;
+        bool destroy(variant &obj) const RTTR_NOEXCEPT;
 
 
-    /*!
+        /*!
      * \brief Returns a property with the name \p name.
      *
      * \remark When there exists no property with the name \p name, then an invalid property is returned.
      *
      * \return A property with name \p name.
      */
-    property get_property(std::string_view name) const RTTR_NOEXCEPT;
+        property get_property(std::string_view name) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a range of all registered *public* properties for this type and
      *        all its base classes.
      *
@@ -678,18 +675,18 @@ public:
      *
      * \return A range of properties.
      */
-    std::span<property> get_properties() const RTTR_NOEXCEPT;
+        std::span<property> get_properties() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a global property with the name \p name.
      *
      * \remark When there exists no property with the name \p name, then an invalid property is returned.
      *
      * \return A property with name \p name.
      */
-    static property get_global_property(std::string_view name) RTTR_NOEXCEPT;
+        static property get_global_property(std::string_view name) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a range of all registered global properties.
      *
      * \remark The order of the properties in the range is undefined.
@@ -698,52 +695,52 @@ public:
      *
      * \return A range of properties.
      */
-    static std::span<property> get_global_properties() RTTR_NOEXCEPT;
+        static std::span<property> get_global_properties() RTTR_NOEXCEPT;
 
 
-    /*!
+        /*!
      * \brief Returns the property value of property named \p name from the instance \p obj.
      *
      * \remark When the given instance is empty, the value of global property will be tryed to returned.
      *
      * \return A variant containing the value of the property.
      */
-    variant get_property_value(std::string_view name, instance obj) const;
+        variant get_property_value(std::string_view name, instance obj) const;
 
-    /*!
+        /*!
      * \brief Returns the property value of property named \p name.
      *
      * \return A variant containing the value of the property.
      */
-    static variant get_property_value(std::string_view name);
+        static variant get_property_value(std::string_view name);
 
-    /*!
+        /*!
      * \brief This function will set the given value \p arg to a property named \p name to the instance \p obj.
      *
      * \remark When the given instance is empty, the value of a global property with name \p name will be tryed to set.
      *
      * \return A bool value, which is true, when the value could be set, otherwise false.
      */
-    bool set_property_value(std::string_view name, instance obj, argument arg) const;
+        bool set_property_value(std::string_view name, instance obj, argument arg) const;
 
-    /*!
+        /*!
      * \brief This function will set the given value \p arg to a property named \p name.
      *
      * \return A bool value, which is true, when the value could be set, otherwise false.
      */
-    static bool set_property_value(std::string_view name, argument arg);
+        static bool set_property_value(std::string_view name, argument arg);
 
 
-    /*!
+        /*!
      * \brief Returns a method with the name \p name.
      *
      * \remark When there exists no method with the name \p name, then an invalid method is returned.
      *
      * \return A method with name \p name.
      */
-    method get_method(std::string_view name) const RTTR_NOEXCEPT;
+        method get_method(std::string_view name) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a method with the name \p name which match the given parameter type list \p type_list.
      *
      * \remark When there exists no method with the name \p name and matching parameter type list \p type_list,
@@ -751,10 +748,9 @@ public:
      *
      * \return A method with name \p name.
      */
-    method get_method(std::string_view name, const std::vector<type>& type_list) const RTTR_NOEXCEPT
-    ;
+        method get_method(std::string_view name, const std::vector<type> &type_list) const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a range of all registered *public* methods for this type and
      *        all its base classes.
      *
@@ -764,18 +760,18 @@ public:
      *
      * \return A range of methods.
      */
-    std::span<method> get_methods() const RTTR_NOEXCEPT;
+        std::span<method> get_methods() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a global method with the name \p name.
      *
      * \remark When there exists no method with the name \p name, and invalid method is returned.
      *
      * \return A method with name \p name.
      */
-    static method get_global_method(std::string_view name) RTTR_NOEXCEPT;
+        static method get_global_method(std::string_view name) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns a global method with the name \p name which match the given parameter list \p params.
      *
      * \remark When there exists no method with the name \p name and matching parameter list \p params,
@@ -783,10 +779,11 @@ public:
      *
      * \return A method with name \p name and parameter signature \p params.
      */
-    static method get_global_method(std::string_view name, const std::vector<type>& params)
-    RTTR_NOEXCEPT;
+        static method get_global_method(std::string_view name, const std::vector<type> &params)
 
-    /*!
+        RTTR_NOEXCEPT;
+
+        /*!
      * \brief Returns a range of all registered global methods.
      *
      * \remark The order of the methods in the range is undefined.
@@ -795,10 +792,10 @@ public:
      *
      * \return A range of methods.
      */
-    static std::span<method> get_global_methods() RTTR_NOEXCEPT;
+        static std::span<method> get_global_methods() RTTR_NOEXCEPT;
 
 
-    /*!
+        /*!
      * \brief Invokes the method represented by the current instance \p object.
      *
      * \remark When it's a static method you still need to provide an instance object,
@@ -809,18 +806,18 @@ public:
      * \return A variant object containing the possible return value,
      *         otherwise when it is a void function an empty but valid variant object.
      */
-    variant invoke(std::string_view name, instance obj, std::vector<argument> args) const;
+        variant invoke(std::string_view name, instance obj, std::vector<argument> args) const;
 
-    /*!
+        /*!
      * \brief Invokes a global method named \p name with the specified argument \p args.
      *
      * \return A variant object containing the possible return value,
      *         otherwise when it is a void function an empty but valid variant object.
      *         Methods with registered \ref default_arguments will be honored.
      */
-    static variant invoke(std::string_view name, std::vector<argument> args);
+        static variant invoke(std::string_view name, std::vector<argument> args);
 
-    /*!
+        /*!
      * \brief Register a converter func `F`, which will be used internally by the
      *        \ref variant class to convert between types.
      *
@@ -841,10 +838,10 @@ public:
      *
      * \see variant::convert()
      */
-    template <typename F>
-    static void register_converter_func(F func);
+        template<typename F>
+        static void register_converter_func(F func);
 
-    /*!
+        /*!
      * \brief Register for all base classes of the giving type \p T
      *        wrapper converter functions.
      *        The converters are registered in both directions respectively.
@@ -868,10 +865,10 @@ public:
      *
      * \see variant::convert(), \ref wrapper_mapper "wrapper_mapper<T>"
      */
-    template <typename T>
-    static void register_wrapper_converter_for_base_classes();
+        template<typename T>
+        static void register_wrapper_converter_for_base_classes();
 
-    /*!
+        /*!
      * \brief Register comparison operators for template type \p T.
      *        This requires a valid `operator==` and `operator<` for type \p T.
      *
@@ -893,10 +890,10 @@ public:
      *
      * \see variant::operator==(), variant::operator<()
      */
-    template <typename T>
-    static void register_comparators();
+        template<typename T>
+        static void register_comparators();
 
-    /*!
+        /*!
      * \brief Register the equal comparison operators for template type \p T.
      *        This requires a valid `operator==` for type \p T.
      *
@@ -918,10 +915,10 @@ public:
      *
      * \see variant::operator==()
      */
-    template <typename T>
-    static void register_equal_comparator();
+        template<typename T>
+        static void register_equal_comparator();
 
-    /*!
+        /*!
      * \brief Register the less than comparison operators for template type \p T.
      *        This requires a valid `operator<` for type \p T.
      *
@@ -950,25 +947,25 @@ public:
      *
      * \see variant::operator<()
      */
-    template <typename T>
-    static void register_less_than_comparator();
+        template<typename T>
+        static void register_less_than_comparator();
 
-    bool has_type_converter(const type& target_type);
+        bool has_type_converter(const type &target_type);
 
-private:
-    /*!
+    private:
+        /*!
      * Constructs an empty and invalid type object.
      */
-    type() RTTR_NOEXCEPT;
+        type() RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Constructs a valid type object.
      *
      * \param id The unique id of the data type.
      */
-    RTTR_INLINE explicit type(detail::type_data* data) RTTR_NOEXCEPT;
+        RTTR_INLINE explicit type(detail::type_data *data) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief This function try to convert the given pointer \p ptr from the type \p source_type
      *        to the target type \p target_type.
      *
@@ -976,53 +973,55 @@ private:
      *
      * \return Returns the converted pointer; when the conversion fails is a null pointer is returned.
      */
-    static void* apply_offset(void* ptr, const type& source_type, const type& target_type)
-    RTTR_NOEXCEPT;
+        static void *apply_offset(void *ptr, const type &source_type, const type &target_type)
 
-    /*!
+        RTTR_NOEXCEPT;
+
+        /*!
      * \brief This function returns the most derived type for the given object \p ptr of type \p source_type.
      *
      * \return Returns the most derived type for the given instance \p ptr.
      */
-    static type get_derived_type(void* ptr, const type& source_type) RTTR_NOEXCEPT;
+        static type get_derived_type(void *ptr, const type &source_type) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief When for the current type instance a converter function to type \p target_type was registered,
      *        then this function returns a valid pointer to a type_converter_base object.
      *        Otherwise this function returns a `nullptr`.
      *
      * \see register_converter_func()
      */
-    const detail::type_converter_base* get_type_converter(const type& target_type) const
-    RTTR_NOEXCEPT;
+        const detail::type_converter_base *get_type_converter(const type &target_type) const
 
-    /*!
+        RTTR_NOEXCEPT;
+
+        /*!
      * \brief When for the current type instance a equal comparator function was registered,
      *        then this function returns a valid pointer to a `type_comparator_base` object.
      *        Otherwise this function returns a `nullptr`.
      *
      * \see register_equal_comparator()
      */
-    const detail::type_comparator_base* get_equal_comparator() const RTTR_NOEXCEPT;
+        const detail::type_comparator_base *get_equal_comparator() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief When for the current type instance a less-than comparator function was registered,
      *        then this function returns a valid pointer to a `type_comparator_base` object.
      *        Otherwise this function returns a `nullptr`.
      *
      * \see register_less_than_comparator()
      */
-    const detail::type_comparator_base* get_less_than_comparator() const RTTR_NOEXCEPT;
+        const detail::type_comparator_base *get_less_than_comparator() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the level of indirection for this this type. A.k.a pointer count.
      *        E.g. (`int` will return `0`; `int*` will return `1`; `int**` will return `2`; etc...)
      *
      * \return The pointer dimension.
      */
-    RTTR_INLINE std::size_t get_pointer_dimension() const RTTR_NOEXCEPT;
+        RTTR_INLINE std::size_t get_pointer_dimension() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the raw type of an array
      *        E.g.  for type `int[100]` it will return the type object of `int`;
      *              `const int[10][25]` will return also `int`; etc...
@@ -1031,55 +1030,54 @@ private:
      */
     RTTR_INLINE type get_raw_array_type() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the compiler depended name of the type.
      *
      * \return The full type name.
      */
-    RTTR_INLINE std::string_view get_full_name() const RTTR_NOEXCEPT;
+        RTTR_INLINE std::string_view get_full_name() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Creates a wrapped value from the given argument \p arg and moves it into the
      *        the given variant \p var.
      */
-    void create_wrapped_value(const argument& arg, variant& var) const;
+        void create_wrapped_value(const argument &arg, variant &var) const;
 
+        /////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////
 
-    //! Creates a variant from the given argument data.
-    RTTR_INLINE variant create_variant(const argument& data) const;
+        //! Creates a variant from the given argument data.
+    RTTR_INLINE variant create_variant(const argument &data) const;
 
-    friend class variant;
+        friend class variant;
 
-    template <typename Target_Type, typename Source_Type>
-    friend Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT;
+        template<typename Target_Type, typename Source_Type>
+        friend Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT;
 
-    friend class instance;
-    friend class detail::type_register;
-    friend class detail::type_register_private;
-    friend struct detail::class_data;
+        friend class instance;
+        friend class detail::type_register;
+        friend class detail::type_register_private;
+        friend struct detail::class_data;
 
-    friend type detail::create_type(detail::type_data*) RTTR_NOEXCEPT;
+        friend type detail::create_type(detail::type_data *) RTTR_NOEXCEPT;
 
-    template <typename T>
-    friend std::unique_ptr<detail::type_data> detail::make_type_data();
+        template<typename T>
+        friend std::unique_ptr<detail::type_data> detail::make_type_data();
 
-    template <typename T, typename Tp, typename Converter>
-    friend struct detail::variant_data_base_policy;
+        template<typename T, typename Tp, typename Converter>
+        friend struct detail::variant_data_base_policy;
 
-    friend RTTR_API bool detail::compare_types_less_than(const void*,
-                                                         const void*,
-                                                         const type&,
-                                                         int&);
+        friend RTTR_API bool detail::compare_types_less_than(const void *,
+                                                             const void *,
+                                                             const type &,
+                                                             int &);
 
-    friend RTTR_API bool detail::compare_types_equal(const void*, const void*, const type&, bool&);
+        friend RTTR_API bool detail::compare_types_equal(const void *, const void *, const type &, bool &);
 
-private:
-    detail::type_data* m_type_data;
-};
-
+    private:
+        detail::type_data *m_type_data;
+    };
 } // end namespace rttr
 
 #include "rttr/detail/type/type_impl.h"

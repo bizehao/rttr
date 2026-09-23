@@ -32,71 +32,69 @@
 #include "rttr/detail/misc/misc_type_traits.h"
 #include "rttr/detail/misc/data_address_container.h"
 
-namespace rttr
-{
-class variant;
-class type;
-class argument;
+namespace rttr {
+    class variant;
+    class type;
+    class argument;
 
-/*!
+    /*!
  * The \ref instance class is used for forwarding the instance of an object to invoke a \ref property or \ref method.
  *
  * \remark The \ref instance class will internally hold a reference to the object. It will not perform any copy operation on the data itself.
  *         Make sure you don't hold an \ref instance, while the underlying object is already destroyed. Otherwise it will lead to undefined behavior.
  */
-class RTTR_API instance
-{
-
-public:
-    /*!
+    class RTTR_API instance {
+    public:
+        /*!
      * \brief Creates an \ref instance::is_valid() "invalid" instance object.
      *
      * Use this constructor, when you need to invoke a property or method where no instance is required.
      */
-    RTTR_INLINE instance() RTTR_NOEXCEPT;
+        RTTR_INLINE instance() RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Creates an instance object from a \ref variant object.
      */
-    RTTR_INLINE instance(const variant& var) RTTR_NOEXCEPT;
+        RTTR_INLINE instance(const variant &var) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Copy constructor for an instance.
      */
-    RTTR_INLINE instance(const instance& other) RTTR_NOEXCEPT;
+        RTTR_INLINE instance(const instance &other) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Creates an instance object from type \p T.
      *
      * \remark Internally, the instance class will hold a reference to the address of the given object \p data.
      */
-    template<typename T> requires (!std::is_same_v<instance, std::decay_t<T>> && !std::is_same_v<variant, std::decay_t<T>>)
-    RTTR_INLINE instance(T& data) RTTR_NOEXCEPT;
+        template<typename T> requires (!std::is_same_v<instance, std::decay_t<T> > && !std::is_same_v<variant,
+                                           std::decay_t<T> >)
+        RTTR_INLINE instance(T &data) RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief This function will try to convert the underlying instance to the given type \p Target_Type*.
      *        When the conversion succeeds, a valid pointer will be returned. Otherwise a nullptr.
      *
      * \return A pointer to the instance of \p Target_Type, when the conversion succeeds, otherwise a nullptr.
      */
-    template<typename Target_Type>
-    RTTR_INLINE Target_Type* try_convert() const RTTR_NOEXCEPT;
+        template<typename Target_Type>
+    RTTR_INLINE Target_Type *try_convert() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true when the instance class contains a reference to an object. Otherwise false.
      *
      * \return True when a reference is stored, otherwise false.
      */
     RTTR_INLINE bool is_valid() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns true when the instance class contains a reference to an object. Otherwise false.
      *
      * \return True when a reference is stored, otherwise false.
      */
-    explicit operator bool() const RTTR_NOEXCEPT;
+        explicit operator bool() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the type of the internally hold instance.
      *
      * \remark When no reference is stored, an \ref type::is_valid() "invalid"  \ref type object will be returned.
@@ -105,7 +103,7 @@ public:
      */
     RTTR_INLINE type get_type() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns an \ref instance object for the wrapped instance.
      *
      * See following example code:
@@ -124,7 +122,7 @@ public:
      */
     RTTR_INLINE instance get_wrapped_instance() const RTTR_NOEXCEPT;
 
-    /*!
+        /*!
      * \brief Returns the most derived type of the hold instance.
      *
      * See following example code:
@@ -143,12 +141,11 @@ public:
      */
     RTTR_INLINE type get_derived_type() const RTTR_NOEXCEPT;
 
-private:
-    instance& operator=(const instance& other) RTTR_NOEXCEPT;
+    private:
+        instance &operator=(const instance &other) RTTR_NOEXCEPT;
 
-    detail::data_address_container m_data_container;
-};
-
+        detail::data_address_container m_data_container;
+    };
 } // end namespace rttr
 
 #include "rttr/detail/impl/instance_impl.h"

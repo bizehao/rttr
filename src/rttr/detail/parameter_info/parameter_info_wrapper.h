@@ -33,31 +33,30 @@
 #include "rttr/detail/parameter_info/parameter_info_wrapper_base.h"
 #include "rttr/parameter_info.h"
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        template<std::meta::info Param, std::size_t Param_Index>
+        class parameter_info_wrapper : public parameter_info_wrapper_base {
+            using Default_Type = [:std::meta::type_of(Param):];
 
-template<std::meta::info Param, std::size_t Param_Index>
-class parameter_info_wrapper : public parameter_info_wrapper_base
-{
-    using Default_Type = [:std::meta::type_of(Param):];
-    public:
-        parameter_info_wrapper() {}
-        std::string_view get_name() const override        RTTR_NOEXCEPT   {
-            if constexpr (std::meta::has_identifier(Param)) {
-                return std::meta::identifier_of(Param);
+        public:
+            parameter_info_wrapper() {
             }
-            else {
-                return std::string_view{};
-            }
-        }
-        rttr::type get_type() const override              RTTR_NOEXCEPT   { return type::get<Default_Type>(); }
-        bool has_default_value() const override     RTTR_NOEXCEPT   { return  std::meta::has_default_argument(Param); }
-        uint32_t get_index() const override         RTTR_NOEXCEPT   { return static_cast<uint32_t>(Param_Index); }
-};
 
-} // end namespace detail
+            std::string_view get_name() const override RTTR_NOEXCEPT {
+                if constexpr (std::meta::has_identifier(Param)) {
+                    return std::meta::identifier_of(Param);
+                }
+                else {
+                    return std::string_view{};
+                }
+            }
+
+            rttr::type get_type() const override RTTR_NOEXCEPT { return type::get<Default_Type>(); }
+            bool has_default_value() const override RTTR_NOEXCEPT { return std::meta::has_default_argument(Param); }
+            uint32_t get_index() const override RTTR_NOEXCEPT { return static_cast<uint32_t>(Param_Index); }
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_PARAMETER_INFO_WRAPPER_H_

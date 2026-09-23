@@ -47,29 +47,27 @@ RAPIDJSON_NAMESPACE_BEGIN
     \tparam StreamType Class derived from \c std::basic_istream.
 */
 
-template <typename StreamType>
-class BasicIStreamWrapper
-{
+
+
+template<typename StreamType>
+class BasicIStreamWrapper {
 public:
     typedef typename StreamType::char_type Ch;
-    BasicIStreamWrapper(StreamType& stream)
+
+    BasicIStreamWrapper(StreamType &stream)
         : stream_(stream),
           count_(),
-          peekBuffer_()
-    {
+          peekBuffer_() {
     }
 
-    Ch Peek() const
-    {
+    Ch Peek() const {
         typename StreamType::int_type c = stream_.peek();
         return RAPIDJSON_LIKELY(c != StreamType::traits_type::eof()) ? static_cast<Ch>(c) : '\0';
     }
 
-    Ch Take()
-    {
+    Ch Take() {
         typename StreamType::int_type c = stream_.get();
-        if (RAPIDJSON_LIKELY(c != StreamType::traits_type::eof()))
-        {
+        if (RAPIDJSON_LIKELY(c != StreamType::traits_type::eof())) {
             count_++;
             return static_cast<Ch>(c);
         }
@@ -78,41 +76,36 @@ public:
     }
 
     // tellg() may return -1 when failed. So we count by ourself.
-    size_t Tell() const
-    {
+    size_t Tell() const {
         return count_;
     }
 
-    Ch* PutBegin()
-    {
+    Ch *PutBegin() {
         RAPIDJSON_ASSERT(false);
         return 0;
     }
-    void Put(Ch)
-    {
+
+    void Put(Ch) {
         RAPIDJSON_ASSERT(false);
     }
-    void Flush()
-    {
+
+    void Flush() {
         RAPIDJSON_ASSERT(false);
     }
-    size_t PutEnd(Ch*)
-    {
+
+    size_t PutEnd(Ch *) {
         RAPIDJSON_ASSERT(false);
         return 0;
     }
 
     // For encoding detection only.
-    const Ch* Peek4() const
-    {
+    const Ch *Peek4() const {
         RAPIDJSON_ASSERT(sizeof(Ch) == 1); // Only usable for byte stream.
         int i;
         bool hasError = false;
-        for (i = 0; i < 4; ++i)
-        {
+        for (i = 0; i < 4; ++i) {
             typename StreamType::int_type c = stream_.get();
-            if (c == StreamType::traits_type::eof())
-            {
+            if (c == StreamType::traits_type::eof()) {
                 hasError = true;
                 stream_.clear();
                 break;
@@ -125,10 +118,11 @@ public:
     }
 
 private:
-    BasicIStreamWrapper(const BasicIStreamWrapper&);
-    BasicIStreamWrapper& operator=(const BasicIStreamWrapper&);
+    BasicIStreamWrapper(const BasicIStreamWrapper &);
 
-    StreamType& stream_;
+    BasicIStreamWrapper &operator=(const BasicIStreamWrapper &);
+
+    StreamType &stream_;
     size_t count_; //!< Number of characters read. Note:
     mutable Ch peekBuffer_[4];
 };

@@ -37,13 +37,12 @@
 #include <vector>
 #include <memory>
 
-namespace rttr
-{
+namespace rttr {
     class type;
     class instance;
     class argument;
 
-/*!
+    /*!
  * The \ref variant_sequential_view describes a class that refers to an
  * <a target="_blank" href=https://en.wikipedia.org/wiki/Sequence_container_(C%2B%2B)>sequence container</a> (e.g: `std::vector`)
  * inside a \ref variant.
@@ -92,8 +91,7 @@ namespace rttr
  *
  * \see variant, type::is_sequential_container()
  */
-class RTTR_API variant_sequential_view
-{
+    class RTTR_API variant_sequential_view {
     public:
         class const_iterator;
 
@@ -107,7 +105,7 @@ class RTTR_API variant_sequential_view
         /*!
          * \brief Constructs a copy of the given variant_sequential_view \p other.
          */
-        variant_sequential_view(const variant_sequential_view& other);
+        variant_sequential_view(const variant_sequential_view &other);
 
         /*!
          * \brief Destroys the variant_sequential_view.
@@ -121,7 +119,7 @@ class RTTR_API variant_sequential_view
          *
          * \return A reference to the variant_sequential_view with the new data.
          */
-        variant_sequential_view& operator=(const variant_sequential_view& other) RTTR_NOEXCEPT;
+        variant_sequential_view &operator=(const variant_sequential_view &other) RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns true if this variant_sequential_view is valid, that means the object is holding some data.
@@ -143,7 +141,7 @@ class RTTR_API variant_sequential_view
         /*!
          * \brief Swaps this variant_sequential_view with the \a other variant_sequential_view.
          */
-        void swap(variant_sequential_view& other) RTTR_NOEXCEPT;
+        void swap(variant_sequential_view &other) RTTR_NOEXCEPT;
 
 
         /*!
@@ -229,14 +227,14 @@ class RTTR_API variant_sequential_view
          *
          * \return An iterator to the inserted element, otherwise an invalid iterator, when the insertion was not possible.
          */
-        const_iterator insert(const const_iterator& pos, argument value);
+        const_iterator insert(const const_iterator &pos, argument value);
 
         /*!
          * \brief Removes the element (if one exists) at the position \p pos.
          *
          * \return Iterator following the last removed element.
          */
-        const_iterator erase(const const_iterator& pos);
+        const_iterator erase(const const_iterator &pos);
 
         /*!
          * \brief Removes all elements from the container.
@@ -306,126 +304,126 @@ class RTTR_API variant_sequential_view
          *
          * \remark The iterator is valid as long as the variant_sequential_view and it corresponding variant is valid and not modified.
          */
-        class RTTR_API const_iterator
-        {
-            public:
-                using self_type = const_iterator;
-                using value_type = variant;
+        class RTTR_API const_iterator {
+        public:
+            using self_type = const_iterator;
+            using value_type = variant;
 
-                /*!
+            /*!
                  * \brief Destroys the variant_sequential_view::const_iterator
                  */
-                ~const_iterator();
+            ~const_iterator();
 
-                /*!
+            /*!
                  * \brief Creates a copy of \p other
                  */
-                const_iterator(const const_iterator& other);
+            const_iterator(const const_iterator &other);
 
-                 /*!
+            /*!
                  * \brief Assigns \p other to `this`.
                  */
-                const_iterator& operator=(const_iterator other);
+            const_iterator &operator=(const_iterator other);
 
-                /*!
+            /*!
                  * Returns the underlying value in a variant stored in a `std::reference_wrapper<T>`.
                  * When the data cannot be returns as reference from the container, the data is stored directly inside the variant.
                  * E.g. for `std::vector<bool>` no reference can be returned.
                  *
                  * \see variant::extract_wrapped_value(), variant::get_wrapped_value<T>()
                  */
-                const variant operator*() const;
+            const variant operator*() const;
 
-                /*!
+            /*!
                  * \brief Returns the current value, stored inside a `std::reference_wrapper<T>`
                  *        and copied to a variant.
                  *
                  * \see operator*(), variant::extract_wrapped_value(), variant::get_wrapped_value<T>()
                  */
-                const variant get_data() const;
+            const variant get_data() const;
 
-                /*!
+            /*!
                  * \brief Pre-increment operator advances the iterator to the next item
                  *        in the container and returns an iterator to the new current item.
                  *
                  * \remark Calling this function on and iterator with value variant_sequential_view::end()
                  *         leads to undefined behaviour.
                  */
-                const_iterator &operator++();
+            const_iterator &operator++();
 
-                /*!
+            /*!
                  * \brief Post-increment operator advances the iterator to the next item
                  *        in the container and returns an iterator to the previously current item.
                  */
-                const_iterator operator++(int);
+            const_iterator operator++(int);
 
-                /*!
+            /*!
                  * \brief Pre-decrement operator makes the preceding item current and returns
                  *        an iterator to the new current item.
                  *
                  * \remark Calling this function on and iterator with value variant_sequential_view::begin()
                  *         leads to undefined behaviour.
                  */
-                const_iterator &operator--();
+            const_iterator &operator--();
 
-                /*!
+            /*!
                  * \brief Post-decrement operator makes the preceding item current
                  *        and returns an iterator to the previously current item.
                  */
-                const_iterator operator--(int);
+            const_iterator operator--(int);
 
-                /*!
+            /*!
                  * \brief Advances the iterator by i items.
                  */
-                const_iterator &operator+=(int i);
+            const_iterator &operator+=(int i);
 
-                /*!
+            /*!
                  * \brief Returns an iterator to the item at i positions backward from this iterator.
                  */
-                const_iterator &operator-=(int i);
+            const_iterator &operator-=(int i);
 
-                /*!
+            /*!
                  * \brief Returns an iterator to the item at i positions forward from this iterator.
                  */
-                const_iterator operator+(int i) const;
+            const_iterator operator+(int i) const;
 
-                /*!
+            /*!
                  * \brief Returns an iterator to the item at i positions backward from this iterator.
                  */
-                const_iterator operator-(int i) const;
+            const_iterator operator-(int i) const;
 
-                /*!
+            /*!
                  * \brief Returns `true` if \p other points to the same item
                  *        as this iterator; otherwise returns false.
                  *
                  * \see \ref const_iterator::operator!= "operator!="
                  */
-                bool operator==(const const_iterator& other) const;
+            bool operator==(const const_iterator &other) const;
 
-                /*!
+            /*!
                  * \brief Returns true if \p other points to a different item
                  *        than this iterator; otherwise returns false.
                  *
                  * \see \ref operator== "operator=="
                  */
-                bool operator!=(const const_iterator& other) const;
+            bool operator!=(const const_iterator &other) const;
 
-            private:
-                const_iterator(const detail::variant_sequential_view_private* view) RTTR_NOEXCEPT;
-                void swap(const_iterator& other);
+        private:
+            const_iterator(const detail::variant_sequential_view_private *view) RTTR_NOEXCEPT;
 
-                friend class variant_sequential_view;
+            void swap(const_iterator &other);
 
-                const detail::variant_sequential_view_private* m_view;
-                detail::iterator_data m_itr;
+            friend class variant_sequential_view;
+
+            const detail::variant_sequential_view_private *m_view;
+            detail::iterator_data m_itr;
         };
+
     private:
         friend class variant;
         friend class argument;
 
         detail::variant_sequential_view_private m_view;
-};
-
+    };
 } // end namespace rttr
 
 #endif // RTTR_VARIANT_SEQUENTIAL_VIEW_H_

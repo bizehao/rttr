@@ -1,43 +1,40 @@
-$( document ).ready(function() {
-    
+$(document).ready(function () {
+
     function ends_with(text, suffix) {
         return text.indexOf(suffix, text.length - suffix.length) !== -1;
     };
 
-        
+
     $("div.headertitle").addClass("page-header");
     $("div.title").addClass("h1");
-    
+
     // here we mark with the help of js the current active tab
     var classes_link = $('li > a[href="classes.html"]');
     var tutorial_link = $('li > a[href="tutorial_page.html"]');
     var install_link = $('li > a[href="building_install_page.html"]');
-    
+
     // by default, because we cannot check for all 
     classes_link.parent().addClass("current active");
     var title = $("title");
-    if (title.text().search("Building & Installation") > - 1)
-    {
+    if (title.text().search("Building & Installation") > -1) {
         classes_link.parent().removeClass("current active");
         install_link.parent().addClass("current active");
-    }
-    else if (ends_with(window.location.pathname, "page.html"))
-    {
+    } else if (ends_with(window.location.pathname, "page.html")) {
         classes_link.parent().removeClass("current active");
         tutorial_link.parent().addClass("current active");
     }
-        
+
     // replace the div tags with the <a> tags below,
     // the reason we are doing this, is because we cannot style directly the <a> tags with classes within doxygen
     // and explicit <a> tags cannot be using with internal links
-    var button_link = $("div.doxy-button").each(function(){
+    var button_link = $("div.doxy-button").each(function () {
         var a_tag = $(this).children().first();
         if (a_tag.length == 0)
             return;
         a_tag.addClass($(this).attr("class"));
         $(this).replaceWith(a_tag);
     });
-    
+
     $('li > a[href="modules.html"] > span').before("<i class='fa fa-square'></i> ");
     $('li > a[href="namespaces.html"] > span').before("<i class='fa fa-bars'></i> ");
     $('li > a[href="annotated.html"] > span').before("<i class='fa fa-list-ul'></i> ");
@@ -52,7 +49,7 @@ $( document ).ready(function() {
     $('img[src="ftv2cl.png"]').replaceWith('<span class="label label-danger">C</span> ');
 
     $("ul.tablist").addClass("nav nav-pills nav-justified");
-    
+
     $("ul.tablist").css("margin-top", "0.5em");
     $("ul.tablist").css("margin-bottom", "0.5em");
     $("li.current").addClass("active");
@@ -93,46 +90,46 @@ $( document ).ready(function() {
     $('div.fragment.well div.line:first').css('margin-top', '15px');
     $('div.fragment.well div.line:last').css('margin-bottom', '15px');
 
-    $('table.doxtable').removeClass('doxtable').addClass('table table-striped table-bordered').each(function(){
+    $('table.doxtable').removeClass('doxtable').addClass('table table-striped table-bordered').each(function () {
         $(this).prepend('<thead></thead>');
         $(this).find('tbody > tr:first').prependTo($(this).find('thead'));
-        
+
         $(this).find('td > span.success').parent().addClass('success');
         $(this).find('td > span.warning').parent().addClass('warning');
         $(this).find('td > span.danger').parent().addClass('danger');
     });
-    
 
-    if($('div.fragment.well div.ttc').length > 0)
-    {
+
+    if ($('div.fragment.well div.ttc').length > 0) {
         $('div.fragment.well div.line:first').parent().removeClass('fragment well');
     }
-    
-/*
-    $('table.memberdecls').find('.memItemRight').each(function(){
-        $(this).contents().appendTo($(this).siblings('.memItemLeft'));
-        $(this).siblings('.memItemLeft').attr('align', 'left');
-    });
-    */
 
-    $('.mdescLeft').each(function(){
-      $(this).parent().remove();
+    /*
+        $('table.memberdecls').find('.memItemRight').each(function(){
+            $(this).contents().appendTo($(this).siblings('.memItemLeft'));
+            $(this).siblings('.memItemLeft').attr('align', 'left');
+        });
+        */
+
+    $('.mdescLeft').each(function () {
+        $(this).parent().remove();
     });
-    
-    $('.memSeparator').each(function(){
-      $(this).parent().remove();
+
+    $('.memSeparator').each(function () {
+        $(this).parent().remove();
     });
-    
-     $('.memTemplParams').each(function(){
-      $(this).parent().remove();
+
+    $('.memTemplParams').each(function () {
+        $(this).parent().remove();
     });
-    
-    
+
+
     function getOriginalWidthOfImg(img_element) {
         var t = new Image();
         t.src = (img_element.getAttribute ? img_element.getAttribute("src") : false) || img_element.src;
         return t.width;
     }
+
     /*
     $('div.dyncontent').find('img').each(function(){
         var w = $('#content>div.container').width();
@@ -143,11 +140,11 @@ $( document ).ready(function() {
         }
     });
     */
-    $('div.dyncontent').find('img').each(function(){
+    $('div.dyncontent').find('img').each(function () {
         var currentSrc = $(this).attr("src");
         $(this).attr("src", "doc/" + currentSrc);
     });
-    
+
     $(".memitem").removeClass('memitem');
     $(".memproto").removeClass('memproto');
     $(".memdoc").removeClass('memdoc');

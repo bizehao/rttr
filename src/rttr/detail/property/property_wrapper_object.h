@@ -32,9 +32,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 // global property read write
 
-template <std::meta::info Var, prop_policy GetPolicy, prop_policy SetPolicy>
-class property_wrapper_object : public property_wrapper_base, public metadata_handler
-{
+template<std::meta::info Var, prop_policy GetPolicy, prop_policy SetPolicy>
+class property_wrapper_object : public property_wrapper_base, public metadata_handler {
     using ParentType = [:std::meta::is_class_member(Var)
                              ? std::meta::parent_of(Var)
                              : ^^invalid_type:];
@@ -43,91 +42,68 @@ class property_wrapper_object : public property_wrapper_base, public metadata_ha
 public:
     property_wrapper_object(std::string_view name, std::vector<metadata> meta_datas) RTTR_NOEXCEPT
         : property_wrapper_base(name, type::get<ParentType>()),
-          metadata_handler{std::move(meta_datas)}
-    {
+          metadata_handler{std::move(meta_datas)} {
         init();
     }
-    
-    variant get_metadata(const std::string_view& key) const override
-    {
+
+    variant get_metadata(const std::string_view &key) const override {
         return metadata_handler::get_metadata(key);
     }
 
-    bool is_valid() const override RTTR_NOEXCEPT
-    {
+    bool is_valid() const override RTTR_NOEXCEPT {
         return true;
     }
 
-    bool is_readonly() const override RTTR_NOEXCEPT
-    {
+    bool is_readonly() const override RTTR_NOEXCEPT {
         return SetPolicy == prop_policy::read_only;
     }
 
-    bool is_static() const override RTTR_NOEXCEPT
-    {
-        if constexpr (std::is_same_v<ParentType, invalid_type>)
-        {
+    bool is_static() const override RTTR_NOEXCEPT {
+        if constexpr (std::is_same_v<ParentType, invalid_type>) {
             return SetPolicy != prop_policy::set_as_ptr && SetPolicy !=
                    prop_policy::set_as_ref_wrapper;
         }
-        else
-        {
+        else {
             return std::meta::is_static_member(Var);
         }
     }
 
-    rttr::type get_type() const override RTTR_NOEXCEPT
-    {
-        if constexpr (GetPolicy == prop_policy::return_as_ptr)
-        {
-            if constexpr (SetPolicy == prop_policy::read_only)
-            {
-                return type::get<std::add_const_t<VarType>*>();
+    rttr::type get_type() const override RTTR_NOEXCEPT {
+        if constexpr (GetPolicy == prop_policy::return_as_ptr) {
+            if constexpr (SetPolicy == prop_policy::read_only) {
+                return type::get<std::add_const_t<VarType> *>();
             }
-            else
-            {
-                return type::get<VarType*>();
+            else {
+                return type::get<VarType *>();
             }
         }
-        else if constexpr (GetPolicy == prop_policy::get_as_ref_wrapper)
-        {
-            if constexpr (SetPolicy == prop_policy::read_only)
-            {
+        else if constexpr (GetPolicy == prop_policy::get_as_ref_wrapper) {
+            if constexpr (SetPolicy == prop_policy::read_only) {
                 return type::get<std::reference_wrapper<std::add_const_t<VarType> > >();
             }
-            else
-            {
+            else {
                 return type::get<std::reference_wrapper<VarType> >();
             }
         }
-        else
-        {
+        else {
             //prop_policy::return_as_copy
             return type::get<VarType>();
         }
     }
 
-    bool set_value(instance& object, argument& arg) const override
-    {
-        if constexpr (std::is_same_v<ParentType, invalid_type>)
-        {
-            if constexpr (SetPolicy == prop_policy::set_value)
-            {
+    bool set_value(instance &object, argument &arg) const override {
+        if constexpr (std::is_same_v<ParentType, invalid_type>) {
+            if constexpr (SetPolicy == prop_policy::set_value) {
                 if (arg.is_type<VarType>())
                     return property_accessor<VarType>::set_value([:Var:], arg.get_value<VarType>());
-                if constexpr (!std::is_array_v<VarType>)
-                {
-                    if constexpr (std::is_default_constructible<VarType>::value)
-                    {
-                        if (arg.get_type().has_type_converter(rttr::type::get<VarType>()))
-                        {
+                if constexpr (!std::is_array_v<VarType>) {
+                    if constexpr (std::is_default_constructible<VarType>::value) {
+                        if (arg.get_type().has_type_converter(rttr::type::get<VarType>())) {
                             variant v = arg.get_value<variant>();
-                            if (v)
-                            {
+                            if (v) {
                                 bool r;
                                 VarType rv = v.convert<VarType>(&r);
-                                if (r)
-                                {
+                                if (r) {
                                     return property_accessor<VarType>::set_value([:Var:], rv);
                                 }
                             }
@@ -136,54 +112,42 @@ public:
                 }
                 return false;
             }
-            else if constexpr (SetPolicy == prop_policy::set_as_ptr)
-            {
-                if (arg.is_type<VarType*>())
-                {
-                    [:Var:] = *arg.get_value<VarType*>();
+            else if constexpr (SetPolicy == prop_policy::set_as_ptr) {
+                if (arg.is_type<VarType *>()) {
+                    [:Var:] = *arg.get_value<VarType *>();
                     return true;
                 }
                 return false;
             }
-            else if constexpr (SetPolicy == prop_policy::set_as_ref_wrapper)
-            {
+            else if constexpr (SetPolicy == prop_policy::set_as_ref_wrapper) {
                 if (arg.is_type<std::reference_wrapper<VarType> >())
                     return property_accessor<VarType>::set_value(
                         [:Var:],
                         arg.get_value<std::reference_wrapper<VarType> >().get());
                 return false;
             }
-            else
-            {
+            else {
                 //prop_policy::read_only
                 return false;
             }
         }
-        else
-        {
-            if constexpr (SetPolicy == prop_policy::set_value)
-            {
-                ParentType* ptr = object.try_convert<ParentType>();
-                if (ptr && arg.is_type<VarType>())
-                {
+        else {
+            if constexpr (SetPolicy == prop_policy::set_value) {
+                ParentType *ptr = object.try_convert<ParentType>();
+                if (ptr && arg.is_type<VarType>()) {
                     return property_accessor<VarType>::set_value(
                         (ptr->[:Var:]),
                         arg.get_value<VarType>());
                 }
 
-                if constexpr (!std::is_array_v<VarType>)
-                {
-                    if constexpr (std::is_default_constructible<VarType>::value)
-                    {
-                        if (ptr && arg.get_type().has_type_converter(rttr::type::get<VarType>()))
-                        {
+                if constexpr (!std::is_array_v<VarType>) {
+                    if constexpr (std::is_default_constructible<VarType>::value) {
+                        if (ptr && arg.get_type().has_type_converter(rttr::type::get<VarType>())) {
                             variant v = arg.get_value<variant>();
-                            if (v)
-                            {
+                            if (v) {
                                 bool r;
                                 VarType rv = v.convert<VarType>(&r);
-                                if (r)
-                                {
+                                if (r) {
                                     return property_accessor<
                                         VarType>::set_value((ptr->[:Var:]), rv);
                                 }
@@ -193,23 +157,19 @@ public:
                 }
                 return false;
             }
-            else if constexpr (SetPolicy == prop_policy::set_as_ptr)
-            {
-                ParentType* ptr = object.try_convert<ParentType>();
-                if (ptr && arg.is_type<VarType*>())
-                {
+            else if constexpr (SetPolicy == prop_policy::set_as_ptr) {
+                ParentType *ptr = object.try_convert<ParentType>();
+                if (ptr && arg.is_type<VarType *>()) {
                     return property_accessor<VarType>::set_value(
                         (ptr->[:Var:]),
-                        *arg.get_value<VarType*>());
+                        *arg.get_value<VarType *>());
                 }
-                else
-                {
+                else {
                     return false;
                 }
             }
-            else if constexpr (SetPolicy == prop_policy::set_as_ref_wrapper)
-            {
-                ParentType* ptr = object.try_convert<ParentType>();
+            else if constexpr (SetPolicy == prop_policy::set_as_ref_wrapper) {
+                ParentType *ptr = object.try_convert<ParentType>();
                 if (ptr && arg.is_type<std::reference_wrapper<VarType> >())
                     return property_accessor<VarType>::set_value(
                         (ptr->[:Var:]),
@@ -217,58 +177,45 @@ public:
                 else
                     return false;
             }
-            else
-            {
+            else {
                 //prop_policy::read_only
                 return false;
             }
         }
-
     }
 
-    variant get_value(instance& object) const override
-    {
-        if constexpr (std::is_same_v<ParentType, invalid_type>)
-        {
-            if constexpr (GetPolicy == prop_policy::return_as_ptr)
-            {
+    variant get_value(instance &object) const override {
+        if constexpr (std::is_same_v<ParentType, invalid_type>) {
+            if constexpr (GetPolicy == prop_policy::return_as_ptr) {
                 auto v = &[:Var:];
                 return variant(v);
             }
-            else if (GetPolicy == prop_policy::get_as_ref_wrapper)
-            {
+            else if (GetPolicy == prop_policy::get_as_ref_wrapper) {
                 auto v = std::ref([:Var:]);
                 return variant(v);
             }
-            else
-            {
+            else {
                 //prop_policy::return_as_copy
                 auto v = [:Var:];
                 return variant(std::move(v));
             }
         }
-        else
-        {
-            if (ParentType* ptr = object.try_convert<ParentType>())
-            {
-                if constexpr (GetPolicy == prop_policy::return_as_ptr)
-                {
+        else {
+            if (ParentType *ptr = object.try_convert<ParentType>()) {
+                if constexpr (GetPolicy == prop_policy::return_as_ptr) {
                     variant r(&ptr->[:Var:]);
                     return r;
                 }
-                else if constexpr (GetPolicy == prop_policy::get_as_ref_wrapper)
-                {
+                else if constexpr (GetPolicy == prop_policy::get_as_ref_wrapper) {
                     variant r(std::ref(ptr->[:Var:]));
                     return r;
                 }
-                else
-                {
+                else {
                     variant r(ptr->[:Var:]);
                     return r;
                 }
             }
-            else
-            {
+            else {
                 return variant();
             }
         }

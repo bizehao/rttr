@@ -44,21 +44,24 @@ static std::vector<int> g_my_array(1000, 42);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
-    registration::do_property<^^g_name>("global_obj_1");
-    registration::do_property_readonly<^^g_int_value>("global_obj_2");
-    registration::do_property<^^g_my_array, policy::prop::op_bind_as_ptr>("global_obj_3");
-    registration::do_property_readonly<^^g_int_value, policy::prop::op_bind_as_ptr>("global_obj_4");
-    registration::do_property<^^g_my_array, policy::prop::op_as_reference_wrapper>("global_obj_5");
-    registration::do_property_readonly<^^g_int_value, policy::prop::op_as_reference_wrapper>("global_obj_6");
+RTTR_REGISTRATION {
+    registration::do_property < ^^g_name > ("global_obj_1");
+    registration::do_property_readonly < ^^g_int_value > ("global_obj_2");
+    registration::do_property < ^^g_my_array, policy::prop::op_bind_as_ptr > ("global_obj_3");
+    registration::do_property_readonly < ^^g_int_value, policy::prop::op_bind_as_ptr > ("global_obj_4");
+    registration::do_property < ^^g_my_array, policy::prop::op_as_reference_wrapper > ("global_obj_5");
+    registration::do_property_readonly < ^^g_int_value, policy::prop::op_as_reference_wrapper > ("global_obj_6");
 
-    registration::do_property<^^g_name>("global_obj_1"); // cannot register the same object twice
+    registration::do_property < ^^g_name > ("global_obj_1"); // cannot register the same object twice
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global object", "[property]")
+TEST_CASE (
+"property - global object"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_obj_1");
     REQUIRE(prop.is_valid() == true);
@@ -81,7 +84,11 @@ TEST_CASE("property - global object", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global object - read only", "[property]")
+TEST_CASE (
+"property - global object - read only"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_obj_2");
     REQUIRE(prop.is_valid() == true);
@@ -102,7 +109,11 @@ TEST_CASE("property - global object - read only", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global object - bind as ptr", "[property]")
+TEST_CASE (
+"property - global object - bind as ptr"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_obj_3");
     REQUIRE(prop.is_valid() == true);
@@ -130,7 +141,11 @@ TEST_CASE("property - global object - bind as ptr", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global object - read only - bind as ptr", "[property]")
+TEST_CASE (
+"property - global object - read only - bind as ptr"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_obj_4");
     REQUIRE(prop.is_valid() == true);
@@ -151,7 +166,11 @@ TEST_CASE("property - global object - read only - bind as ptr", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global object - as_reference_wrapper", "[property]")
+TEST_CASE (
+"property - global object - as_reference_wrapper"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_obj_5");
     REQUIRE(prop.is_valid() == true);
@@ -180,7 +199,11 @@ TEST_CASE("property - global object - as_reference_wrapper", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global object - read only - as_reference_wrapper", "[property]")
+TEST_CASE (
+"property - global object - read only - as_reference_wrapper"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_obj_6");
     REQUIRE(prop.is_valid() == true);

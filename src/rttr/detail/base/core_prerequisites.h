@@ -30,9 +30,7 @@
 
 #include "rttr/detail/base/version.h"
 
-namespace rttr
-{
-
+namespace rttr {
 #define RTTR_PLATFORM_WINDOWS 1
 #define RTTR_PLATFORM_LINUX 2
 #define RTTR_PLATFORM_APPLE 3
@@ -48,9 +46,9 @@ namespace rttr
 #define RTTR_ARCH_32 1
 #define RTTR_ARCH_64 2
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// Platform
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Platform
+    /////////////////////////////////////////////////////////////////////////////////////////
 #if defined( __WIN32__ ) || defined( _WIN32 )
 #   define RTTR_PLATFORM RTTR_PLATFORM_WINDOWS
 #elif defined( __APPLE_CC__)
@@ -59,9 +57,9 @@ namespace rttr
 #   define RTTR_PLATFORM RTTR_PLATFORM_LINUX
 #endif
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// Compiler
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Compiler
+    /////////////////////////////////////////////////////////////////////////////////////////
 #if defined( __clang__ )
 
 #if defined __apple_build_version__
@@ -85,9 +83,9 @@ namespace rttr
 #endif
 
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// Architecture
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Architecture
+    /////////////////////////////////////////////////////////////////////////////////////////
 #if defined(__x86_64__) || defined(_M_X64) || defined(__powerpc64__) || defined(__alpha__) ||\
     defined(__ia64__) || defined(__s390__) || defined(__s390x__) || defined(_LP64) || defined(__LP64__)
 #   define RTTR_ARCH_TYPE RTTR_ARCH_64
@@ -109,9 +107,9 @@ namespace rttr
 #   define RTTR_FORCE_INLINE    inline // no force inline for other platforms possible
 #endif
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// Compiler specific cmds for export and import code to DLL
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Compiler specific cmds for export and import code to DLL
+    /////////////////////////////////////////////////////////////////////////////////////////
 #if RTTR_COMPILER == RTTR_COMPILER_MSVC || __MINGW32__ || __CYGWIN__
 #     define RTTR_HELPER_DLL_IMPORT __declspec( dllimport )
 #     define RTTR_HELPER_DLL_EXPORT __declspec( dllexport )
@@ -146,9 +144,9 @@ namespace rttr
 #   define RTTR_LOCAL
 #endif
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// Macros for some C++11 features, which are not available on every compiler
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Macros for some C++11 features, which are not available on every compiler
+    /////////////////////////////////////////////////////////////////////////////////////////
 
 
 #if RTTR_COMPILER == RTTR_COMPILER_MSVC
@@ -173,7 +171,7 @@ namespace rttr
 #   endif
 #endif
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
 #if defined(RTTR_NO_CXX11_CONSTEXPR)
 #   define RTTR_CONSTEXPR
@@ -201,8 +199,8 @@ namespace rttr
 
 #define RTTR_STATIC_CONSTEXPR static RTTR_CONSTEXPR_OR_CONST
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// deprecated macro
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // deprecated macro
 #if RTTR_COMPILER == RTTR_COMPILER_GNUC || RTTR_COMPILER == RTTR_COMPILER_CLANG || RTTR_COMPILER == RTTR_COMPILER_APPLECLANG
 #   define RTTR_DEPRECATED __attribute__ ((deprecated))
 #   define RTTR_DEPRECATED_WITH_MSG(msg) __attribute__ ((deprecated(msg)))
@@ -215,41 +213,41 @@ namespace rttr
 #   define RTTR_DEPRECATED_MSG(func) func
 #endif
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// Disable some MSVC compile warnings
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Disable some MSVC compile warnings
+    /////////////////////////////////////////////////////////////////////////////////////////
 #if  RTTR_COMPILER == RTTR_COMPILER_MSVC
-// Save warnings state
+    // Save warnings state
 #   pragma warning (push)
-// Turn off warnings generated by long std templates
-// This warns about truncation to 255 characters in debug/browse info
+    // Turn off warnings generated by long std templates
+    // This warns about truncation to 255 characters in debug/browse info
 #   pragma warning (disable : 4786)
 
-// Turn off warnings generated by long std templates
-// This warns about truncation to 255 characters in debug/browse info
+    // Turn off warnings generated by long std templates
+    // This warns about truncation to 255 characters in debug/browse info
 #   pragma warning (disable : 4503)
 
-// disable: "<type> needs to have dll-interface to be used by clients'
-// Happens on STL member variables which are not public therefore is ok
+    // disable: "<type> needs to have dll-interface to be used by clients'
+    // Happens on STL member variables which are not public therefore is ok
 #   pragma warning (disable : 4251)
 
-// disable: "non dll-interface class used as base for dll-interface class"
-// Happens when deriving from Singleton because bug in compiler ignores
-// template export
+    // disable: "non dll-interface class used as base for dll-interface class"
+    // Happens when deriving from Singleton because bug in compiler ignores
+    // template export
 #   pragma warning (disable : 4275)
 
-// disable: "C++ Exception Specification ignored"
-// This is because MSVC 6 did not implement all the C++ exception
-// specifications in the ANSI C++ draft.
+    // disable: "C++ Exception Specification ignored"
+    // This is because MSVC 6 did not implement all the C++ exception
+    // specifications in the ANSI C++ draft.
 #   pragma warning( disable : 4290 )
 
-// disable: "no suitable definition provided for explicit template
-// instantiation request" Occurs in VC7 for no justifiable reason on all
-// #includes of Singleton
+    // disable: "no suitable definition provided for explicit template
+    // instantiation request" Occurs in VC7 for no justifiable reason on all
+    // #includes of Singleton
 #   pragma warning( disable: 4661)
 
-// disable: "unreferenced formal parameter"
-// Many versions of VC have bugs which generate this error in cases where they shouldn't
+    // disable: "unreferenced formal parameter"
+    // Many versions of VC have bugs which generate this error in cases where they shouldn't
 #   pragma warning (disable : 4100)
 #endif
 
@@ -261,12 +259,12 @@ namespace rttr
 #   define RTTR_BEGIN_DISABLE_CONDITIONAL_EXPR_WARNING
 #   define RTTR_END_DISABLE_CONDITIONAL_EXPR_WARNING
 #if RTTR_COMP_VER >= 700
-    #define RTTR_BEGIN_DISABLE_EXCEPT_TYPE_WARNING      _Pragma ("GCC diagnostic push") \
+#define RTTR_BEGIN_DISABLE_EXCEPT_TYPE_WARNING      _Pragma ("GCC diagnostic push") \
                                                         _Pragma ("GCC diagnostic ignored \"-Wnoexcept-type\"")
-    #define RTTR_END_DISABLE_EXCEPT_TYPE_WARNING        _Pragma ("GCC diagnostic pop")
+#define RTTR_END_DISABLE_EXCEPT_TYPE_WARNING        _Pragma ("GCC diagnostic pop")
 #else
-    #define RTTR_BEGIN_DISABLE_EXCEPT_TYPE_WARNING
-    #define RTTR_END_DISABLE_EXCEPT_TYPE_WARNING
+#define RTTR_BEGIN_DISABLE_EXCEPT_TYPE_WARNING
+#define RTTR_END_DISABLE_EXCEPT_TYPE_WARNING
 #endif
 
 #if RTTR_COMP_VER >= 510
@@ -358,8 +356,6 @@ namespace rttr
 #else
 #define Has_Static_Reflection 0
 #endif
-
-
 } // end namespace rttr
 
 #endif // RTTR_CORE_PREREQUISITES_H_

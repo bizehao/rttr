@@ -39,7 +39,8 @@ std::string greet(const std::string& name)
 //           用于消除重载歧义；注册后可通过统一名字调用不同重载版本。
 //     注意：使用 do_method_overload 时，默认参数和参数名将失效。
 // ============================================================================
-namespace example_detail {
+namespace example_detail
+{
 // 保存最后一次调用结果，用于演示
 std::string last_format_result;
 }
@@ -73,7 +74,10 @@ struct Shape
 {
     // 为默认构造函数指定 raw_ptr 策略，create() 将返回 Shape*
     [[=rttr::class_op::ctor_policy(rttr::policy::ctor::op_as_raw_ptr)]]
-    Shape() { std::println("  [Shape()] 默认构造"); }
+    Shape()
+    {
+        std::println("  [Shape()] 默认构造");
+    }
 
     // 带参构造函数（默认 as_object 策略，返回值拷贝）
     Shape(std::string name) : m_name(std::move(name))
@@ -108,11 +112,21 @@ struct Shape
         return m_area;
     }
 
-    void set_name(const std::string& name) { m_name = name; }
-    const std::string& get_name() const { return m_name; }
+    void set_name(const std::string& name)
+    {
+        m_name = name;
+    }
+
+    const std::string& get_name() const
+    {
+        return m_name;
+    }
 
     // 静态方法
-    static std::string category() { return "2D Shape"; }
+    static std::string category()
+    {
+        return "2D Shape";
+    }
 
     // 为方法指定策略：丢弃返回值
     [[=rttr::class_op::method_policy(rttr::policy::method::op_discard_return)]]
@@ -132,7 +146,10 @@ struct Circle : Shape
 {
     // 默认构造函数使用 shared_ptr 策略
     [[=rttr::class_op::ctor_policy(rttr::policy::ctor::op_as_std_shared_ptr)]]
-    Circle() { std::println("  [Circle()] 默认构造"); }
+    Circle()
+    {
+        std::println("  [Circle()] 默认构造");
+    }
 
     Circle(std::string name, double radius) : Shape(std::move(name)), m_radius(radius)
     {
@@ -150,9 +167,15 @@ struct Circle : Shape
 
     // Circle 独有方法
     [[=metadata("DESC", "获取半径")]]
-    double get_radius() const { return m_radius; }
+    double get_radius() const
+    {
+        return m_radius;
+    }
 
-    void set_radius(double r) { m_radius = r; }
+    void set_radius(double r)
+    {
+        m_radius = r;
+    }
 
     RTTR_ENABLE()
 };
@@ -180,7 +203,6 @@ RTTR_REGISTRATION
         status = true;
         return std::string{src};
     });
-
 
     // 注册重载函数 —— 使用 do_method_overload，通过 static_cast 消除重载歧义
     // 注意：重载版本使用相同的注册名 "format_value"，调用时按参数类型匹配
@@ -212,7 +234,9 @@ static void print_properties(const type& t)
     std::println("  属性列表:");
     for (auto& prop : t.get_properties())
     {
-        std::println("    - {} : {}{}", prop.get_name(), prop.get_type().get_name(),
+        std::println("    - {} : {}{}",
+                     prop.get_name(),
+                     prop.get_type().get_name(),
                      prop.is_readonly() ? " (只读)" : "");
         // 打印元数据
         auto meta_desc = prop.get_metadata("DESC");
@@ -412,7 +436,6 @@ int main()
             unit.convert(mm);
             std::println("属性 m_area 元数据 UNIT = {}", unit.to_string());
         }
-
 
         // 查询方法的元数据（通过全局函数）
         method meth = type::get_global_method("add_numbers");

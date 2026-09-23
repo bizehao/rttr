@@ -13,29 +13,26 @@
 
 #include "proxy_functions.hpp"
 
-namespace chaiscript
-{
-  namespace dispatch
-  {
-    namespace detail
-    {
+namespace chaiscript {
+    namespace dispatch {
+        namespace detail {
+            template<typename Class, typename... Params>
+            Proxy_Function build_constructor_(Class (*)(Params...)) {
+                auto call = dispatch::detail::Constructor<Class, Params...>();
 
-      template<typename Class, typename ... Params  >
-        Proxy_Function build_constructor_(Class (*)(Params...))
-        {
-          auto call = dispatch::detail::Constructor<Class, Params...>();
-
-          return Proxy_Function(
-            chaiscript::make_shared<dispatch::Proxy_Function_Base, dispatch::Proxy_Function_Callable_Impl<std::shared_ptr<Class> (Params...), decltype(call)>>(call));
+                return Proxy_Function(
+                    chaiscript::make_shared<dispatch::Proxy_Function_Base,
+                        dispatch::Proxy_Function_Callable_Impl < std::shared_ptr<Class>(Params...), decltype(call)> > (
+                        call));
+            }
         }
     }
-  }
 
 
-  /// \brief Generates a constructor function for use with ChaiScript
-  /// 
+    /// \brief Generates a constructor function for use with ChaiScript
+  ///
   /// \tparam T The signature of the constructor to generate. In the form of: ClassType (ParamType1, ParamType2, ...)
-  /// 
+  ///
   /// Example:
   /// \code
   ///    chaiscript::ChaiScript chai;
@@ -43,13 +40,11 @@ namespace chaiscript
   ///    // and call that function "MyClass" so that it appears as a normal constructor to the user.
   ///    chai.add(constructor<MyClass (int, float)>(), "MyClass");
   /// \endcode
-  template<typename T>
-    Proxy_Function constructor()
-    {
-      T *f = nullptr;
-      return (dispatch::detail::build_constructor_(f));
+    template<typename T>
+    Proxy_Function constructor() {
+        T *f = nullptr;
+        return (dispatch::detail::build_constructor_(f));
     }
-
 }
 
 #endif

@@ -31,55 +31,62 @@
 using namespace rttr;
 
 
-enum E_MetaData
-{
-    SCRIPTABLE  = 0,
-    TOOL_TIP    = 1,
+enum E_MetaData {
+    SCRIPTABLE = 0,
+    TOOL_TIP = 1,
     DESCRIPTION = 2
 };
 
-struct method_misc_test
-{
-    method_misc_test() { }
-    void func(){ }
+struct method_misc_test {
+    method_misc_test() {
+    }
 
-    int func_return(){ return 42; }
+    void func() {
+    }
 
-    void default_func(std::string value = "text") {}
+    int func_return() { return 42; }
 
-    static void static_func() {}
+    void default_func(std::string value = "text") {
+    }
+
+    static void static_func() {
+    }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-struct base_class_with_methods
-{
-    base_class_with_methods(){}
-    void some_method() {}
+struct base_class_with_methods {
+    base_class_with_methods() {
+    }
+
+    void some_method() {
+    }
 
     RTTR_ENABLE()
 };
 
-struct derived_class_without_registered_methods : base_class_with_methods
-{
+struct derived_class_without_registered_methods : base_class_with_methods {
     RTTR_ENABLE(base_class_with_methods)
 };
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^method_misc_test>("method_misc_test");
+RTTR_REGISTRATION {
+    registration::do_class < ^^method_misc_test > ("method_misc_test");
 
-    registration::do_class<^^base_class_with_methods>("base_class_with_methods");
+    registration::do_class < ^^base_class_with_methods > ("base_class_with_methods");
 
-    registration::do_class<^^derived_class_without_registered_methods>("derived_class_without_registered_methods");
+    registration::do_class < ^^derived_class_without_registered_methods > ("derived_class_without_registered_methods");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - get_name()", "[method]")
+TEST_CASE (
+"method - get_name()"
+,
+"[method]"
+)
 {
     method meth = type::get_by_name("method_misc_test").get_method("func");
     CHECK(meth.get_name() == "func");
@@ -94,7 +101,11 @@ TEST_CASE("method - get_name()", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - is_static()", "[method]")
+TEST_CASE (
+"method - is_static()"
+,
+"[method]"
+)
 {
     method meth = type::get_by_name("method_misc_test").get_method("static_func");
     CHECK(meth.is_static() == true);
@@ -112,7 +123,11 @@ TEST_CASE("method - is_static()", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - get_return_type()", "[method]")
+TEST_CASE (
+"method - get_return_type()"
+,
+"[method]"
+)
 {
     method meth = type::get_by_name("method_misc_test").get_method("func_return");
     CHECK(meth.get_return_type() == type::get<int>());
@@ -127,7 +142,11 @@ TEST_CASE("method - get_return_type()", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - get_declaring_type()", "[method]")
+TEST_CASE (
+"method - get_declaring_type()"
+,
+"[method]"
+)
 {
     method meth = type::get_by_name("method_misc_test").get_method("func");
     CHECK(meth.get_declaring_type() == type::get<method_misc_test>());
@@ -142,7 +161,11 @@ TEST_CASE("method - get_declaring_type()", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - get_signature()", "[method]")
+TEST_CASE (
+"method - get_signature()"
+,
+"[method]"
+)
 {
     method meth = type::get_by_name("method_misc_test").get_method("func");
     CHECK(meth.get_signature() == "func( )");
@@ -157,7 +180,11 @@ TEST_CASE("method - get_signature()", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - compare operators", "[method]")
+TEST_CASE (
+"method - compare operators"
+,
+"[method]"
+)
 {
     method meth_1 = type::get_by_name("method_misc_test").get_method("func");
     method meth_1a = type::get_by_name("method_misc_test").get_method("func");
@@ -173,7 +200,11 @@ TEST_CASE("method - compare operators", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - check inheritance of methods", "[method]")
+TEST_CASE (
+"method - check inheritance of methods"
+,
+"[method]"
+)
 {
     // base class has registered methodes, the derived class not
     type t = type::get<derived_class_without_registered_methods>();

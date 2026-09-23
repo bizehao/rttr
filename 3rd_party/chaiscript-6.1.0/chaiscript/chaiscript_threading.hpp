@@ -33,140 +33,138 @@
 /// It also has the side effect that the chaiscript::ChaiScript object may not be accessed from more than
 /// one thread simultaneously.
 
-namespace chaiscript
-{
-  namespace detail
-  {
-    /// If threading is enabled, then this namespace contains std thread classes.
+namespace chaiscript {
+    namespace detail {
+        /// If threading is enabled, then this namespace contains std thread classes.
     /// If threading is not enabled, then stubbed in wrappers that do nothing are provided.
     /// This allows us to avoid \#ifdef code in the sections that need thread safety.
-    namespace threading
-    {
-
+        namespace threading {
 #ifndef CHAISCRIPT_NO_THREADS
 
-      template<typename T>
-        using unique_lock = std::unique_lock<T>;
+            template<typename T>
+            using unique_lock = std::unique_lock<T>;
 
-      template<typename T>
-        using shared_lock = std::unique_lock<T>;
+            template<typename T>
+            using shared_lock = std::unique_lock<T>;
 
-      template<typename T>
-        using lock_guard = std::lock_guard<T>;
+            template<typename T>
+            using lock_guard = std::lock_guard<T>;
 
 
-      using shared_mutex = std::mutex;
+            using shared_mutex = std::mutex;
 
-      using std::mutex;
+            using std::mutex;
 
-      using std::recursive_mutex;
+            using std::recursive_mutex;
 
-      /// Typesafe thread specific storage. If threading is enabled, this class uses a mutex protected map. If
+            /// Typesafe thread specific storage. If threading is enabled, this class uses a mutex protected map. If
       /// threading is not enabled, the class always returns the same data, regardless of which thread it is called from.
-      template<typename T>
-        class Thread_Storage
-        {
-          public:
-            Thread_Storage() = default;
-            Thread_Storage(const Thread_Storage &) = delete;
-            Thread_Storage(Thread_Storage &&) = delete;
-            Thread_Storage &operator=(const Thread_Storage &) = delete;
-            Thread_Storage &operator=(Thread_Storage &&) = delete;
+            template<typename T>
+            class Thread_Storage {
+            public:
+                Thread_Storage() = default;
 
-            ~Thread_Storage()
-            {
-              t().erase(this);
-            }
+                Thread_Storage(const Thread_Storage &) = delete;
 
-            inline const T *operator->() const
-            {
-              return &(t()[this]);
-            }
+                Thread_Storage(Thread_Storage &&) = delete;
 
-            inline const T &operator*() const
-            {
-              return t()[this];
-            }
+                Thread_Storage &operator=(const Thread_Storage &) = delete;
 
-            inline T *operator->()
-            {
-              return &(t()[this]);
-            }
+                Thread_Storage &operator=(Thread_Storage &&) = delete;
 
-            inline T &operator*()
-            {
-              return t()[this];
-            }
+                ~Thread_Storage() {
+                    t().erase(this);
+                }
+
+                inline const T *operator->() const {
+                    return &(t()[this]);
+                }
+
+                inline const T &operator*() const {
+                    return t()[this];
+                }
+
+                inline T *operator->() {
+                    return &(t()[this]);
+                }
+
+                inline T &operator*() {
+                    return t()[this];
+                }
 
 
-            void *m_key;
+                void *m_key;
 
-          private:
-            static std::unordered_map<const void*, T> &t()
-            {
-              thread_local std::unordered_map<const void *, T> my_t;
-              return my_t;
-            }
-        };
+            private:
+                static std::unordered_map<const void *, T> &t() {
+                    thread_local std::unordered_map<const void *, T> my_t;
+                    return my_t;
+                }
+            };
 
 #else // threading disabled
-      template<typename T>
-      class unique_lock 
-      {
-        public:
-          explicit unique_lock(T &) {}
-          void lock() {}
-          void unlock() {}
-      };
+            template<typename T>
+            class unique_lock {
+            public:
+                explicit unique_lock(T &) {
+                }
 
-      template<typename T>
-      class shared_lock 
-      {
-        public:
-          explicit shared_lock(T &) {}
-          void lock() {}
-          void unlock() {}
-      };
+                void lock() {
+                }
 
-      template<typename T>
-      class lock_guard 
-      {
-        public:
-          explicit lock_guard(T &) {}
-      };
+                void unlock() {
+                }
+            };
 
-      class shared_mutex { };
+            template<typename T>
+            class shared_lock {
+            public:
+                explicit shared_lock(T &) {
+                }
 
-      class recursive_mutex {};
+                void lock() {
+                }
+
+                void unlock() {
+                }
+            };
+
+            template<typename T>
+            class lock_guard {
+            public:
+                explicit lock_guard(T &) {
+                }
+            };
+
+            class shared_mutex {
+            };
+
+            class recursive_mutex {
+            };
 
 
-      template<typename T>
-        class Thread_Storage
-        {
-          public:
-            explicit Thread_Storage()
-            {
-            }
+            template<typename T>
+            class Thread_Storage {
+            public:
+                explicit Thread_Storage() {
+                }
 
-            inline T *operator->() const
-            {
-              return &obj;
-            }
+                inline T *operator->() const {
+                    return &obj;
+                }
 
-            inline T &operator*() const
-            {
-              return obj;
-            }
+                inline T &operator*() const {
+                    return obj;
+                }
 
-          private:
-            mutable T obj;
-        };
+            private:
+                mutable T obj;
+            };
 
 #endif
+        }
     }
-  }
 }
-
 
 
 #endif

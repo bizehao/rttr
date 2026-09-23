@@ -40,28 +40,34 @@ using namespace rttr;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-namespace
-{
-    struct custom_type
-    {
-        custom_type(){}
+namespace {
+    struct custom_type {
+        custom_type() {
+        }
+
         int value = 23;
 
         int my_func() { return value; }
         int my_const_func() const { return value; }
     };
 
-    typedef int(custom_type::*mem_obj_ptr_t);
-    typedef int(custom_type::*mem_func_ptr_t)(void);
-    typedef int(custom_type::*mem_const_func_ptr_t)(void)const;
+    typedef int (custom_type::*mem_obj_ptr_t);
+
+    typedef int (custom_type::*mem_func_ptr_t)(void);
+
+    typedef int (custom_type::*mem_const_func_ptr_t)(void) const;
 
     int my_free_func() { return 42; }
 
-    typedef int(*func_ptr_t)(void);
+    typedef int (*func_ptr_t)(void);
 } // end namespace anonymous
 
 
-TEST_CASE("Test raw_adressof", "[raw_adressof]")
+TEST_CASE (
+"Test raw_adressof"
+,
+"[raw_adressof]"
+)
 {
     SECTION("Test pointer type")
     {
@@ -243,7 +249,11 @@ TEST_CASE("Test raw_adressof", "[raw_adressof]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test get_wrapper_adressof", "[wrapped_raw_addressof]")
+TEST_CASE (
+"Test get_wrapper_adressof"
+,
+"[wrapped_raw_addressof]"
+)
 {
     SECTION("Test std::shared_ptr")
     {
@@ -278,15 +288,18 @@ TEST_CASE("Test get_wrapper_adressof", "[wrapped_raw_addressof]")
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T1, typename T2>
-bool raw_type_check()
-{
+bool raw_type_check() {
     static_assert(std::is_same<typename detail::raw_type<T1>::type, T2>::value, "Types are not the same!");
     return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test raw_type type traits", "[raw_type<T>]")
+TEST_CASE (
+"Test raw_type type traits"
+,
+"[raw_type<T>]"
+)
 {
     SECTION("Test pointer type")
     {
@@ -465,15 +478,18 @@ TEST_CASE("Test raw_type type traits", "[raw_type<T>]")
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T1, typename T2>
-bool raw_array_type_check()
-{
+bool raw_array_type_check() {
     static_assert(std::is_same<typename detail::raw_array_type<T1>::type, T2>::value, "Types are not the same!");
     return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test raw_array_type type traits", "[raw_array_type<T>]")
+TEST_CASE (
+"Test raw_array_type type traits"
+,
+"[raw_array_type<T>]"
+)
 {
     SECTION("Test array types")
     {

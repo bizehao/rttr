@@ -32,326 +32,285 @@
 #include "rttr/instance.h"
 
 
+namespace rttr {
+    /////////////////////////////////////////////////////////////////////////////////
 
-namespace rttr
-{
+    variant_sequential_view::variant_sequential_view() = default;
 
-/////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::variant_sequential_view() = default;
+    variant_sequential_view::variant_sequential_view(const variant_sequential_view &other)
+        : m_view(other.m_view) {
+    }
 
-/////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::variant_sequential_view(const variant_sequential_view& other)
-:   m_view(other.m_view)
-{
+    variant_sequential_view::~variant_sequential_view() RTTR_NOEXCEPT = default;
 
-}
+    /////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////
+    void variant_sequential_view::swap(variant_sequential_view & other) RTTR_NOEXCEPT {
+        std::swap(m_view, other.m_view);
+    }
 
-variant_sequential_view::~variant_sequential_view() RTTR_NOEXCEPT = default;
+    /////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////
+    variant_sequential_view &variant_sequential_view::operator=(const variant_sequential_view &other) RTTR_NOEXCEPT {
+        variant_sequential_view(other).swap(*this);
+        return *this;
+    }
 
-void variant_sequential_view::swap(variant_sequential_view& other) RTTR_NOEXCEPT
-{
-    std::swap(m_view, other.m_view);
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////
+    bool variant_sequential_view::is_valid() const RTTR_NOEXCEPT {
+        return m_view.get_type().is_valid();
+    }
 
-variant_sequential_view& variant_sequential_view::operator=(const variant_sequential_view& other) RTTR_NOEXCEPT
-{
-    variant_sequential_view(other).swap(*this);
-    return *this;
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant_sequential_view::operator bool() const RTTR_NOEXCEPT {
+        return m_view.get_type().is_valid();
+    }
 
-bool variant_sequential_view::is_valid() const RTTR_NOEXCEPT
-{
-    return m_view.get_type().is_valid();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    type variant_sequential_view::get_type() const RTTR_NOEXCEPT {
+        return m_view.get_type();
+    }
 
-variant_sequential_view::operator bool() const RTTR_NOEXCEPT
-{
-    return m_view.get_type().is_valid();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    type variant_sequential_view::get_value_type() const RTTR_NOEXCEPT {
+        return m_view.get_value_type();
+    }
 
-type variant_sequential_view::get_type() const RTTR_NOEXCEPT
-{
-    return m_view.get_type();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    bool variant_sequential_view::is_empty() const RTTR_NOEXCEPT {
+        return m_view.is_empty();
+    }
 
-type variant_sequential_view::get_value_type() const RTTR_NOEXCEPT
-{
-    return m_view.get_value_type();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    bool variant_sequential_view::is_dynamic() const RTTR_NOEXCEPT {
+        return m_view.is_dynamic();
+    }
 
-bool variant_sequential_view::is_empty() const RTTR_NOEXCEPT
-{
-    return m_view.is_empty();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    std::size_t variant_sequential_view::get_rank() const RTTR_NOEXCEPT {
+        return m_view.get_rank();
+    }
 
-bool variant_sequential_view::is_dynamic() const RTTR_NOEXCEPT
-{
-    return m_view.is_dynamic();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    type variant_sequential_view::get_rank_type(std::size_t index) const RTTR_NOEXCEPT {
+        return m_view.get_rank_type(index);
+    }
 
-std::size_t variant_sequential_view::get_rank() const RTTR_NOEXCEPT
-{
-    return m_view.get_rank();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    std::size_t variant_sequential_view::get_size() const RTTR_NOEXCEPT {
+        return m_view.get_size();
+    }
 
-type variant_sequential_view::get_rank_type(std::size_t index) const RTTR_NOEXCEPT
-{
-    return m_view.get_rank_type(index);
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    bool variant_sequential_view::set_size(std::size_t size) const RTTR_NOEXCEPT {
+        return m_view.set_size(size);
+    }
 
-std::size_t variant_sequential_view::get_size() const RTTR_NOEXCEPT
-{
-    return m_view.get_size();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant_sequential_view::const_iterator variant_sequential_view::insert(const const_iterator &pos, argument value) {
+        const_iterator itr(&m_view);
 
-bool variant_sequential_view::set_size(std::size_t size) const RTTR_NOEXCEPT
-{
-    return m_view.set_size(size);
-}
+        m_view.insert(pos.m_itr, value, itr.m_itr);
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        return itr;
+    }
 
-variant_sequential_view::const_iterator variant_sequential_view::insert(const const_iterator& pos, argument value)
-{
-    const_iterator itr(&m_view);
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-    m_view.insert(pos.m_itr, value, itr.m_itr);
+    variant_sequential_view::const_iterator variant_sequential_view::erase(const const_iterator &pos) {
+        const_iterator itr(&m_view);
 
-    return itr;
-}
+        m_view.erase(pos.m_itr, itr.m_itr);
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        return itr;
+    }
 
-variant_sequential_view::const_iterator variant_sequential_view::erase(const const_iterator& pos)
-{
-    const_iterator itr(&m_view);
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-    m_view.erase(pos.m_itr, itr.m_itr);
+    void variant_sequential_view::clear() {
+        m_view.clear();
+    }
 
-    return itr;
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    bool variant_sequential_view::set_value(std::size_t index, argument arg) {
+        return m_view.set_value(index, arg);
+    }
 
-void variant_sequential_view::clear()
-{
-    m_view.clear();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant variant_sequential_view::get_value(std::size_t index) const {
+        return m_view.get_value(index);
+    }
 
-bool variant_sequential_view::set_value(std::size_t index, argument arg)
-{
-    return m_view.set_value(index, arg);
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant_sequential_view::const_iterator variant_sequential_view::begin() const {
+        const_iterator itr(&m_view);
 
-variant variant_sequential_view::get_value(std::size_t index) const
-{
-    return m_view.get_value(index);
-}
+        m_view.begin(itr.m_itr);
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        return itr;
+    }
 
-variant_sequential_view::const_iterator variant_sequential_view::begin() const
-{
-    const_iterator itr(&m_view);
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-    m_view.begin(itr.m_itr);
+    variant_sequential_view::const_iterator variant_sequential_view::end() const {
+        const_iterator itr(&m_view);
 
-    return itr;
-}
+        m_view.end(itr.m_itr);
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        return itr;
+    }
 
-variant_sequential_view::const_iterator variant_sequential_view::end() const
-{
-    const_iterator itr(&m_view);
-
-    m_view.end(itr.m_itr);
-
-    return itr;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator::const_iterator(const detail::variant_sequential_view_private* view) RTTR_NOEXCEPT
-:   m_view(view)
-{
-}
+    variant_sequential_view::const_iterator::const_iterator(const detail::variant_sequential_view_private *view)
+    RTTR_NOEXCEPT
+        : m_view(view) {
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator::~const_iterator()
-{
-    m_view->destroy(m_itr);
-}
+    variant_sequential_view::const_iterator::~const_iterator() {
+        m_view->destroy(m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator::const_iterator(const const_iterator &other)
-:   m_view(other.m_view),
-    m_itr(other.m_itr)
-{
-    m_view->copy(m_itr, other.m_itr);
-}
+    variant_sequential_view::const_iterator::const_iterator(const const_iterator &other)
+        : m_view(other.m_view),
+          m_itr(other.m_itr) {
+        m_view->copy(m_itr, other.m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator& variant_sequential_view::const_iterator::operator=(const_iterator other)
-{
-    swap(other);
-    return *this;
-}
+    variant_sequential_view::const_iterator &variant_sequential_view::const_iterator::operator=(const_iterator other) {
+        swap(other);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void variant_sequential_view::const_iterator::swap(const_iterator& other)
-{
-    std::swap(m_itr, other.m_itr);
-    std::swap(m_view, other.m_view);
-}
+    void variant_sequential_view::const_iterator::swap(const_iterator &other) {
+        std::swap(m_itr, other.m_itr);
+        std::swap(m_view, other.m_view);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-const variant variant_sequential_view::const_iterator::operator*() const
-{
-    return m_view->get_data(m_itr);
-}
+    const variant variant_sequential_view::const_iterator::operator*() const {
+        return m_view->get_data(m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-const variant variant_sequential_view::const_iterator::get_data() const
-{
-    return m_view->get_data(m_itr);
-}
+    const variant variant_sequential_view::const_iterator::get_data() const {
+        return m_view->get_data(m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator& variant_sequential_view::const_iterator::operator++()
-{
-    m_view->advance(m_itr, 1);
-    return *this;
-}
+    variant_sequential_view::const_iterator &variant_sequential_view::const_iterator::operator++() {
+        m_view->advance(m_itr, 1);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator variant_sequential_view::const_iterator::operator++(int)
-{
-    const_iterator result(m_view);
+    variant_sequential_view::const_iterator variant_sequential_view::const_iterator::operator++(int) {
+        const_iterator result(m_view);
 
-    m_view->copy(result.m_itr, m_itr);
-    m_view->advance(m_itr, 1);
+        m_view->copy(result.m_itr, m_itr);
+        m_view->advance(m_itr, 1);
 
-    return result;
-}
+        return result;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator& variant_sequential_view::const_iterator::operator--()
-{
-    m_view->advance(m_itr, -1);
-    return *this;
-}
+    variant_sequential_view::const_iterator &variant_sequential_view::const_iterator::operator--() {
+        m_view->advance(m_itr, -1);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator variant_sequential_view::const_iterator::operator--(int)
-{
-    const_iterator result(m_view);
+    variant_sequential_view::const_iterator variant_sequential_view::const_iterator::operator--(int) {
+        const_iterator result(m_view);
 
-    m_view->copy(result.m_itr, m_itr);
-    m_view->advance(m_itr, -1);
+        m_view->copy(result.m_itr, m_itr);
+        m_view->advance(m_itr, -1);
 
-    return result;
-}
+        return result;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator& variant_sequential_view::const_iterator::operator+=(int i)
-{
-    m_view->advance(m_itr, i);
-    return *this;
-}
+    variant_sequential_view::const_iterator &variant_sequential_view::const_iterator::operator+=(int i) {
+        m_view->advance(m_itr, i);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator& variant_sequential_view::const_iterator::operator-=(int i)
-{
-    m_view->advance(m_itr, -i);
-    return *this;
-}
+    variant_sequential_view::const_iterator &variant_sequential_view::const_iterator::operator-=(int i) {
+        m_view->advance(m_itr, -i);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator variant_sequential_view::const_iterator::operator+(int i) const
-{
-    const_iterator result(m_view);
+    variant_sequential_view::const_iterator variant_sequential_view::const_iterator::operator+(int i) const {
+        const_iterator result(m_view);
 
-    m_view->copy(result.m_itr, m_itr);
-    result.m_view->advance(result.m_itr, i);
+        m_view->copy(result.m_itr, m_itr);
+        result.m_view->advance(result.m_itr, i);
 
-    return result;
-}
+        return result;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_sequential_view::const_iterator variant_sequential_view::const_iterator::operator-(int i) const
-{
-    const_iterator result(m_view);
+    variant_sequential_view::const_iterator variant_sequential_view::const_iterator::operator-(int i) const {
+        const_iterator result(m_view);
 
-    m_view->copy(result.m_itr, m_itr);
-    result.m_view->advance(result.m_itr, -i);
+        m_view->copy(result.m_itr, m_itr);
+        result.m_view->advance(result.m_itr, -i);
 
-    return result;
-}
+        return result;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool variant_sequential_view::const_iterator::operator==(const const_iterator& other) const
-{
-    return m_view->equal(m_itr, other.m_itr);
-}
+    bool variant_sequential_view::const_iterator::operator==(const const_iterator &other) const {
+        return m_view->equal(m_itr, other.m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool variant_sequential_view::const_iterator::operator!=(const const_iterator& other) const
-{
-    return !m_view->equal(m_itr, other.m_itr);
-}
+    bool variant_sequential_view::const_iterator::operator!=(const const_iterator &other) const {
+        return !m_view->equal(m_itr, other.m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////////////////////////////
 } // end namespace rttr
 

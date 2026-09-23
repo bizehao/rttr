@@ -30,8 +30,7 @@
 
 #include <rttr/type>
 
-struct player
-{
+struct player {
 public:
     int bullets;
     int speed;

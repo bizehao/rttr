@@ -31,24 +31,21 @@ using namespace rttr;
 #include <vector>
 
 
-class test_container_plugin
-{
+class test_container_plugin {
 public:
-    test_container_plugin()
-    {}
+    test_container_plugin() {
+    }
 
     int my_array[100];
-
 };
 
 
-RTTR_PLUGIN_REGISTRATION
-{
+RTTR_PLUGIN_REGISTRATION {
     registration::class_<test_container_plugin>("test_container_plugin")
             .constructor<>()()
             .property("my_array", &test_container_plugin::my_array)
-             (
-                 policy::prop::bind_as_ptr
-             );
+            (
+                policy::prop::bind_as_ptr
+            );
 }
 

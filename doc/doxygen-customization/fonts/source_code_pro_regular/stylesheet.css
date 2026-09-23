@@ -4,9 +4,9 @@
     font-family: 'SourceCodeProRegular';
     src: url('SourceCodePro-Regular-webfont.eot');
     src: url('SourceCodePro-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('SourceCodePro-Regular-webfont.woff') format('woff'),
-         url('SourceCodePro-Regular-webfont.ttf') format('truetype'),
-         url('SourceCodePro-Regular-webfont.svg#SourceCodeProRegular') format('svg');
+    url('SourceCodePro-Regular-webfont.woff') format('woff'),
+    url('SourceCodePro-Regular-webfont.ttf') format('truetype'),
+    url('SourceCodePro-Regular-webfont.svg#SourceCodeProRegular') format('svg');
     font-weight: normal;
     font-style: normal;
 

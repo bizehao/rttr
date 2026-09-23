@@ -1,12 +1,14 @@
 Classes {#register_classes_page}
 =======
 
-For registering classes in RTTR you use a class called @ref rttr::registration::class_<T> "registration::class_<T>". 
-Its name is supposed to resemble the C++ keyword, to make it look more intuitive. 
-It has member functions for register @ref rttr::registration::class_<T>::constructor() "constructors", @ref rttr::registration::class_<T>::property() "properties",
-@ref rttr::registration::class_<T>::method() "methods" and @ref rttr::registration::class_<T>::enumeration() "enums".
+For registering classes in RTTR you use a class called @ref rttr::registration::class_<T> "registration::class_<T>".
+Its name is supposed to resemble the C++ keyword, to make it look more intuitive.
+It has member functions for register @ref rttr::registration::class_<T>::constructor () "constructors", @ref rttr::
+registration::class_<T>::property () "properties",
+@ref rttr::registration::class_<T>::method () "methods" and @ref rttr::registration::class_<T>::enumeration () "enums".
 These functions have the same interface and work in the same way like register the global symbols.
-Every call to these member functions, will return @ref rttr::registration::bind "bind" object, in order to chain more registration calls.
+Every call to these member functions, will return @ref rttr::registration::bind "bind" object, in order to chain more
+registration calls.
 
 Let's start with a simple example. Consider the following C++ class:
 
@@ -43,17 +45,21 @@ RTTR_REGISTRATION
 }
 ~~~~
 
-This will register the class `test_class` with a constructor that takes an integer as argument, a member function with the name `print_value`
+This will register the class `test_class` with a constructor that takes an integer as argument, a member function with
+the name `print_value`
 and a property called `value`.
 
-The property name has to be unique for this class type, but derived classes can register another property with the same name again.
-Member functions can be overloaded, so a method can be registered with an already existing name multiple times. 
-However when there exist a method with the same name and signature, then this function will not be registered and discarded.
+The property name has to be unique for this class type, but derived classes can register another property with the same
+name again.
+Member functions can be overloaded, so a method can be registered with an already existing name multiple times.
+However when there exist a method with the same name and signature, then this function will not be registered and
+discarded.
 
 Overloaded member functions
 ---------------------------
-In order to register a overloaded member function, you have to disambiguate the member function pointer you pass to @ref rttr::registration::class_<T>::method() "method".
-Therefore a helper function can be used: @ref rttr::select_overload() "select_overload<T>(T (ClassType::*func))"
+In order to register a overloaded member function, you have to disambiguate the member function pointer you pass to @ref
+rttr::registration::class_<T>::method () "method".
+Therefore a helper function can be used: @ref rttr::select_overload () "select_overload<T>(T (ClassType::*func))"
 
 Here's an example illustrating this:
 
@@ -77,14 +83,15 @@ RTTR_REGISTRATION
 }
 ~~~~
 
-The last function is a overloaded const function, use therefore the 
-@ref rttr::select_const() "select_const()" function.
+The last function is a overloaded const function, use therefore the
+@ref rttr::select_const () "select_const ()" function.
 
 Register constructor
 --------------------
 
-RTTR allows your to register constructors for classes. 
-Because C++ doesn't allow to retrieve the member function pointer of a constructor you have to explicit specify all data types of a constructor.
+RTTR allows your to register constructors for classes.
+Because C++ doesn't allow to retrieve the member function pointer of a constructor you have to explicit specify all data
+types of a constructor.
 
 Consider following class with three constructors:
 
@@ -99,8 +106,8 @@ struct Foo
 };
 ~~~~
 
-For registering three `Foo` constructors you now have to specify every parameter as template parameter 
-in the member function @ref rttr::registration::class_<T>::constructor() "constructor()".
+For registering three `Foo` constructors you now have to specify every parameter as template parameter
+in the member function @ref rttr::registration::class_<T>::constructor () "constructor ()".
 As second option, it is possible to register a static function as constructor.
 In order to do this, just forward the function pointer.
 
@@ -118,7 +125,8 @@ RTTR_REGISTRATION
 ~~~~
 
 When a constructor is registered a destructor is registered automatically.
-The used default policy for creating an instance is @ref rttr::policy::ctor::as_std_shared_ptr "policy::ctor::as_std_shared_ptr".
+The used default policy for creating an instance is @ref rttr::policy::ctor::as_std_shared_ptr "policy::ctor::
+as_std_shared_ptr".
 
 Register class properties
 -------------------------
@@ -143,12 +151,14 @@ RTTR_REGISTRATION
 }
 ~~~~
 
-With the @ref rttr::registration::class_<T>::property() "property()" member function you will register the member variable `Foo::value` 
+With the @ref rttr::registration::class_<T>::property () "property ()" member function you will register the member
+variable `Foo::value`
 with read and write access.
 
 ###Read Only Properties###
-When you want a register a property with `read-only` access, 
-then this is also possible with @ref rttr::registration::class_<T>::property_readonly "property_readonly()" member function.
+When you want a register a property with `read-only` access,
+then this is also possible with @ref rttr::registration::class_<T>::property_readonly "property_readonly ()" member
+function.
 
 ~~~~{.cpp}
 RTTR_REGISTRATION
@@ -162,8 +172,10 @@ RTTR_REGISTRATION
 
 ###Private Properties###
 
-When you have a class and the property is declared in private scope, then you can still register this property when you insert the macro: \ref RTTR_REGISTRATION_FRIEND
+When you have a class and the property is declared in private scope, then you can still register this property when you
+insert the macro: \ref RTTR_REGISTRATION_FRIEND
 inside the class.
+
 ~~~~{.cpp}
 class Foo
 {
@@ -177,7 +189,9 @@ private:
 This will make this class a friend to the registration system.
 
 ###Getter Setter For Properties###
-You can also register getter and setter functions and make them look as if they were a public data member. Consider the following class:
+You can also register getter and setter functions and make them look as if they were a public data member. Consider the
+following class:
+
 ~~~~{.cpp}
 class Foo
 {
@@ -202,9 +216,11 @@ RTTR_REGISTRATION
 }
 ~~~~
 
-This way, accessing the property will now call these functions, instead the property directly. Remark that the getter function needs the be `const`.
+This way, accessing the property will now call these functions, instead the property directly. Remark that the getter
+function needs the be `const`.
 
-The following sub sections will now show how to retrieve these informations for creating, invoking and setting properties of an instance of this class.
+The following sub sections will now show how to retrieve these informations for creating, invoking and setting
+properties of an instance of this class.
 
 Access Level Of Class Members
 ------------------------------
@@ -233,17 +249,22 @@ RTTR_REGISTRATION
                   .property("value", &Foo::value, registration::private_access);
 }
 ~~~~
-The access level has to be specified as last argument in the corresponding \ref rttr::registration::class_ "class_" registration function.
+
+The access level has to be specified as last argument in the corresponding \ref rttr::registration::class_ "class_"
+registration function.
 Use therefore one of the three static member variables in the \ref rttr::registration "registration" class.
-This information can be retrieved at runtime for \ref rttr::property::get_access_level() "properties", \ref rttr::method::get_access_level() "methods" or 
-\ref rttr::constructor::get_access_level() "constructors". via the function `get_access_level()`, which will return a enum value of type \ref rttr::access_levels "access_levels".
+This information can be retrieved at runtime for \ref rttr::property::get_access_level () "properties", \ref rttr::
+method::get_access_level () "methods" or
+\ref rttr::constructor::get_access_level () "constructors". via the function `get_access_level()`, which will return a
+enum value of type \ref rttr::access_levels "access_levels".
 
 
 Create/destroy of classes
 -------------------------
-There are two options for creating/destroying a class. 
--# use just the @ref rttr::type::create "type" interface or 
--# retrieve a @ref rttr::constructor "constructor" and @ref rttr::destructor "destructor" object from the @ref rttr::type "type" class.
+There are two options for creating/destroying a class.
+-# use just the @ref rttr::type::create "type" interface or
+-# retrieve a @ref rttr::constructor "constructor" and @ref rttr::destructor "destructor" object from the @ref rttr::
+type "type" class.
 
 ~~~~{.cpp}
 int main()
@@ -270,11 +291,13 @@ int main()
     }
 }
 ~~~~
+
 The objects which are constructed are created on the heap and stored as pointer in the variant object.
 
 Invoke member functions
 -----------------------
-Invoking a member function works in the same way like invoking global function. The only difference is, that you have to provide
+Invoking a member function works in the same way like invoking global function. The only difference is, that you have to
+provide
 the instance of the class.
 
 ~~~~{.cpp}
@@ -293,7 +316,8 @@ int main()
 }
 ~~~~
 
-The invoke function also except to use variants. So when you create the object via the type constructor you can use the returned variant to invoke a method:
+The invoke function also except to use variants. So when you create the object via the type constructor you can use the
+returned variant to invoke a method:
 
 ~~~~{.cpp}
 int main()
@@ -305,7 +329,8 @@ int main()
 }
 ~~~~
 
-It is possible to invoke a method, when the instance is wrapped inside a wrapper class, for example `std::shared_ptr<T>`.
+It is possible to invoke a method, when the instance is wrapped inside a wrapper class, for example
+`std::shared_ptr<T>`.
 
 ~~~~{.cpp}
 int main()
@@ -325,7 +350,9 @@ int main()
     return 0;
 }
 ~~~~
-When you want to use RTTR with a custom wrapper type, you have provide a specialization of the class template @ref rttr::wrapper_mapper<T> "wrapper_mapper<T>".
+
+When you want to use RTTR with a custom wrapper type, you have provide a specialization of the class template @ref
+rttr::wrapper_mapper<T> "wrapper_mapper<T>".
 
 Set/Get property of a class
 ---------------------------
@@ -349,8 +376,10 @@ int main()
 }
 ~~~~
 
-In difference to the global properties, a valid \ref type object and an instance (object) of the class is now needed to set and get the value.
-It doesn't matter in what hierarchy level the object is or if its a pointer, an object on the stack or wrapped inside a variant.
+In difference to the global properties, a valid \ref type object and an instance (object) of the class is now needed to
+set and get the value.
+It doesn't matter in what hierarchy level the object is or if its a pointer, an object on the stack or wrapped inside a
+variant.
 RTTR will try to cast the given object to the class type where the property was registered to.
 
 <hr>

@@ -33,35 +33,32 @@
 #include <memory>
 #include <type_traits>
 
-namespace rttr
-{
-namespace detail
-{
-
-/*!
+namespace rttr {
+    namespace detail {
+        /*!
  * This class holds the address to any given data in m_data.
  *
  * What kind of data it holds, depends on the operation it will be used for.
  * That means there will be also kind of check what kind of data it contains.
  * The caller has to make sure the data it will forward, matches the expected data in the invoke function.
  */
-struct argument_wrapper
-{
-    argument_wrapper() : m_data(nullptr) {}
+        struct argument_wrapper {
+            argument_wrapper() : m_data(nullptr) {
+            }
 
-    template<typename T> requires (!std::is_same_v<T, argument_wrapper>)
-    argument_wrapper(T&& data) : m_data(const_cast<void*>(reinterpret_cast<const void*>(std::addressof(data)))) {}
+            template<typename T> requires (!std::is_same_v<T, argument_wrapper>)
+            argument_wrapper(T &&data) : m_data(
+                const_cast<void *>(reinterpret_cast<const void *>(std::addressof(data)))) {
+            }
 
-    template<typename T>
-    T& get_value() const
-    {
-        return (*reinterpret_cast<std::remove_reference_t<T>*>(const_cast<void *>(m_data)));
-    }
+            template<typename T>
+            T &get_value() const {
+                return (*reinterpret_cast<std::remove_reference_t<T> *>(const_cast<void *>(m_data)));
+            }
 
-    void* m_data;
-};
-
-} // end namespace detail
+            void *m_data;
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_ARGUMENT_WRAPPER_H_

@@ -30,29 +30,44 @@
 
 using namespace rttr;
 
-struct ctor_default_arg_invoke_test
-{
-    ctor_default_arg_invoke_test(int a) {};
-    ctor_default_arg_invoke_test(int a, int b) {};
-    ctor_default_arg_invoke_test(int a, int b, int c) {};
-    ctor_default_arg_invoke_test(int a, int b, int c, int d) {};
-    ctor_default_arg_invoke_test(int a, int b, int c, int d, int e) {};
-    ctor_default_arg_invoke_test(int a, int b, int c, int d, int e, int f) {};
-    ctor_default_arg_invoke_test(int a, int b, int c, int d, int e, int f, int g) {};
+struct ctor_default_arg_invoke_test {
+    ctor_default_arg_invoke_test(int a) {
+    };
+
+    ctor_default_arg_invoke_test(int a, int b) {
+    };
+
+    ctor_default_arg_invoke_test(int a, int b, int c) {
+    };
+
+    ctor_default_arg_invoke_test(int a, int b, int c, int d) {
+    };
+
+    ctor_default_arg_invoke_test(int a, int b, int c, int d, int e) {
+    };
+
+    ctor_default_arg_invoke_test(int a, int b, int c, int d, int e, int f) {
+    };
+
+    ctor_default_arg_invoke_test(int a, int b, int c, int d, int e, int f, int g) {
+    };
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_class<^^ctor_default_arg_invoke_test>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - default argument test (real ctor)", "[constructor]")
+TEST_CASE (
+"constructor - default argument test (real ctor)"
+,
+"[constructor]"
+)
 {
     struct ctor_default_arg_test {
         [[=class_op::ctor_policy(policy::ctor::op_as_std_shared_ptr)]]
@@ -98,7 +113,11 @@ TEST_CASE("constructor - default argument test (real ctor)", "[constructor]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - default argument test (func ctor)", "[constructor]")
+TEST_CASE (
+"constructor - default argument test (func ctor)"
+,
+"[constructor]"
+)
 {
     struct ctor_default_arg_test {
         [[=class_op::ctor_policy(policy::ctor::op_as_std_shared_ptr)]]
@@ -143,7 +162,11 @@ TEST_CASE("constructor - default argument test (func ctor)", "[constructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - default argument test (invoke variadic; real ctor)", "[constructor]")
+TEST_CASE (
+"constructor - default argument test (invoke variadic; real ctor)"
+,
+"[constructor]"
+)
 {
     struct ctor_default_arg_test {
         [[=class_op::ctor_policy(policy::ctor::op_as_std_shared_ptr)]]
@@ -190,7 +213,11 @@ TEST_CASE("constructor - default argument test (invoke variadic; real ctor)", "[
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - default argument test (invoke variadic; func ctor)", "[constructor]")
+TEST_CASE (
+"constructor - default argument test (invoke variadic; func ctor)"
+,
+"[constructor]"
+)
 {
     struct ctor_default_arg_test {
         [[=class_op::ctor_policy(policy::ctor::op_as_std_shared_ptr)]]
@@ -234,7 +261,11 @@ TEST_CASE("constructor - default argument test (invoke variadic; func ctor)", "[
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - default argument via type (real ctor)", "[constructor]")
+TEST_CASE (
+"constructor - default argument via type (real ctor)"
+,
+"[constructor]"
+)
 {
     struct ctor_default_arg_test {
         [[=class_op::ctor_policy(policy::ctor::op_as_std_shared_ptr)]]
@@ -262,7 +293,11 @@ TEST_CASE("constructor - default argument via type (real ctor)", "[constructor]"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke ctor with defaults valid", "[constructor]")
+TEST_CASE (
+"constructor - invoke ctor with defaults valid"
+,
+"[constructor]"
+)
 {
     auto range = type::get<ctor_default_arg_invoke_test>().get_constructors();
     std::vector<constructor> ctor_list(range.cbegin(), range.cend());

@@ -26,8 +26,8 @@
 ####################################################################################
 
 set(HEADER_FILES version.rc.in
-                 )
+)
 
 set(SOURCE_FILES test_container_plugin.cpp
-                 test_class_plugin.cpp
-                 )
+        test_class_plugin.cpp
+)

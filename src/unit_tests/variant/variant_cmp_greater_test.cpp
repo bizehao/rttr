@@ -33,8 +33,7 @@
 using namespace rttr;
 
 
-struct type_with_no_less_than_operator_2
-{
+struct type_with_no_less_than_operator_2 {
     int i;
 };
 
@@ -42,13 +41,17 @@ struct type_with_less_than_operator_2 // important, other name
 {
     int i;
 
-    bool operator<(const type_with_less_than_operator_2& rhs) const { return (i < rhs.i); }
-    bool operator==(const type_with_less_than_operator_2& other) const { return (i == other.i); }
+    bool operator<(const type_with_less_than_operator_2 &rhs) const { return (i < rhs.i); }
+    bool operator==(const type_with_less_than_operator_2 &other) const { return (i == other.i); }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>() - empty", "[variant]")
+TEST_CASE (
+"variant::operator>() - empty"
+,
+"[variant]"
+)
 {
     SECTION("empty type")
     {
@@ -78,7 +81,11 @@ TEST_CASE("variant::operator>() - empty", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>() - integer", "[variant]")
+TEST_CASE (
+"variant::operator>() - integer"
+,
+"[variant]"
+)
 {
     SECTION("equal")
     {
@@ -115,7 +122,11 @@ TEST_CASE("variant::operator>() - integer", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>() - float", "[variant]")
+TEST_CASE (
+"variant::operator>() - float"
+,
+"[variant]"
+)
 {
     SECTION("lower > bigger")
     {
@@ -152,7 +163,11 @@ TEST_CASE("variant::operator>() - float", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>() - double", "[variant]")
+TEST_CASE (
+"variant::operator>() - double"
+,
+"[variant]"
+)
 {
     SECTION("lower > bigger")
     {
@@ -180,7 +195,11 @@ TEST_CASE("variant::operator>() - double", "[variant]")
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-TEST_CASE("variant::operator>() - Non-template type", "[variant]")
+TEST_CASE (
+"variant::operator>() - Non-template type"
+,
+"[variant]"
+)
 {
     SECTION("lower < bigger")
     {
@@ -194,7 +213,11 @@ TEST_CASE("variant::operator>() - Non-template type", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>() - template type - comparator registered", "[variant]")
+TEST_CASE (
+"variant::operator>() - template type - comparator registered"
+,
+"[variant]"
+)
 {
     SECTION("lower < bigger")
     {
@@ -213,7 +236,11 @@ TEST_CASE("variant::operator>() - template type - comparator registered", "[vari
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>() - template type - no comparator registered", "[variant]")
+TEST_CASE (
+"variant::operator>() - template type - no comparator registered"
+,
+"[variant]"
+)
 {
     SECTION("lower < bigger, use std::string comparator")
     {
@@ -236,7 +263,11 @@ TEST_CASE("variant::operator>() - template type - no comparator registered", "[v
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>() - with nullptr", "[variant]")
+TEST_CASE (
+"variant::operator>() - with nullptr"
+,
+"[variant]"
+)
 {
     SECTION("nullptr > nullptr")
     {
@@ -268,7 +299,11 @@ TEST_CASE("variant::operator>() - with nullptr", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>() - raw arrays", "[variant]")
+TEST_CASE (
+"variant::operator>() - raw arrays"
+,
+"[variant]"
+)
 {
     SECTION("int - pos.")
     {

@@ -32,8 +32,7 @@
 
 using namespace rttr;
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_enumeration<^^variant_enum_test>();
     registration::do_enumeration<^^variant_enum_test_big>();
     registration::do_enumeration<^^enum_int8_t>();
@@ -41,7 +40,11 @@ RTTR_REGISTRATION
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to enum - from empty", "[variant]")
+TEST_CASE (
+"variant::to enum - from empty"
+,
+"[variant]"
+)
 {
     variant var;
     bool ok = false;
@@ -55,7 +58,11 @@ TEST_CASE("variant::to enum - from empty", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from bool", "[variant]")
+TEST_CASE (
+"variant:to enum - from bool"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {
@@ -95,7 +102,11 @@ TEST_CASE("variant:to enum - from bool", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from char", "[variant]")
+TEST_CASE (
+"variant:to enum - from char"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -125,7 +136,11 @@ TEST_CASE("variant:to enum - from char", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from std::string", "[variant]")
+TEST_CASE (
+"variant:to enum - from std::string"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {
@@ -155,7 +170,11 @@ TEST_CASE("variant:to enum - from std::string", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from int", "[variant]")
+TEST_CASE (
+"variant:to enum - from int"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -185,7 +204,11 @@ TEST_CASE("variant:to enum - from int", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from float", "[variant]")
+TEST_CASE (
+"variant:to enum - from float"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -215,7 +238,11 @@ TEST_CASE("variant:to enum - from float", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from double", "[variant]")
+TEST_CASE (
+"variant:to enum - from double"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -245,7 +272,11 @@ TEST_CASE("variant:to enum - from double", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from int8_t", "[variant]")
+TEST_CASE (
+"variant:to enum - from int8_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -275,7 +306,11 @@ TEST_CASE("variant:to enum - from int8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from int16_t", "[variant]")
+TEST_CASE (
+"variant:to enum - from int16_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -305,7 +340,11 @@ TEST_CASE("variant:to enum - from int16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from int32_t", "[variant]")
+TEST_CASE (
+"variant:to enum - from int32_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -335,7 +374,11 @@ TEST_CASE("variant:to enum - from int32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from int64_t", "[variant]")
+TEST_CASE (
+"variant:to enum - from int64_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -365,7 +408,11 @@ TEST_CASE("variant:to enum - from int64_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from uint8_t", "[variant]")
+TEST_CASE (
+"variant:to enum - from uint8_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -395,7 +442,11 @@ TEST_CASE("variant:to enum - from uint8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from uint16_t", "[variant]")
+TEST_CASE (
+"variant:to enum - from uint16_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -425,7 +476,11 @@ TEST_CASE("variant:to enum - from uint16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from uint32_t", "[variant]")
+TEST_CASE (
+"variant:to enum - from uint32_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -455,7 +510,11 @@ TEST_CASE("variant:to enum - from uint32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant:to enum - from uint64_t", "[variant]")
+TEST_CASE (
+"variant:to enum - from uint64_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {

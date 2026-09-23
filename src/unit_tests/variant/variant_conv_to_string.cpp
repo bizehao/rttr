@@ -32,14 +32,17 @@
 
 using namespace rttr;
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_enumeration<^^enum_int64_t>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from empty", "[variant]")
+TEST_CASE (
+"variant::to_string() - from empty"
+,
+"[variant]"
+)
 {
     variant var;
     bool ok = false;
@@ -49,7 +52,11 @@ TEST_CASE("variant::to_string() - from empty", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from bool", "[variant]")
+TEST_CASE (
+"variant::to_string() - from bool"
+,
+"[variant]"
+)
 {
     variant var = true;
     REQUIRE(var.is_valid() == true);
@@ -78,7 +85,11 @@ TEST_CASE("variant::to_string() - from bool", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from char", "[variant]")
+TEST_CASE (
+"variant::to_string() - from char"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {
@@ -104,7 +115,11 @@ TEST_CASE("variant::to_string() - from char", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from std::string", "[variant]")
+TEST_CASE (
+"variant::to_string() - from std::string"
+,
+"[variant]"
+)
 {
     variant var = std::string("23");
     REQUIRE(var.can_convert<std::string>() == true);
@@ -120,7 +135,11 @@ TEST_CASE("variant::to_string() - from std::string", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from int", "[variant]")
+TEST_CASE (
+"variant::to_string() - from int"
+,
+"[variant]"
+)
 {
     SECTION("conversion positive")
     {
@@ -146,7 +165,11 @@ TEST_CASE("variant::to_string() - from int", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from float", "[variant]")
+TEST_CASE (
+"variant::to_string() - from float"
+,
+"[variant]"
+)
 {
     SECTION("conversion positive")
     {
@@ -172,7 +195,11 @@ TEST_CASE("variant::to_string() - from float", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from double", "[variant]")
+TEST_CASE (
+"variant::to_string() - from double"
+,
+"[variant]"
+)
 {
     SECTION("conversion positive")
     {
@@ -198,7 +225,11 @@ TEST_CASE("variant::to_string() - from double", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from int8_t", "[variant]")
+TEST_CASE (
+"variant::to_string() - from int8_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -224,7 +255,11 @@ TEST_CASE("variant::to_string() - from int8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from int16_t", "[variant]")
+TEST_CASE (
+"variant::to_string() - from int16_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -250,7 +285,11 @@ TEST_CASE("variant::to_string() - from int16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from int32_t", "[variant]")
+TEST_CASE (
+"variant::to_string() - from int32_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -276,7 +315,11 @@ TEST_CASE("variant::to_string() - from int32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from int64_t", "[variant]")
+TEST_CASE (
+"variant::to_string() - from int64_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -302,7 +345,11 @@ TEST_CASE("variant::to_string() - from int64_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from uint8_t", "[variant]")
+TEST_CASE (
+"variant::to_string() - from uint8_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -319,7 +366,11 @@ TEST_CASE("variant::to_string() - from uint8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from uint16_t", "[variant]")
+TEST_CASE (
+"variant::to_string() - from uint16_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -336,7 +387,11 @@ TEST_CASE("variant::to_string() - from uint16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from uint32_t", "[variant]")
+TEST_CASE (
+"variant::to_string() - from uint32_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -353,7 +408,11 @@ TEST_CASE("variant::to_string() - from uint32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from uint64_t", "[variant]")
+TEST_CASE (
+"variant::to_string() - from uint64_t"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion positive")
     {
@@ -374,7 +433,11 @@ enum class unregisterd_enum { VALUE_1 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_string() - from enum", "[variant]")
+TEST_CASE (
+"variant::to_string() - from enum"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {

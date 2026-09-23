@@ -30,28 +30,27 @@
 #include "rttr/detail/constructor/constructor_wrapper_base.h"
 #include <meta>
 
-namespace rttr
-{
-template<typename... U> struct type_list;
+namespace rttr {
+    template<typename... U>
+    struct type_list;
 
-namespace detail
-{
+    namespace detail {
+        struct base_class_info {
+            base_class_info(type t, void *(*rttr_cast_func)(void *))
+                : m_base_type(t), m_rttr_cast_func(rttr_cast_func) {
+            }
 
-struct base_class_info
-{
-    base_class_info(type t, void*(*rttr_cast_func)(void*))
-    :   m_base_type(t), m_rttr_cast_func(rttr_cast_func)
-    {}
-    type            m_base_type;
-    void*           (*m_rttr_cast_func)(void*);
-};
+            type m_base_type;
 
-/*!
+            void * (*m_rttr_cast_func)(void *);
+        };
+
+        /*!
  * If T has a type alias called \a 'base_class_list' then inherits from true_type, otherwise inherits from false_type.
  */
-using info_container = std::vector<detail::base_class_info>;
+        using info_container = std::vector<detail::base_class_info>;
 
-/*!
+        /*!
  * This is the trick to make the replacement of `dynamic_cast` possible.
  *
  * For every \p DerivedType is a function pointer stored, which performs a
@@ -60,55 +59,51 @@ using info_container = std::vector<detail::base_class_info>;
  * otherwise we would get undefined behavior.
  * Therefore the \ref get_derived_info() function is used. It will return this information.
  */
-template<typename DerivedType, typename BaseType>
-static void* rttr_cast_impl(void* ptr)
-{
-    return static_cast<void*>(static_cast<BaseType*>(static_cast<DerivedType*>(ptr)));
-}
+        template<typename DerivedType, typename BaseType>
+        static void *rttr_cast_impl(void *ptr) {
+            return static_cast<void *>(static_cast<BaseType *>(static_cast<DerivedType *>(ptr)));
+        }
 
-    /*!
+        /*!
  * This class fills from a given type_list the corresponding type objects into a std::vector.
  */
-template<std::meta::info info, std::meta::info baseInfo>
-static RTTR_INLINE void base_fill(info_container& vec)
-{
-    using DerivedT = [: info :];
-    using BaseT = [: baseInfo :];
-    vec.emplace_back(type::get<BaseT>(), &rttr_cast_impl<DerivedT, BaseT>);
+        template<std::meta::info info, std::meta::info baseInfo>
+        static RTTR_INLINE void base_fill(info_container &vec) {
+            using DerivedT = [:info:];
+            using BaseT = [:baseInfo:];
+            vec.emplace_back(type::get<BaseT>(), &rttr_cast_impl<DerivedT, BaseT>);
 
-    template for (constexpr auto b : std::define_static_array(std::meta::bases_of(baseInfo, std::meta::access_context::unprivileged()))) {
-        base_fill<info, std::meta::type_of(b)>(vec);
-    }
-}
+            template for (constexpr auto b: std::define_static_array(
+                std::meta::bases_of(baseInfo, std::meta::access_context::unprivileged()))) {
+                base_fill<info, std::meta::type_of(b)>(vec);
+            }
+        }
 
-template<typename T>
-struct RTTR_LOCAL base_classes
-{
-    static RTTR_INLINE info_container get_types()
-    {
-        info_container result;
-        return result;
-    }
-};
+        template<typename T>
+        struct RTTR_LOCAL base_classes {
+            static RTTR_INLINE info_container get_types() {
+                info_container result;
+                return result;
+            }
+        };
 
-/*!
+        /*!
  * This helper trait returns a vector with type object of all base classes.
  * When there is no type_list defined or the class has no base class, an empty vector is returned.
  */
-template<typename T> requires (std::is_class_v<T>)
-struct RTTR_LOCAL base_classes<T>
-{
-    static RTTR_INLINE info_container get_types()
-    {
-        info_container result;
-        template for (constexpr auto b : std::define_static_array(std::meta::bases_of(^^T, std::meta::access_context::unprivileged()))) {
-            base_fill<^^T, std::meta::type_of(b)>(result);
-        }
-        return result;
-    }
-};
-
-} // end namespace detail
+        template<typename T> requires (std::is_class_v<T>)
+        struct RTTR_LOCAL base_classes<T> {
+            static RTTR_INLINE info_container get_types()
+            {
+                info_container result;
+                template for (constexpr auto b: std::define_static_array(
+                    std::meta::bases_of(^^T, std::meta::access_context::unprivileged()))) {
+                    base_fill<^^T, std::meta::type_of(b)>(result);
+                }
+                return result;
+            }
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_BASE_CLASSES_H_

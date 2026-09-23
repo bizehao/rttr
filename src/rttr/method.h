@@ -38,21 +38,18 @@
 #include <span>
 
 
-namespace rttr
-{
+namespace rttr {
+    class variant;
+    class type;
+    class instance;
+    class argument;
+    class method;
 
-class variant;
-class type;
-class instance;
-class argument;
-class method;
+    namespace detail {
+        class method_wrapper_base;
+    }
 
-namespace detail
-{
-    class method_wrapper_base;
-}
-
-/*!
+    /*!
  * The \ref method class provides several meta information about a method and can be invoked.
  *
  * A instance of a method class can only be obtained from the \ref type class.
@@ -117,8 +114,7 @@ namespace detail
  *
  * \see property, enumeration, constructor and type
  */
-class RTTR_API method
-{
+    class RTTR_API method {
     public:
         /*!
          * \brief Returns true if this method is valid, otherwise false.
@@ -151,7 +147,7 @@ class RTTR_API method
          */
         bool is_static() const RTTR_NOEXCEPT;
 
-        variant get_metadata(const std::string_view& key) const;
+        variant get_metadata(const std::string_view &key) const;
 
         /*!
          * Returns the type object of the return type.
@@ -309,27 +305,27 @@ class RTTR_API method
          *
          * \return True if both methods are equal, otherwise false.
          */
-        bool operator==(const method& other) const RTTR_NOEXCEPT;
+        bool operator==(const method &other) const RTTR_NOEXCEPT;
 
         /*!
          * Returns true if this method is the not the same like the \p other.
          *
          * \return True if both methods are different, otherwise false.
          */
-        bool operator!=(const method& other) const RTTR_NOEXCEPT;
+        bool operator!=(const method &other) const RTTR_NOEXCEPT;
 
     private:
-        method(const detail::method_wrapper_base* wrapper) RTTR_NOEXCEPT;
+        method(const detail::method_wrapper_base *wrapper) RTTR_NOEXCEPT;
 
         template<typename T>
-        friend T detail::create_item(const detail::class_item_to_wrapper_t<T>* wrapper);
+        friend T detail::create_item(const detail::class_item_to_wrapper_t<T> *wrapper);
+
         template<typename T>
         friend T detail::create_invalid_item();
 
     private:
-        const detail::method_wrapper_base* m_wrapper;
-};
-
+        const detail::method_wrapper_base *m_wrapper;
+    };
 } // end namespace rttr
 
 #endif // RTTR_METHOD_H_

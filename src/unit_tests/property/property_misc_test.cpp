@@ -31,16 +31,13 @@
 
 using namespace rttr;
 
-enum class color
-{
-    red     = 0,
-    green   = 1,
-    blue    = 2
+enum class color {
+    red = 0,
+    green = 1,
+    blue = 2
 };
 
-struct prop_misc_test
-{
-
+struct prop_misc_test {
     int value_1;
     bool value_2;
     color color_value;
@@ -52,16 +49,19 @@ int prop_misc_test::s_value = 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^prop_misc_test>("prop_misc_test");
+RTTR_REGISTRATION {
+    registration::do_class < ^^prop_misc_test > ("prop_misc_test");
 
     registration::do_enumeration<^^color>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - is_valid()", "[property]")
+TEST_CASE (
+"property - is_valid()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.is_valid() == true);
@@ -72,7 +72,11 @@ TEST_CASE("property - is_valid()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - is_readonly()", "[property]")
+TEST_CASE (
+"property - is_readonly()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.is_readonly() == false);
@@ -87,7 +91,11 @@ TEST_CASE("property - is_readonly()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - is_static()", "[property]")
+TEST_CASE (
+"property - is_static()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.is_static() == false);
@@ -102,7 +110,11 @@ TEST_CASE("property - is_static()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - is_enumeration()", "[property]")
+TEST_CASE (
+"property - is_enumeration()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.is_enumeration() == false);
@@ -117,7 +129,11 @@ TEST_CASE("property - is_enumeration()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - get_enumeration()", "[property]")
+TEST_CASE (
+"property - get_enumeration()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.get_enumeration().is_valid() == false);
@@ -132,7 +148,11 @@ TEST_CASE("property - get_enumeration()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - is_array()", "[property]")
+TEST_CASE (
+"property - is_array()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.get_type().is_sequential_container() == false);
@@ -147,7 +167,11 @@ TEST_CASE("property - is_array()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - get_name()", "[property]")
+TEST_CASE (
+"property - get_name()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.get_name() == "value_1");
@@ -160,7 +184,11 @@ TEST_CASE("property - get_name()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - get_type()", "[property]")
+TEST_CASE (
+"property - get_type()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.get_type() == type::get<int>());
@@ -172,7 +200,11 @@ TEST_CASE("property - get_type()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - get_declaring_type()", "[property]")
+TEST_CASE (
+"property - get_declaring_type()"
+,
+"[property]"
+)
 {
     property prop = type::get<prop_misc_test>().get_property("value_1");
     CHECK(prop.get_declaring_type() == type::get<prop_misc_test>());
@@ -184,7 +216,11 @@ TEST_CASE("property - get_declaring_type()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - compare operators()", "[property]")
+TEST_CASE (
+"property - compare operators()"
+,
+"[property]"
+)
 {
     property prop1  = type::get<prop_misc_test>().get_property("value_1");
     property prop1a = type::get<prop_misc_test>().get_property("value_1");

@@ -34,18 +34,21 @@ using namespace rttr;
 
 
 template<typename T>
-struct custom_compare_type
-{
+struct custom_compare_type {
     T i;
 
-    bool operator==(const custom_compare_type<T>& other) const { return (i == other.i); }
+    bool operator==(const custom_compare_type<T> &other) const { return (i == other.i); }
 
-    bool operator<(const custom_compare_type<T>& other) const { return (i < other.i); }
+    bool operator<(const custom_compare_type<T> &other) const { return (i < other.i); }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>=() - empty", "[variant]")
+TEST_CASE (
+"variant::operator>=() - empty"
+,
+"[variant]"
+)
 {
     SECTION("empty type")
     {
@@ -75,7 +78,11 @@ TEST_CASE("variant::operator>=() - empty", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>=() - integer", "[variant]")
+TEST_CASE (
+"variant::operator>=() - integer"
+,
+"[variant]"
+)
 {
     SECTION("equal")
     {
@@ -112,7 +119,11 @@ TEST_CASE("variant::operator>=() - integer", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>=() - float", "[variant]")
+TEST_CASE (
+"variant::operator>=() - float"
+,
+"[variant]"
+)
 {
     SECTION("equal")
     {
@@ -157,7 +168,11 @@ TEST_CASE("variant::operator>=() - float", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>=() - double", "[variant]")
+TEST_CASE (
+"variant::operator>=() - double"
+,
+"[variant]"
+)
 {
     SECTION("equal")
     {
@@ -194,7 +209,11 @@ TEST_CASE("variant::operator>=() - double", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>=() - with nullptr", "[variant]")
+TEST_CASE (
+"variant::operator>=() - with nullptr"
+,
+"[variant]"
+)
 {
     SECTION("nullptr > nullptr")
     {
@@ -225,7 +244,11 @@ TEST_CASE("variant::operator>=() - with nullptr", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>=() - raw arrays", "[variant]")
+TEST_CASE (
+"variant::operator>=() - raw arrays"
+,
+"[variant]"
+)
 {
     SECTION("int - pos. - equal")
     {
@@ -251,7 +274,11 @@ TEST_CASE("variant::operator>=() - raw arrays", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator>=() - custom type", "[variant]")
+TEST_CASE (
+"variant::operator>=() - custom type"
+,
+"[variant]"
+)
 {
     variant a = custom_compare_type<int> { 2 };
     variant b = custom_compare_type<int> { 1 };

@@ -30,83 +30,102 @@
 
 using namespace rttr;
 
-struct ctor_invoke_test
-{
+struct ctor_invoke_test {
     [[=class_op::ctor_policy(policy::ctor::op_as_raw_ptr)]]
-    ctor_invoke_test(bool is_default_ctor = true)
-    {
+    ctor_invoke_test(bool is_default_ctor = true) {
         default_ctor_invoked = is_default_ctor;
         func_as_ctor_invoked = is_default_ctor;
     }
 
     [[=class_op::ctor_policy(policy::ctor::op_as_raw_ptr)]]
-    ctor_invoke_test(const ctor_invoke_test& other) { cpy_ctor_invoked = true; }
+    ctor_invoke_test(const ctor_invoke_test &other) { cpy_ctor_invoked = true; }
 
     [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
-    ctor_invoke_test(std::in_place_index_t<0>, int param_1, double param_2)
-    {
+    ctor_invoke_test(std::in_place_index_t<0>, int param_1, double param_2) {
         value_1 = param_1;
         value_2 = param_2;
         custom_ctor_invoked = true;
     }
 
     [[=class_op::ctor_policy(policy::ctor::op_as_raw_ptr)]]
-    ctor_invoke_test(std::in_place_index_t<1>, int param_1, double param_2)
-    {
+    ctor_invoke_test(std::in_place_index_t<1>, int param_1, double param_2) {
         value_1 = param_1;
         value_2 = param_2;
         custom_ctor_invoked = true;
     }
 
     [[=class_op::ctor_policy(policy::ctor::op_as_std_shared_ptr)]]
-    ctor_invoke_test(std::in_place_index_t<2>, int param_1, double param_2)
-    {
+    ctor_invoke_test(std::in_place_index_t<2>, int param_1, double param_2) {
         value_1 = param_1;
         value_2 = param_2;
         custom_ctor_invoked = true;
     }
 
-    ctor_invoke_test(ctor_invoke_test&& other) = default;
+    ctor_invoke_test(ctor_invoke_test &&other) = default;
 
     [[=class_op::ctor_policy(policy::ctor::op_as_raw_ptr)]]
-    ctor_invoke_test(int p1, int p2, int p3, int p4, int p5, int p6, const int* p7){ value_1 = p1; value_2 = p2; }
+    ctor_invoke_test(int p1, int p2, int p3, int p4, int p5, int p6, const int *p7) {
+        value_1 = p1;
+        value_2 = p2;
+    }
 
-    ctor_invoke_test(int p1, double p2){ value_1 = p1; value_2 = p2; custom_ctor_invoked = true;}
+    ctor_invoke_test(int p1, double p2) {
+        value_1 = p1;
+        value_2 = p2;
+        custom_ctor_invoked = true;
+    }
 
     //static ctor_invoke_test create_object() { return ctor_invoke_test(false); }
 
-    bool default_ctor_invoked   = false;
-    bool cpy_ctor_invoked       = false;
-    bool custom_ctor_invoked    = false;
-    bool func_as_ctor_invoked   = false;
+    bool default_ctor_invoked = false;
+    bool cpy_ctor_invoked = false;
+    bool custom_ctor_invoked = false;
+    bool func_as_ctor_invoked = false;
     int value_1 = 0;
     double value_2 = 0;
     std::string _text;
 };
 
-struct ctor_invoke_arg_test
-{
-    ctor_invoke_arg_test() {}
-    ctor_invoke_arg_test(int) {}
-    ctor_invoke_arg_test(int, int) {}
-    ctor_invoke_arg_test(int, int, int) {}
-    ctor_invoke_arg_test(int, int, int, int) {}
-    ctor_invoke_arg_test(int, int, int, int, int) {}
-    ctor_invoke_arg_test(int, int, int, int, int, int) {}
-    ctor_invoke_arg_test(int, int, int, int, int, int, int) {}
+struct ctor_invoke_arg_test {
+    ctor_invoke_arg_test() {
+    }
+
+    ctor_invoke_arg_test(int) {
+    }
+
+    ctor_invoke_arg_test(int, int) {
+    }
+
+    ctor_invoke_arg_test(int, int, int) {
+    }
+
+    ctor_invoke_arg_test(int, int, int, int) {
+    }
+
+    ctor_invoke_arg_test(int, int, int, int, int) {
+    }
+
+    ctor_invoke_arg_test(int, int, int, int, int, int) {
+    }
+
+    ctor_invoke_arg_test(int, int, int, int, int, int, int) {
+    }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_class<^^ctor_invoke_test>();
     registration::do_class<^^ctor_invoke_arg_test>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke general", "[constructor]")
+TEST_CASE (
+"constructor - invoke general"
+,
+"[constructor]"
+)
 {
     type t = type::get<ctor_invoke_test>();
     REQUIRE(t.is_valid() == true);
@@ -162,7 +181,11 @@ TEST_CASE("constructor - invoke general", "[constructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke policy", "[constructor]")
+TEST_CASE (
+"constructor - invoke policy"
+,
+"[constructor]"
+)
 {
     auto range = type::get<ctor_invoke_test>().get_constructors();
     std::vector<constructor> ctor_list(range.cbegin(), range.cend());
@@ -203,7 +226,11 @@ TEST_CASE("constructor - invoke policy", "[constructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke variadic", "[constructor]")
+TEST_CASE (
+"constructor - invoke variadic"
+,
+"[constructor]"
+)
 {
     type t = type::get<ctor_invoke_test>();
 
@@ -227,7 +254,11 @@ TEST_CASE("constructor - invoke variadic", "[constructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke ctor valid", "[constructor]")
+TEST_CASE (
+"constructor - invoke ctor valid"
+,
+"[constructor]"
+)
 {
     auto range = type::get<ctor_invoke_arg_test>().get_constructors();
     std::vector<constructor> ctor_list(range.cbegin(), range.cend());
@@ -245,7 +276,11 @@ TEST_CASE("constructor - invoke ctor valid", "[constructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke func ctor valid", "[constructor]")
+TEST_CASE (
+"constructor - invoke func ctor valid"
+,
+"[constructor]"
+)
 {
     auto range = type::get<ctor_invoke_arg_test>().get_constructors();
     std::vector<constructor> ctor_list(range.cbegin(), range.cend());
@@ -263,7 +298,11 @@ TEST_CASE("constructor - invoke func ctor valid", "[constructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke ctor invalid", "[constructor]")
+TEST_CASE (
+"constructor - invoke ctor invalid"
+,
+"[constructor]"
+)
 {
     constructor ctor = type::get_by_name("ctor_invoke_arg_test").get_constructor();
 
@@ -272,7 +311,11 @@ TEST_CASE("constructor - invoke ctor invalid", "[constructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke ctor func invalid", "[constructor]")
+TEST_CASE (
+"constructor - invoke ctor func invalid"
+,
+"[constructor]"
+)
 {
     constructor ctor = type::get_by_name("ctor_func_invoke_arg_test").get_constructor();
 
@@ -281,7 +324,11 @@ TEST_CASE("constructor - invoke ctor func invalid", "[constructor]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - invoke negative", "[constructor]")
+TEST_CASE (
+"constructor - invoke negative"
+,
+"[constructor]"
+)
 {
     constructor ctor = type::get_by_name("").get_constructor();
 

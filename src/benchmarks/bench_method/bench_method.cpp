@@ -36,8 +36,7 @@ extern void bench_find_method();
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void bench_method()
-{
+void bench_method() {
     bench_find_method();
 }
 

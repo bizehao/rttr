@@ -31,35 +31,30 @@
 #include "rttr/detail/misc/misc_type_traits.h"
 #include <type_traits>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        using variant_basic_types = type_list<bool,
+            signed char, unsigned char, char, wchar_t,
+            short int, unsigned short int, int, unsigned int,
+            long int, unsigned long int, long long int,
+            unsigned long long int, float, double, void *>;
 
-using variant_basic_types = type_list<bool,
-                                      signed char, unsigned char, char, wchar_t,
-                                      short int, unsigned short int, int, unsigned int,
-                                      long int, unsigned long int, long long int,
-                                      unsigned long long int, float, double, void*>;
-
-/*!
+        /*!
  * This is the data storage for the \ref variant class.
  */
-template <size_t _Len, size_t _Align =alignof(std::max_align_t)>
-struct DataStorage
-{
-    alignas(_Align) std::byte storage[_Len];
-};
+        template<size_t _Len, size_t _Align = alignof(std::max_align_t)>
+        struct DataStorage {
+            alignas(_Align) std::byte storage[_Len];
+        };
 
-using variant_data = DataStorage<max_sizeof_list<variant_basic_types>::value>;
+        using variant_data = DataStorage<max_sizeof_list<variant_basic_types>::value>;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-struct RTTR_API void_variant_type {};
-
-} // end namespace detail
+        struct RTTR_API void_variant_type{};
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_VARIANT_DATA_H_

@@ -27,20 +27,20 @@
 
 project(unit_test_base LANGUAGES CXX)
 
-message(STATUS "Scanning "  ${PROJECT_NAME} " module.")
+message(STATUS "Scanning " ${PROJECT_NAME} " module.")
 message(STATUS "===========================")
 
 set(HPP_FILES "")
 set(SRC_FILES "")
 
 generateLibraryVersionVariables(${RTTR_VERSION_MAJOR} ${RTTR_VERSION_MINOR} ${RTTR_VERSION_PATCH}
-                                "RTTR Unit-Tests: unit_test_base" "Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>" "MIT License")
+        "RTTR Unit-Tests: unit_test_base" "Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>" "MIT License")
 
 loadFolder("files" HPP_FILES SRC_FILES)
 
 if (USE_PCH)
-  activate_precompiled_headers("pch.h" SRC_FILES)
-endif()
+    activate_precompiled_headers("pch.h" SRC_FILES)
+endif ()
 
 add_library(unit_test_base SHARED ${SRC_FILES} ${HPP_FILES})
 
@@ -48,9 +48,9 @@ target_compile_definitions(unit_test_base PRIVATE RTTR_DLL_EXPORTS)
 target_compile_definitions(unit_test_base PUBLIC RTTR_DLL)
 
 target_link_libraries(unit_test_base RTTR::Core)
-set_target_properties(unit_test_base PROPERTIES 
-                                     DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
-                                     FOLDER "Testing")
+set_target_properties(unit_test_base PROPERTIES
+        DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
+        FOLDER "Testing")
 
 message(STATUS "Scanning " ${PROJECT_NAME} " module finished!")
 message(STATUS "")

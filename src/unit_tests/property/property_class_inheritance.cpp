@@ -36,98 +36,105 @@
 using namespace rttr;
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////
 // test derived properties
 
-namespace ns_property
-{
-struct top
-{
-    virtual ~top() {}
-    top() : _p1(12){}
-    [[=rttr::class_op::rename("top")]]
-    int _p1;
-    RTTR_ENABLE()
-};
+namespace ns_property {
+    struct top {
+        virtual ~top() {
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        top() : _p1(12) {
+        }
 
-struct left : virtual top
-{
+        [[=rttr::class_op::rename("top")]]
+        int _p1;
 
-    left() : _p2(true){}
-    ~left() override = default;
-    [[=rttr::class_op::rename("left")]]
-    bool _p2;
+        RTTR_ENABLE()
+    };
 
-    RTTR_ENABLE(top)
-};
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    struct left : virtual top {
+        left() : _p2(true) {
+        }
 
-struct right : virtual top
-{
+        ~left() override = default;
 
-    right() : _p3(true){}
-    ~right() override = default;
-    [[=rttr::class_op::rename("right")]]
-    bool _p3;
+        [[=rttr::class_op::rename("left")]]
+        bool _p2;
 
-    RTTR_ENABLE(top)
-};
+        RTTR_ENABLE(top)
+    };
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-struct right_2
-{
-    virtual ~right_2() {}
+    struct right : virtual top {
+        right() : _p3(true) {
+        }
 
-    right_2() : _p4(true){}
-    [[=rttr::class_op::rename("right_2")]]
-    bool _p4;
-    RTTR_ENABLE()
-};
+        ~right() override = default;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        [[=rttr::class_op::rename("right")]]
+        bool _p3;
 
-struct bottom : left, right, right_2
-{
-    bottom() : _p5(23.0){}
-     ~bottom() override = default;
-    [[=rttr::class_op::rename("bottom")]]
-    double _p5;
+        RTTR_ENABLE(top)
+    };
 
-    RTTR_ENABLE(left, right, right_2)
-};
+    /////////////////////////////////////////////////////////////////////////////////////////
 
+    struct right_2 {
+        virtual ~right_2() {
+        }
+
+        right_2() : _p4(true) {
+        }
+
+        [[=rttr::class_op::rename("right_2")]]
+        bool _p4;
+
+        RTTR_ENABLE()
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    struct bottom : left, right, right_2 {
+        bottom() : _p5(23.0) {
+        }
+
+        ~bottom() override = default;
+
+        [[=rttr::class_op::rename("bottom")]]
+        double _p5;
+
+        RTTR_ENABLE(left, right, right_2)
+    };
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-struct base_prop_not_registered
-{
-    base_prop_not_registered() : value(100) {}
+struct base_prop_not_registered {
+    base_prop_not_registered() : value(100) {
+    }
+
     int value;
 };
 
-struct derived_registered_prop : base_prop_not_registered
-{
-
+struct derived_registered_prop : base_prop_not_registered {
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-struct base_class_with_props
-{
-    base_class_with_props() : value(100) {}
+struct base_class_with_props {
+    base_class_with_props() : value(100) {
+    }
+
     int value;
 
     RTTR_ENABLE()
 };
 
-struct derived_class_without_registered_props : base_class_with_props
-{
+struct derived_class_without_registered_props : base_class_with_props {
     RTTR_ENABLE()
 };
 
@@ -139,30 +146,33 @@ static double g_name;
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^ns_property::top>("ns_property::top");;
+RTTR_REGISTRATION {
+    registration::do_class < ^^ns_property::top > ("ns_property::top");;
 
-    registration::do_class<^^ns_property::left>("ns_property::left");
+    registration::do_class < ^^ns_property::left > ("ns_property::left");
 
-    registration::do_class<^^ns_property::right>("ns_property::right");
+    registration::do_class < ^^ns_property::right > ("ns_property::right");
 
-    registration::do_class<^^ns_property::right_2>("ns_property::right_2");
+    registration::do_class < ^^ns_property::right_2 > ("ns_property::right_2");
 
-    registration::do_class<^^ns_property::bottom>("ns_property::bottom");
+    registration::do_class < ^^ns_property::bottom > ("ns_property::bottom");
 
-    registration::do_class<^^base_prop_not_registered>("base_prop_not_registered");
-    registration::do_class<^^derived_registered_prop>("derived_registered_prop");
+    registration::do_class < ^^base_prop_not_registered > ("base_prop_not_registered");
+    registration::do_class < ^^derived_registered_prop > ("derived_registered_prop");
 
 
-    registration::do_class<^^base_class_with_props>("base_class_with_props");
+    registration::do_class < ^^base_class_with_props > ("base_class_with_props");
 
-    registration::do_class<^^derived_class_without_registered_props>("derived_class_without_registered_props");
+    registration::do_class < ^^derived_class_without_registered_props > ("derived_class_without_registered_props");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - get_properties()", "[property]")
+TEST_CASE (
+"property - get_properties()"
+,
+"[property]"
+)
 {
     type t = type::get<ns_property::bottom>();
     auto range = t.get_properties();
@@ -180,7 +190,11 @@ TEST_CASE("property - get_properties()", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class - inheritance - invoke", "[property]")
+TEST_CASE (
+"property - class - inheritance - invoke"
+,
+"[property]"
+)
 {
     type t = type::get<ns_property::bottom>();
 
@@ -209,7 +223,11 @@ TEST_CASE("property - class - inheritance - invoke", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - base class not registered", "[property]")
+TEST_CASE (
+"property - base class not registered"
+,
+"[property]"
+)
 {
     type t_prop = type::get<derived_registered_prop>();
     property prop = t_prop.get_property("value");
@@ -232,7 +250,11 @@ TEST_CASE("property - base class not registered", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - check inheritance of probs", "[property]")
+TEST_CASE (
+"property - check inheritance of probs"
+,
+"[property]"
+)
 {
     // base class has registered properties, the derived class not
     type t_prop = type::get<derived_class_without_registered_props>();

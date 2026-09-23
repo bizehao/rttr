@@ -28,7 +28,6 @@
 #include "rttr/detail/constructor/constructor_wrapper_base.h"
 
 
-
 static RTTR_CONSTEXPR const char* is_ref_list[] = {"", " &"};
 static RTTR_CONSTEXPR const char* is_const_list[] = {"", " const"};
 
@@ -77,12 +76,14 @@ void constructor_wrapper_base::create_signature_string() RTTR_NOEXCEPT
         return;
 
     auto param_info_list = get_parameter_infos();
-    m_signature = std::string{ get_instantiated_type().get_raw_type().get_name() } + "( ";
+    m_signature = std::string{get_instantiated_type().get_raw_type().get_name()} + "( ";
     auto ref_list = get_is_reference();
     auto const_list = get_is_const();
     for (const auto& param : param_info_list)
     {
-        m_signature += std::string{ param.get_type().get_name() } + std::string{ is_const_list[const_list[param.get_index()]] } + std::string{ is_ref_list[ref_list[param.get_index()]] };
+        m_signature += std::string{param.get_type().get_name()} + std::string{
+            is_const_list[const_list[param.get_index()]]} + std::string{
+            is_ref_list[ref_list[param.get_index()]]};
         if (param.get_index() < param_info_list.size() - 1)
             m_signature += ", ";
     }
@@ -173,14 +174,20 @@ variant constructor_wrapper_base::invoke(argument& arg1, argument& arg2, argumen
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant constructor_wrapper_base::invoke(argument& arg1, argument& arg2, argument& arg3, argument& arg4) const
+variant constructor_wrapper_base::invoke(argument& arg1,
+                                         argument& arg2,
+                                         argument& arg3,
+                                         argument& arg4) const
 {
     return variant();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant constructor_wrapper_base::invoke(argument& arg1, argument& arg2, argument& arg3, argument& arg4,
+variant constructor_wrapper_base::invoke(argument& arg1,
+                                         argument& arg2,
+                                         argument& arg3,
+                                         argument& arg4,
                                          argument& arg5) const
 {
     return variant();
@@ -188,8 +195,12 @@ variant constructor_wrapper_base::invoke(argument& arg1, argument& arg2, argumen
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant constructor_wrapper_base::invoke(argument& arg1, argument& arg2, argument& arg3, argument& arg4,
-                                         argument& arg5, argument& arg6) const
+variant constructor_wrapper_base::invoke(argument& arg1,
+                                         argument& arg2,
+                                         argument& arg3,
+                                         argument& arg4,
+                                         argument& arg5,
+                                         argument& arg6) const
 {
     return variant();
 }

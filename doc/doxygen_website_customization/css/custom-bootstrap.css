@@ -1,23 +1,23 @@
 /* flat style */
 .nav-pills > li > a {
-  border-radius: 0px;
+    border-radius: 0px;
 }
 
 .panel {
-  margin-bottom: 0;
-  border-radius: 0;
+    margin-bottom: 0;
+    border-radius: 0;
 }
 
 td > .btn-default {
-  font-weight: bold;
+    font-weight: bold;
 }
 
-.memname  td {
+.memname td {
     padding: 0 1px;
 }
 
 .panel-body > dl > dd {
-  margin-left: 40px;
+    margin-left: 40px;
 }
 
 html {
@@ -25,12 +25,12 @@ html {
 }
 
 code, kbd, pre, samp {
-    font-family: "SourceCodeProRegular", monospace,monospace;
+    font-family: "SourceCodeProRegular", monospace, monospace;
     font-size: 0.9rem;
 }
 
- .page-header{
-    margin-top:0px;
+.page-header {
+    margin-top: 0px;
 }
 
 .doxy-button {

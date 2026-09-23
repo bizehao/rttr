@@ -29,94 +29,79 @@
 
 #include "rttr/argument.h"
 
-namespace rttr
-{
-namespace detail
-{
-/////////////////////////////////////////////////////////////////////////////////////////
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-enumeration_wrapper_base::enumeration_wrapper_base() RTTR_NOEXCEPT
-:   m_declaring_type(get_invalid_type())
-{
-}
+        enumeration_wrapper_base::enumeration_wrapper_base() RTTR_NOEXCEPT
+            : m_declaring_type(get_invalid_type()) {
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-enumeration_wrapper_base::~enumeration_wrapper_base() RTTR_NOEXCEPT
-{
-}
+        enumeration_wrapper_base::~enumeration_wrapper_base() RTTR_NOEXCEPT {
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-void enumeration_wrapper_base::set_declaring_type(rttr::type declaring_type) RTTR_NOEXCEPT
-{
-    m_declaring_type = declaring_type;
-}
+        void enumeration_wrapper_base::set_declaring_type(rttr::type declaring_type) RTTR_NOEXCEPT {
+            m_declaring_type = declaring_type;
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-rttr::type enumeration_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT
-{
-    return m_declaring_type;
-}
+        rttr::type enumeration_wrapper_base::get_declaring_type() const RTTR_NOEXCEPT {
+            return m_declaring_type;
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-variant enumeration_wrapper_base::get_metadata(const std::string_view& key) const
-{
-    return {};
-}
+        variant enumeration_wrapper_base::get_metadata(const std::string_view &key) const {
+            return {};
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-bool enumeration_wrapper_base::is_valid() const RTTR_NOEXCEPT
-{
-    return false;
-}
+        bool enumeration_wrapper_base::is_valid() const RTTR_NOEXCEPT {
+            return false;
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-rttr::type enumeration_wrapper_base::get_underlying_type() const RTTR_NOEXCEPT
-{
-    return get_invalid_type();
-}
+        rttr::type enumeration_wrapper_base::get_underlying_type() const RTTR_NOEXCEPT {
+            return get_invalid_type();
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-rttr::type enumeration_wrapper_base::get_type() const RTTR_NOEXCEPT
-{
-    return get_invalid_type();
-}
+        rttr::type enumeration_wrapper_base::get_type() const RTTR_NOEXCEPT {
+            return get_invalid_type();
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-std::span<const std::string_view> enumeration_wrapper_base::get_names() const RTTR_NOEXCEPT
-{
-    return std::span<const std::string_view>();
-}
+        std::span<const std::string_view> enumeration_wrapper_base::get_names() const RTTR_NOEXCEPT {
+            return std::span<const std::string_view>();
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-std::span<const variant> enumeration_wrapper_base::get_values() const RTTR_NOEXCEPT
-{
-    return std::span<const variant>();
-}
+        std::span<const variant> enumeration_wrapper_base::get_values() const RTTR_NOEXCEPT {
+            return std::span<const variant>();
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string_view enumeration_wrapper_base::value_to_name(argument& value) const
-{
-    return std::string_view();
-}
+        std::string_view enumeration_wrapper_base::value_to_name(argument &value) const {
+            return std::string_view();
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-variant enumeration_wrapper_base::name_to_value(std::string_view name) const
-{
-    return variant();
-}
+        variant enumeration_wrapper_base::name_to_value(std::string_view name) const {
+            return variant();
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr

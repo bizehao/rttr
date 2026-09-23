@@ -34,24 +34,21 @@
 
 #include <memory>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        class variant_sequential_view_private;
 
-class variant_sequential_view_private;
+        template<typename T>
+        using can_create_sequential_view = std::integral_constant<bool, is_sequential_container<raw_type_t<
+            wrapper_address_return_type_t<T> > >::value>;
 
-template<typename T>
-using can_create_sequential_view = std::integral_constant<bool, is_sequential_container<raw_type_t<wrapper_address_return_type_t<T>>>::value>;
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        variant_sequential_view_private create_variant_sequential_view(T &&value);
 
-template<typename T>
-variant_sequential_view_private create_variant_sequential_view(T&& value);
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #include "rttr/detail/variant_sequential_view/variant_sequential_view_creator_impl.h"

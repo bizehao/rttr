@@ -31,19 +31,14 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/misc_type_traits.h"
 
-namespace rttr
-{
-namespace detail
-{
-
-enum class method_policy {
-    return_as_ptr,
-    discard_return,
-    default_invoke
-};
-
-} // end namespace detail;
-
+namespace rttr {
+    namespace detail {
+        enum class method_policy {
+            return_as_ptr,
+            discard_return,
+            default_invoke
+        };
+    } // end namespace detail;
 } // end namespace rttr
 
 #endif // RTTR_METH_POLICIES_H_

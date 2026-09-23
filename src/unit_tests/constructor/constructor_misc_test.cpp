@@ -30,54 +30,56 @@
 
 using namespace rttr;
 
-struct ctor_misc_test
-{
+struct ctor_misc_test {
     [[=class_op::ctor_policy(policy::ctor::op_as_raw_ptr)]]
-    ctor_misc_test(std::in_place_index_t<0>){}
+    ctor_misc_test (std::in_place_index_t<0>){}
 
     [[=class_op::ctor_policy(policy::ctor::op_as_std_shared_ptr)]]
-    ctor_misc_test(std::in_place_index_t<1>){}
+    ctor_misc_test (std::in_place_index_t<1>){}
 
     [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
-    ctor_misc_test(std::in_place_index_t<2>){}
+    ctor_misc_test (std::in_place_index_t<2>){}
 
-    ctor_misc_test(){}
-    ctor_misc_test(int value){}
+    ctor_misc_test() {
+    }
+
+    ctor_misc_test(int value) {
+    }
 };
 
-struct not_copyable_ctor
-{
+struct not_copyable_ctor {
     [[=class_op::ctor_policy(policy::ctor::op_as_raw_ptr)]]
-    not_copyable_ctor(std::in_place_index_t<0>){}
+    not_copyable_ctor (std::in_place_index_t<0>){}
 
     [[=class_op::ctor_policy(policy::ctor::op_as_std_shared_ptr)]]
-    not_copyable_ctor(std::in_place_index_t<1>){}
+    not_copyable_ctor (std::in_place_index_t<1>){}
 
     // [[=class_op::ctor_policy(policy::ctor::op_as_object)]]
     // not_copyable_ctor(std::in_place_index_t<2>){}
 
-    private:
-        not_copyable_ctor(const not_copyable_ctor&);
+private:
+    not_copyable_ctor(const not_copyable_ctor &);
 };
 
-enum class E_MetaData
-{
-    SCRIPTABLE  = 0,
-    TOOL_TIP    = 1,
+enum class E_MetaData {
+    SCRIPTABLE = 0,
+    TOOL_TIP = 1,
     DESCRIPTION = 2
 };
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_class<^^ctor_misc_test>();
     registration::do_class<^^not_copyable_ctor>();
     registration::do_enumeration<^^E_MetaData>();
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - default ctor binding type", "[constructor]")
+TEST_CASE (
+"constructor - default ctor binding type"
+,
+"[constructor]"
+)
 {
     variant var = type::get<not_copyable_ctor>().create({std::in_place_index<1>});
 
@@ -86,7 +88,11 @@ TEST_CASE("constructor - default ctor binding type", "[constructor]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - get_instantiated_type", "[constructor]")
+TEST_CASE (
+"constructor - get_instantiated_type"
+,
+"[constructor]"
+)
 {
     registration::do_class<^^ctor_misc_test>();
 
@@ -105,8 +111,11 @@ TEST_CASE("constructor - get_instantiated_type", "[constructor]")
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-TEST_CASE("constructor - get_signature", "[constructor]")
+TEST_CASE (
+"constructor - get_signature"
+,
+"[constructor]"
+)
 {
     registration::do_class<^^ctor_misc_test>();
     auto range = type::get<ctor_misc_test>().get_constructors();
@@ -122,7 +131,11 @@ TEST_CASE("constructor - get_signature", "[constructor]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - get_parameter_infos", "[constructor]")
+TEST_CASE (
+"constructor - get_parameter_infos"
+,
+"[constructor]"
+)
 {
     registration::do_class<^^ctor_misc_test>();
 
@@ -139,7 +152,11 @@ TEST_CASE("constructor - get_parameter_infos", "[constructor]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("ctor - get_declaring_type", "[constructor]")
+TEST_CASE (
+"ctor - get_declaring_type"
+,
+"[constructor]"
+)
 {
     registration::do_class<^^ctor_misc_test>();
 
@@ -155,7 +172,11 @@ TEST_CASE("ctor - get_declaring_type", "[constructor]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor - compare - type", "[constructor]")
+TEST_CASE (
+"constructor - compare - type"
+,
+"[constructor]"
+)
 {
 
     registration::do_class<^^ctor_misc_test>();

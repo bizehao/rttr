@@ -36,14 +36,12 @@ using namespace rttr;
 
 #include <catch/catch.hpp>
 
-enum ui_metainfo
-{
-    tool_tip    = 0,
+enum ui_metainfo {
+    tool_tip = 0,
     description = 1
 };
 
-enum class weekday : int
-{
+enum class weekday : int {
     monday,
     tuesday,
     wednesday,
@@ -53,15 +51,12 @@ enum class weekday : int
     sunday,
 };
 
-enum class some_enum
-{
+enum class some_enum {
     nothing_fancy
 };
 
-struct enum_test_class
-{
-    enum class color : int
-    {
+struct enum_test_class {
+    enum class color : int {
         red,
         green,
         blue
@@ -70,8 +65,7 @@ struct enum_test_class
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_enumeration<^^ui_metainfo>();
     registration::do_enumeration<^^weekday>();
     registration::do_enumeration<^^some_enum>();
@@ -104,7 +98,11 @@ RTTR_REGISTRATION
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - is_valid()", "[enumeration]")
+TEST_CASE (
+"enumeration - is_valid()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("weekday").get_enumeration();
     CHECK(e.is_valid() == true);
@@ -118,7 +116,11 @@ TEST_CASE("enumeration - is_valid()", "[enumeration]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - get_name()", "[enumeration]")
+TEST_CASE (
+"enumeration - get_name()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("weekday").get_enumeration();
     CHECK(e.get_name() == "weekday");
@@ -130,7 +132,11 @@ TEST_CASE("enumeration - get_name()", "[enumeration]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - get_underlying_type()", "[enumeration]")
+TEST_CASE (
+"enumeration - get_underlying_type()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("weekday").get_enumeration();
     CHECK(e.get_underlying_type() == type::get<int>());
@@ -142,7 +148,11 @@ TEST_CASE("enumeration - get_underlying_type()", "[enumeration]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - get_type()", "[enumeration]")
+TEST_CASE (
+"enumeration - get_type()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("weekday").get_enumeration();
     CHECK(e.get_type() == type::get<weekday>());
@@ -154,7 +164,11 @@ TEST_CASE("enumeration - get_type()", "[enumeration]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - get_declaring_type()", "[enumeration]")
+TEST_CASE (
+"enumeration - get_declaring_type()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("weekday").get_enumeration();
     CHECK(e.get_declaring_type().is_valid() == false);
@@ -170,7 +184,11 @@ TEST_CASE("enumeration - get_declaring_type()", "[enumeration]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - get_names()", "[enumeration]")
+TEST_CASE (
+"enumeration - get_names()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("weekday").get_enumeration();
     std::vector<std::string> name_list(e.get_names().begin(), e.get_names().end());
@@ -190,7 +208,11 @@ TEST_CASE("enumeration - get_names()", "[enumeration]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - get_values()", "[enumeration]")
+TEST_CASE (
+"enumeration - get_values()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("weekday").get_enumeration();
     std::vector<rttr::variant> value_list(e.get_values().begin(), e.get_values().end());
@@ -216,7 +238,11 @@ TEST_CASE("enumeration - get_values()", "[enumeration]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - compare operators()", "[enumeration]")
+TEST_CASE (
+"enumeration - compare operators()"
+,
+"[enumeration]"
+)
 {
     enumeration e1 = type::get_by_name("weekday").get_enumeration();
     enumeration e1_a = type::get_by_name("weekday").get_enumeration();

@@ -39,7 +39,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("constructor", "[variant]")
+TEST_CASE (
+"constructor"
+,
+"[variant]"
+)
 {
     SECTION("empty type")
     {
@@ -84,17 +88,17 @@ TEST_CASE("constructor", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-struct simple_type
-{
-    simple_type() {}
-    simple_type(const simple_type& other)
-    :   moved(other.moved),
-        moved_from(other.moved_from)
-    {
+struct simple_type {
+    simple_type() {
     }
-    simple_type(simple_type&& other)
-    :   moved(true)
-    {
+
+    simple_type(const simple_type &other)
+        : moved(other.moved),
+          moved_from(other.moved_from) {
+    }
+
+    simple_type(simple_type &&other)
+        : moved(true) {
         other.moved_from = true;
     }
 
@@ -102,12 +106,15 @@ struct simple_type
     bool moved_from = false;
 };
 
-struct big_type : simple_type
-{
-    big_type() {}
-    big_type(const big_type& other) : simple_type(other) {}
+struct big_type : simple_type {
+    big_type() {
+    }
 
-    big_type(big_type&& other) : simple_type(std::forward<simple_type>(other)) {}
+    big_type(const big_type &other) : simple_type(other) {
+    }
+
+    big_type(big_type &&other) : simple_type(std::forward<simple_type>(other)) {
+    }
 
     double value;
     double value_2;
@@ -115,7 +122,11 @@ struct big_type : simple_type
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("move ctor", "[variant]")
+TEST_CASE (
+"move ctor"
+,
+"[variant]"
+)
 {
     SECTION("small type")
     {
@@ -144,31 +155,32 @@ TEST_CASE("move ctor", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-bool is_stored_internally(const void* obj, const rttr::variant& var)
-{
-  std::uintptr_t a_addr = reinterpret_cast<std::uintptr_t>(&var);
-  std::uintptr_t a_end = a_addr + sizeof(var);
-  std::uintptr_t obj_addr = reinterpret_cast<std::uintptr_t>(obj);
-  return (a_addr <= obj_addr) && (obj_addr < a_end);
+bool is_stored_internally(const void *obj, const rttr::variant &var) {
+    std::uintptr_t a_addr = reinterpret_cast<std::uintptr_t>(&var);
+    std::uintptr_t a_end = a_addr + sizeof(var);
+    std::uintptr_t obj_addr = reinterpret_cast<std::uintptr_t>(obj);
+    return (a_addr <= obj_addr) && (obj_addr < a_end);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-struct big_custom_type
-{
+struct big_custom_type {
     // two doubles, cannot be stored internally inside variant
     std::aligned_storage<sizeof(double[3]), 8>::type m_data;
 };
 
 // this type should be stored internally inside variant class.
-struct small_custom_type
-{
+struct small_custom_type {
     float value;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("check storage type", "[variant]")
+TEST_CASE (
+"check storage type"
+,
+"[variant]"
+)
 {
     {
         variant var = big_custom_type{};
@@ -216,24 +228,34 @@ TEST_CASE("check storage type", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-struct self_aware
-{
-    self_aware() { }
-    ~self_aware()
-    {
+struct self_aware {
+    self_aware() {
+    }
+
+    ~self_aware() {
         CHECK(self == this);
     }
-    self_aware(const self_aware&) { }
-    self_aware& operator=(const self_aware&) { return *this; }
-    self_aware(self_aware&&) RTTR_NOEXCEPT_OR_NOTHROW { }
-    self_aware& operator=(self_aware&&) RTTR_NOEXCEPT_OR_NOTHROW { return *this; }
 
-    const self_aware* self = this;
+    self_aware(const self_aware &) {
+    }
+
+    self_aware &operator=(const self_aware &) { return *this; }
+
+    self_aware(self_aware &&) RTTR_NOEXCEPT_OR_NOTHROW {
+    }
+
+    self_aware &operator=(self_aware &&) RTTR_NOEXCEPT_OR_NOTHROW { return *this; }
+
+    const self_aware *self = this;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("copy non trivial type", "[variant]")
+TEST_CASE (
+"copy non trivial type"
+,
+"[variant]"
+)
 {
     static_assert(std::is_nothrow_move_constructible<self_aware>::value, "");
 
@@ -272,7 +294,11 @@ TEST_CASE("copy non trivial type", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - copy nullptr type", "[variant]")
+TEST_CASE (
+"variant - copy nullptr type"
+,
+"[variant]"
+)
 {
 
     SECTION("nullptr type")

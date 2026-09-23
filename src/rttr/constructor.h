@@ -37,19 +37,16 @@
 #include <string_view>
 #include <span>
 
-namespace rttr
-{
+namespace rttr {
+    class variant;
+    class type;
+    class argument;
 
-class variant;
-class type;
-class argument;
+    namespace detail {
+        class constructor_wrapper_base;
+    }
 
-namespace detail
-{
-class constructor_wrapper_base;
-}
-
-/*!
+    /*!
  * The \ref constructor class provides several meta information about a constructor and can be invoked.
  *
  * A instance of a constructor class can only be obtained from the \ref type class.
@@ -84,8 +81,7 @@ class constructor_wrapper_base;
  *
  * \see method, property, enumeration, destructor and type
  */
-class RTTR_API constructor
-{
+    class RTTR_API constructor {
     public:
         /*!
          * \brief Returns true if this constructor is valid, otherwise false.
@@ -125,7 +121,7 @@ class RTTR_API constructor
          */
         std::string_view get_signature() const RTTR_NOEXCEPT;
 
-        variant get_metadata(const std::string_view& key) const;
+        variant get_metadata(const std::string_view &key) const;
 
         /*!
          * \brief Returns an ordered range of \ref parameter_info objects, which matches the signature of the constructor.
@@ -254,27 +250,27 @@ class RTTR_API constructor
          *
          * \return True if both constructors are equal, otherwise false.
          */
-        bool operator==(const constructor& other) const RTTR_NOEXCEPT;
+        bool operator==(const constructor &other) const RTTR_NOEXCEPT;
 
         /*!
          * Returns true if this constructor is the not the same like the \p other.
          *
          * \return True if both constructors are different, otherwise false.
          */
-        bool operator!=(const constructor& other) const RTTR_NOEXCEPT;
+        bool operator!=(const constructor &other) const RTTR_NOEXCEPT;
 
     private:
-        constructor(const detail::constructor_wrapper_base* wrapper) RTTR_NOEXCEPT;
+        constructor(const detail::constructor_wrapper_base *wrapper) RTTR_NOEXCEPT;
 
         template<typename T>
-        friend T detail::create_item(const detail::class_item_to_wrapper_t<T>* wrapper);
+        friend T detail::create_item(const detail::class_item_to_wrapper_t<T> *wrapper);
+
         template<typename T>
         friend T detail::create_invalid_item();
 
     private:
-        const detail::constructor_wrapper_base* m_wrapper;
-};
-
+        const detail::constructor_wrapper_base *m_wrapper;
+    };
 } // end namespace rttr
 
 #endif // RTTR_CONSTRUCTOR_H_

@@ -32,337 +32,298 @@
 #include "rttr/instance.h"
 
 
-
-namespace rttr
-{
-
-/////////////////////////////////////////////////////////////////////////////////
+namespace rttr {
+    /////////////////////////////////////////////////////////////////////////////////
 
     variant_associative_view::variant_associative_view() = default;
 
-/////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::variant_associative_view(const variant_associative_view& other)
-:   m_view(other.m_view)
-{
+    variant_associative_view::variant_associative_view(const variant_associative_view &other)
+        : m_view(other.m_view) {
+    }
 
-}
+    /////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////
+    variant_associative_view::~variant_associative_view() RTTR_NOEXCEPT = default;
 
-variant_associative_view::~variant_associative_view() RTTR_NOEXCEPT = default;
+    /////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////
+    void variant_associative_view::swap(variant_associative_view & other) RTTR_NOEXCEPT {
+        std::swap(m_view, other.m_view);
+    }
 
-void variant_associative_view::swap(variant_associative_view& other) RTTR_NOEXCEPT
-{
-    std::swap(m_view, other.m_view);
-}
+    /////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////
+    variant_associative_view &variant_associative_view::operator=(const variant_associative_view &other) RTTR_NOEXCEPT {
+        variant_associative_view(other).swap(*this);
+        return *this;
+    }
 
-variant_associative_view& variant_associative_view::operator=(const variant_associative_view& other) RTTR_NOEXCEPT
-{
-    variant_associative_view(other).swap(*this);
-    return *this;
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    bool variant_associative_view::is_valid() const RTTR_NOEXCEPT {
+        return m_view.get_type().is_valid();
+    }
 
-bool variant_associative_view::is_valid() const RTTR_NOEXCEPT
-{
-    return m_view.get_type().is_valid();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant_associative_view::operator bool() const RTTR_NOEXCEPT {
+        return m_view.get_type().is_valid();
+    }
 
-variant_associative_view::operator bool() const RTTR_NOEXCEPT
-{
-    return m_view.get_type().is_valid();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    type variant_associative_view::get_type() const RTTR_NOEXCEPT {
+        return m_view.get_type();
+    }
 
-type variant_associative_view::get_type() const RTTR_NOEXCEPT
-{
-    return m_view.get_type();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    type variant_associative_view::get_key_type() const RTTR_NOEXCEPT {
+        return m_view.get_key_type();
+    }
 
-type variant_associative_view::get_key_type() const RTTR_NOEXCEPT
-{
-    return m_view.get_key_type();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    type variant_associative_view::get_value_type() const RTTR_NOEXCEPT {
+        return m_view.get_value_type();
+    }
 
-type variant_associative_view::get_value_type() const RTTR_NOEXCEPT
-{
-    return m_view.get_value_type();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    bool variant_associative_view::is_key_only_type() const RTTR_NOEXCEPT {
+        return (m_view.get_value_type().is_valid() == false && is_valid());
+    }
 
-bool variant_associative_view::is_key_only_type() const RTTR_NOEXCEPT
-{
-    return (m_view.get_value_type().is_valid() == false && is_valid());
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    bool variant_associative_view::is_empty() const RTTR_NOEXCEPT {
+        return m_view.is_empty();
+    }
 
-bool variant_associative_view::is_empty() const RTTR_NOEXCEPT
-{
-    return m_view.is_empty();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    std::size_t variant_associative_view::get_size() const RTTR_NOEXCEPT {
+        return m_view.get_size();
+    }
 
-std::size_t variant_associative_view::get_size() const RTTR_NOEXCEPT
-{
-    return m_view.get_size();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    std::pair<variant_associative_view::const_iterator, bool> variant_associative_view::insert(argument key) {
+        const_iterator itr(&m_view);
 
-std::pair<variant_associative_view::const_iterator, bool> variant_associative_view::insert(argument key)
-{
-    const_iterator itr(&m_view);
+        auto success = m_view.insert(key, itr.m_itr);
 
-    auto success = m_view.insert(key, itr.m_itr);
+        return {itr, success};
+    }
 
-    return {itr, success};
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    std::pair<variant_associative_view::const_iterator, bool> variant_associative_view::insert(
+        argument key, argument value) {
+        const_iterator itr(&m_view);
 
-std::pair<variant_associative_view::const_iterator, bool> variant_associative_view::insert(argument key, argument value)
-{
-    const_iterator itr(&m_view);
+        auto success = m_view.insert(key, value, itr.m_itr);
 
-    auto success = m_view.insert(key, value, itr.m_itr);
+        return {itr, success};
+    }
 
-    return {itr, success};
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant_associative_view::const_iterator variant_associative_view::find(argument arg) {
+        const_iterator itr(&m_view);
 
-variant_associative_view::const_iterator variant_associative_view::find(argument arg)
-{
-    const_iterator itr(&m_view);
+        m_view.find(itr.m_itr, arg);
 
-    m_view.find(itr.m_itr, arg);
+        return itr;
+    }
 
-    return itr;
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    std::size_t variant_associative_view::erase(argument key) {
+        return m_view.erase(key);
+    }
 
-std::size_t variant_associative_view::erase(argument key)
-{
-    return m_view.erase(key);
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    void variant_associative_view::clear() {
+        m_view.clear();
+    }
 
-void variant_associative_view::clear()
-{
-    m_view.clear();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    std::pair<variant_associative_view::const_iterator, variant_associative_view::const_iterator>
+    variant_associative_view::equal_range(argument key) {
+        const_iterator itr_begin(&m_view);
+        const_iterator itr_end(&m_view);
 
-std::pair<variant_associative_view::const_iterator, variant_associative_view::const_iterator>
-variant_associative_view::equal_range(argument key)
-{
-    const_iterator itr_begin(&m_view);
-    const_iterator itr_end(&m_view);
-
-    m_view.equal_range(key, itr_begin.m_itr, itr_end.m_itr);
+        m_view.equal_range(key, itr_begin.m_itr, itr_end.m_itr);
 
 
-    return {itr_begin, itr_end};
-}
+        return {itr_begin, itr_end};
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator variant_associative_view::begin() const
-{
-    const_iterator itr(&m_view);
+    variant_associative_view::const_iterator variant_associative_view::begin() const {
+        const_iterator itr(&m_view);
 
-    m_view.begin(itr.m_itr);
+        m_view.begin(itr.m_itr);
 
-    return itr;
-}
+        return itr;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator variant_associative_view::end() const
-{
-    const_iterator itr(&m_view);
+    variant_associative_view::const_iterator variant_associative_view::end() const {
+        const_iterator itr(&m_view);
 
-    m_view.end(itr.m_itr);
+        m_view.end(itr.m_itr);
 
-    return itr;
-}
+        return itr;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator::const_iterator(const detail::variant_associative_view_private* view) RTTR_NOEXCEPT
-:   m_view(view)
-{
-}
+    variant_associative_view::const_iterator::const_iterator(const detail::variant_associative_view_private *view)
+    RTTR_NOEXCEPT
+        : m_view(view) {
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator::~const_iterator()
-{
-    m_view->destroy(m_itr);
-}
+    variant_associative_view::const_iterator::~const_iterator() {
+        m_view->destroy(m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator::const_iterator(const const_iterator &other)
-:   m_view(other.m_view),
-    m_itr(other.m_itr)
-{
-    m_view->copy(m_itr, other.m_itr);
-}
+    variant_associative_view::const_iterator::const_iterator(const const_iterator &other)
+        : m_view(other.m_view),
+          m_itr(other.m_itr) {
+        m_view->copy(m_itr, other.m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator& variant_associative_view::const_iterator::operator=(const_iterator other)
-{
-    swap(other);
-    return *this;
-}
+    variant_associative_view::const_iterator &variant_associative_view::const_iterator::operator
+    =(const_iterator other) {
+        swap(other);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void variant_associative_view::const_iterator::swap(const_iterator& other)
-{
-    std::swap(m_itr, other.m_itr);
-    std::swap(m_view, other.m_view);
-}
+    void variant_associative_view::const_iterator::swap(const_iterator &other) {
+        std::swap(m_itr, other.m_itr);
+        std::swap(m_view, other.m_view);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-const std::pair<variant, variant> variant_associative_view::const_iterator::operator*() const
-{
-    return m_view->get_key_value(m_itr);
-}
+    const std::pair<variant, variant> variant_associative_view::const_iterator::operator*() const {
+        return m_view->get_key_value(m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-const variant variant_associative_view::const_iterator::get_key() const
-{
-    return m_view->get_key(m_itr);
-}
+    const variant variant_associative_view::const_iterator::get_key() const {
+        return m_view->get_key(m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-const variant variant_associative_view::const_iterator::get_value() const
-{
-    return m_view->get_value(m_itr);
-}
+    const variant variant_associative_view::const_iterator::get_value() const {
+        return m_view->get_value(m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator& variant_associative_view::const_iterator::operator++()
-{
-    m_view->advance(m_itr, 1);
-    return *this;
-}
+    variant_associative_view::const_iterator &variant_associative_view::const_iterator::operator++() {
+        m_view->advance(m_itr, 1);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator variant_associative_view::const_iterator::operator++(int)
-{
-    const_iterator result(m_view);
+    variant_associative_view::const_iterator variant_associative_view::const_iterator::operator++(int) {
+        const_iterator result(m_view);
 
-    m_view->copy(result.m_itr, m_itr);
-    m_view->advance(m_itr, 1);
+        m_view->copy(result.m_itr, m_itr);
+        m_view->advance(m_itr, 1);
 
-    return result;
-}
+        return result;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator& variant_associative_view::const_iterator::operator--()
-{
-    m_view->advance(m_itr, -1);
-    return *this;
-}
+    variant_associative_view::const_iterator &variant_associative_view::const_iterator::operator--() {
+        m_view->advance(m_itr, -1);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator variant_associative_view::const_iterator::operator--(int)
-{
-    const_iterator result(m_view);
+    variant_associative_view::const_iterator variant_associative_view::const_iterator::operator--(int) {
+        const_iterator result(m_view);
 
-    m_view->copy(result.m_itr, m_itr);
-    m_view->advance(m_itr, -1);
+        m_view->copy(result.m_itr, m_itr);
+        m_view->advance(m_itr, -1);
 
-    return result;
-}
+        return result;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator& variant_associative_view::const_iterator::operator+=(int i)
-{
-    m_view->advance(m_itr, i);
-    return *this;
-}
+    variant_associative_view::const_iterator &variant_associative_view::const_iterator::operator+=(int i) {
+        m_view->advance(m_itr, i);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator& variant_associative_view::const_iterator::operator-=(int i)
-{
-    m_view->advance(m_itr, -i);
-    return *this;
-}
+    variant_associative_view::const_iterator &variant_associative_view::const_iterator::operator-=(int i) {
+        m_view->advance(m_itr, -i);
+        return *this;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator variant_associative_view::const_iterator::operator+(int i) const
-{
-    const_iterator result(m_view);
+    variant_associative_view::const_iterator variant_associative_view::const_iterator::operator+(int i) const {
+        const_iterator result(m_view);
 
-    m_view->copy(result.m_itr, m_itr);
-    result.m_view->advance(result.m_itr, i);
+        m_view->copy(result.m_itr, m_itr);
+        result.m_view->advance(result.m_itr, i);
 
-    return result;
-}
+        return result;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant_associative_view::const_iterator variant_associative_view::const_iterator::operator-(int i) const
-{
-    const_iterator result(m_view);
+    variant_associative_view::const_iterator variant_associative_view::const_iterator::operator-(int i) const {
+        const_iterator result(m_view);
 
-    m_view->copy(result.m_itr, m_itr);
-    result.m_view->advance(result.m_itr, -i);
+        m_view->copy(result.m_itr, m_itr);
+        result.m_view->advance(result.m_itr, -i);
 
-    return result;
-}
+        return result;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool variant_associative_view::const_iterator::operator==(const const_iterator& other) const
-{
-    return m_view->equal(m_itr, other.m_itr);
-}
+    bool variant_associative_view::const_iterator::operator==(const const_iterator &other) const {
+        return m_view->equal(m_itr, other.m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool variant_associative_view::const_iterator::operator!=(const const_iterator& other) const
-{
-    return !m_view->equal(m_itr, other.m_itr);
-}
+    bool variant_associative_view::const_iterator::operator!=(const const_iterator &other) const {
+        return !m_view->equal(m_itr, other.m_itr);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////////////////////////////
 } // end namespace rttr
 

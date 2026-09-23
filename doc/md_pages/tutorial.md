@@ -1,6 +1,6 @@
-Tutorial   {#tutorial_page}
+Tutorial {#tutorial_page}
 ========
-This tutorial will guide you through the basic usage of RTTR. 
+This tutorial will guide you through the basic usage of RTTR.
 It is separated in two parts, using the @ref rttr::type "type" class and register types.
 
 For the inpatient:

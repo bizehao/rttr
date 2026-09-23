@@ -32,27 +32,21 @@
 
 #include <memory>
 
-namespace rttr
-{
+namespace rttr {
+    class type;
 
-class type;
-
-namespace detail
-{
-
-/*!
+    namespace detail {
+        /*!
  * This class bundles all the data necessary to forward
  * data to ctors, dtors, properties or methods.
  */
-struct data_address_container
-{
-    rttr::type    m_type;
-    rttr::type    m_wrapped_type;
-    void*   m_data_address;
-    void*   m_data_address_wrapped_type;
-};
-
-} // end namespace detail
+        struct data_address_container {
+            rttr::type m_type;
+            rttr::type m_wrapped_type;
+            void *m_data_address;
+            void *m_data_address_wrapped_type;
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_DATA_ADDRESS_CONTAINER_H_

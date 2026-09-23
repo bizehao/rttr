@@ -37,39 +37,36 @@
 #include <type_traits>
 #include <cstring>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+RTTR_API bool compare_types_equal(const void *lhs, const void *rhs, const type &t, bool &ok);
 
-RTTR_API bool compare_types_equal(const void* lhs, const void* rhs, const type& t, bool& ok);
-
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
 
-template<typename T>
-using has_equal_operator_impl = std::integral_constant<bool, has_equal_operator<T>::value && !std::is_array_v<T> &&
-                                                             !is_template_instance<T>>;
+        template<typename T>
+        using has_equal_operator_impl = std::integral_constant<bool,
+            has_equal_operator<T>::value && !std::is_array_v<T> &&
+            !is_template_instance<T>>;
 
-template<typename T>
-using is_equal_comparable = std::integral_constant<bool, has_equal_operator_impl<T>::value ||
-                                                         is_comparable_type<T>::value>;
+        template<typename T>
+        using is_equal_comparable = std::integral_constant<bool, has_equal_operator_impl<T>::value ||
+                                                                 is_comparable_type<T>::value>;
 
 
+        /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE bool compare_equal(const T& lhs, const T& rhs, bool& ok);
+        template<typename T>
+RTTR_INLINE bool compare_equal(const T &lhs, const T &rhs, bool &ok);
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #include "rttr/detail/comparison/compare_equal_impl.h"

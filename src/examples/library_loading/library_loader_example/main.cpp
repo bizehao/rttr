@@ -37,26 +37,24 @@
 using namespace rttr;
 
 #ifdef NDEBUG
-    static std::string_view library_name("plugin_example");
+static std::string_view library_name("plugin_example");
 #else
-    static std::string_view library_name("plugin_example_d");
+static std::string_view library_name("plugin_example_d");
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
     library lib(library_name); // load the actual plugin
 
-    if (!lib.load())
-    {
+    if (!lib.load()) {
         std::cerr << lib.get_error_string() << std::endl;
         return -1;
     }
 
-    {   // scope is important, because we have to free all data before we unload the library
+    {
+        // scope is important, because we have to free all data before we unload the library
 
         // print all classes contained in the library
-        for (auto t : lib.get_types())
-        {
+        for (auto t: lib.get_types()) {
             if (t.is_class() && !t.is_wrapper())
                 std::cout << t.get_name() << std::endl;
         }
@@ -65,8 +63,7 @@ int main(int argc, char** argv)
         auto t = type::get_by_name("MyPluginClass");
 
         // iterate over all methods of the class
-        for (auto meth : t.get_methods())
-        {
+        for (auto meth: t.get_methods()) {
             std::cout << meth.get_signature() << std::endl;
         }
 
@@ -76,15 +73,13 @@ int main(int argc, char** argv)
         std::cout << t.get_property_value("value", var).to_int() << std::endl; // prints "12"
     } // all data has to be remove before unload the library, otherwise we get UB
 
-    if (!lib.unload())
-    {
+    if (!lib.unload()) {
         std::cerr << lib.get_error_string() << std::endl;
         return -1;
     }
 
     auto t = type::get_by_name("MyPlugin");
-    if (t.is_valid())
-    {
+    if (t.is_valid()) {
         std::cerr << "the type: " << t.get_name() << " should not be valid!";
     }
 

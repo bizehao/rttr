@@ -32,53 +32,56 @@
 #include "rttr/variant.h"
 #include "rttr/detail/type/type_register.h"
 
-namespace rttr
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-namespace detail
-{
+        struct type_converter_base {
+            type_converter_base(const rttr::type &target_type) : m_target_type(target_type) {
+            }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+            virtual variant to_variant(void *data, bool &ok) const = 0;
 
-struct type_converter_base
-{
-    type_converter_base(const rttr::type& target_type) : m_target_type(target_type) {}
-    virtual variant to_variant(void* data, bool& ok) const = 0;
-    virtual rttr::type get_source_type() const = 0;
-    virtual ~type_converter_base() {};
+            virtual rttr::type get_source_type() const = 0;
 
-    rttr::type m_target_type;
-};
+            virtual ~type_converter_base() {
+            };
 
-/////////////////////////////////////////////////////////////////////////////////////////
+            rttr::type m_target_type;
+        };
 
-template<typename TargetType>
-struct type_converter_target : type_converter_base
-{
-    type_converter_target(const rttr::type& target_type) : type_converter_base(target_type) {}
-    variant to_variant(void* data, bool& ok) const override { return convert(data, ok); }
-    virtual TargetType convert(void* data, bool& ok) const = 0;
-};
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename TargetType>
+        struct type_converter_target : type_converter_base {
+            type_converter_target(const rttr::type &target_type) : type_converter_base(target_type) {
+            }
 
-template<typename TargetType, typename SourceType, typename F>
-struct type_converter : type_converter_target<TargetType>
-{
-    type_converter(const F& acc) : type_converter_target<TargetType>(rttr::type::get<TargetType>()), m_acc(acc) { }
-    virtual rttr::type get_source_type() const override { return rttr::type::get<SourceType>(); }
-    TargetType convert(void* data, bool& ok) const override
-    {
-        SourceType* obj = static_cast<SourceType*>(data);
-        return m_acc(*obj, ok);
-    }
+            variant to_variant(void *data, bool &ok) const override { return convert(data, ok); }
 
-    F m_acc;
-};
+            virtual TargetType convert(void *data, bool &ok) const = 0;
+        };
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-} // end namespace detail
+        template<typename TargetType, typename SourceType, typename F>
+        struct type_converter : type_converter_target<TargetType> {
+            type_converter(const F &acc) : type_converter_target<TargetType>(rttr::type::get<TargetType>()),
+                                           m_acc(acc) {
+            }
+
+            virtual rttr::type get_source_type() const override { return rttr::type::get<SourceType>(); }
+
+            TargetType convert(void *data, bool &ok) const override {
+                SourceType *obj = static_cast<SourceType *>(data);
+                return m_acc(*obj, ok);
+            }
+
+            F m_acc;
+        };
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_TYPE_CONVERTER_H_

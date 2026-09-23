@@ -30,13 +30,15 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 
-namespace rttr
-{
-//////////////////////////////////////////////////////////////////////////////////////
+namespace rttr {
+    //////////////////////////////////////////////////////////////////////////////////////
 
-namespace detail { struct invalid_wrapper_type { }; }
+    namespace detail {
+        struct invalid_wrapper_type {
+        };
+    }
 
-/*!
+    /*!
  * The \ref wrapper_mapper class is a class template to access different wrapper types via one common interface.
  *
  * A wrapper type is a class which encapsulate an instance of another type.
@@ -129,36 +131,31 @@ namespace detail { struct invalid_wrapper_type { }; }
  * The best place for this code, is below the declaration of your wrapper type.
  * When this is not possible, include your specialization code before registering your types to RTTR.
  */
-template<typename T>
-struct wrapper_mapper
-{
+    template<typename T>
+    struct wrapper_mapper {
 #ifndef DOXYGEN
-    using wrapped_type  = detail::invalid_wrapper_type;
-    using type          = T;
+        using wrapped_type = detail::invalid_wrapper_type;
+        using type = T;
 #else
-    using wrapped_type  = typename wrapper_type::encapsulated_type;
-    using type          = T;
+        using wrapped_type = typename wrapper_type::encapsulated_type;
+        using type = T;
 
-    inline static wrapped_type get(const type& obj)
-    {
-        return obj.get();
-    }
+        inline static wrapped_type get(const type &obj) {
+            return obj.get();
+        }
 
-    inline static type create(const wrapped_type& value)
-    {
-        return type(value);
-    }
+        inline static type create(const wrapped_type &value) {
+            return type(value);
+        }
 
-    template<typename U>
-    inline static T<U> convert(const type& source, bool& ok)
-    {
-        return type(value);
-    }
+        template<typename U>
+        inline static T<U> convert(const type &source, bool &ok) {
+            return type(value);
+        }
 #endif
-};
+    };
 
-//////////////////////////////////////////////////////////////////////////////////////
-
+    //////////////////////////////////////////////////////////////////////////////////////
 } // end namespace rttr
 
 #include "rttr/detail/impl/wrapper_mapper_impl.h"

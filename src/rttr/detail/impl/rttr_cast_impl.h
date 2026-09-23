@@ -33,31 +33,32 @@
 
 #include <type_traits>
 
-namespace rttr
-{
+namespace rttr {
+    template<typename Target_Type, typename Source_Type>
+RTTR_INLINE Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT {
+        static_assert(detail::pointer_count<Target_Type>::value == 1, "Target type must be a pointer");
+        static_assert(detail::pointer_count<Source_Type>::value == 1, "Source argument must be a pointer");
+        static_assert(rttr::detail::has_get_type_func<std::remove_pointer_t<Source_Type> >::value,
+                      "Class has not type defined - please use the macro RTTR_ENABLE().");
 
-template<typename Target_Type, typename Source_Type>
-RTTR_INLINE Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT
-{
-    static_assert(detail::pointer_count<Target_Type>::value == 1, "Target type must be a pointer");
-    static_assert(detail::pointer_count<Source_Type>::value == 1, "Source argument must be a pointer");
-    static_assert(rttr::detail::has_get_type_func<std::remove_pointer_t<Source_Type>>::value, "Class has not type defined - please use the macro RTTR_ENABLE().");
+        using Return_Type = std::remove_pointer_t<Target_Type>;
+        using Arg_Type = std::remove_pointer_t<Source_Type>;
 
-    using Return_Type = std::remove_pointer_t<Target_Type>;
-    using Arg_Type = std::remove_pointer_t<Source_Type>;
+        static_assert((std::is_volatile_v<Arg_Type> && std::is_volatile_v<Return_Type>) ||
+                      (!std::is_volatile_v<Arg_Type> && std::is_volatile_v<Return_Type>) ||
+                      (!std::is_volatile_v<Arg_Type> && !std::is_volatile_v<Return_Type>),
+                      "Return type must have volatile qualifier");
 
-    static_assert((std::is_volatile_v<Arg_Type> && std::is_volatile_v<Return_Type>) ||
-                   (!std::is_volatile_v<Arg_Type> && std::is_volatile_v<Return_Type>) ||
-                   (!std::is_volatile_v<Arg_Type> && !std::is_volatile_v<Return_Type>),  "Return type must have volatile qualifier");
+        static_assert((std::is_const_v<Arg_Type> && std::is_const_v<Return_Type>) ||
+                      (!std::is_const_v<Arg_Type> && std::is_const_v<Return_Type>) ||
+                      (!std::is_const_v<Arg_Type> && !std::is_const_v<Return_Type>),
+                      "Return type must have const qualifier");
 
-    static_assert( (std::is_const_v<Arg_Type> && std::is_const_v<Return_Type>) ||
-                   (!std::is_const_v<Arg_Type> && std::is_const_v<Return_Type>) ||
-                   (!std::is_const_v<Arg_Type> && !std::is_const_v<Return_Type>), "Return type must have const qualifier");
-
-    using source_type_no_cv = std::remove_cv_t<std::remove_pointer_t<Source_Type>>;
-    return static_cast<Target_Type>(type::apply_offset(const_cast<source_type_no_cv*>(object)->get_ptr(), const_cast<source_type_no_cv*>(object)->get_type(), type::get<Target_Type>()));
-}
-
+        using source_type_no_cv = std::remove_cv_t<std::remove_pointer_t<Source_Type> >;
+        return static_cast<Target_Type>(type::apply_offset(const_cast<source_type_no_cv *>(object)->get_ptr(),
+                                                           const_cast<source_type_no_cv *>(object)->get_type(),
+                                                           type::get<Target_Type>()));
+    }
 }
 
 #endif // RTTR_CAST_IMPL_H_

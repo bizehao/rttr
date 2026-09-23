@@ -33,60 +33,47 @@
 #include "rttr/variant.h"
 #include "rttr/detail/metadata/metadata_handler.h"
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        template<std::meta::info Dector>
+        class destructor_wrapper : public destructor_wrapper_base, public metadata_handler {
+            using Class_Type = [:std::meta::parent_of(Dector):];
 
-template <std::meta::info Dector>
-class destructor_wrapper : public destructor_wrapper_base, public metadata_handler
-{
-    using Class_Type = [:std::meta::parent_of(Dector):];
+        public:
+            destructor_wrapper(std::vector<metadata> meta_datas) : metadata_handler{std::move(meta_datas)} {
+            }
 
-public:
-    destructor_wrapper(std::vector<metadata> meta_datas) : metadata_handler{std::move(meta_datas)}
-    {
-    }
+            type get_declaring_type() const RTTR_NOEXCEPT {
+                return type::get<Class_Type>();
+            }
 
-    type get_declaring_type() const RTTR_NOEXCEPT
-    {
-        return type::get<Class_Type>();
-    }
+            type get_destructed_type() const RTTR_NOEXCEPT {
+                return type::get<Class_Type *>();
+            }
 
-    type get_destructed_type() const RTTR_NOEXCEPT
-    {
-        return type::get<Class_Type*>();
-    }
+            variant get_metadata(const std::string_view &key) const override {
+                return metadata_handler::get_metadata(key);
+            }
 
-    variant get_metadata(const std::string_view& key) const override
-    {
-        return metadata_handler::get_metadata(key);
-    }
+            bool is_valid() const RTTR_NOEXCEPT {
+                return true;
+            }
 
-    bool is_valid() const RTTR_NOEXCEPT
-    {
-        return true;
-    }
-
-    bool invoke(variant& obj) const RTTR_NOEXCEPT
-    {
-        if (obj.is_type<Class_Type*>())
-        {
-            // although an exception can occur when calling 'delete',
-            // nobody should throw an exception in destructor, so we don't catch the exception
-            // and just terminate the application
-            delete obj.get_value<Class_Type*>();
-            obj = variant();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-};
-
-} // end namespace detail
+            bool invoke(variant &obj) const RTTR_NOEXCEPT {
+                if (obj.is_type<Class_Type *>()) {
+                    // although an exception can occur when calling 'delete',
+                    // nobody should throw an exception in destructor, so we don't catch the exception
+                    // and just terminate the application
+                    delete obj.get_value<Class_Type *>();
+                    obj = variant();
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_DESTRUCTOR_WRAPPER_H_

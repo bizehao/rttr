@@ -30,23 +30,21 @@
 #include <rttr/registration>
 
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     using namespace rttr;
 
     registration::class_<ns_foo::method_class>("ns_foo::method_class")
-        .constructor<>()
-        .method("method_0",             &ns_foo::method_class::method_0)
-        .method("method_v",             &ns_foo::method_class::method_v)
-        .method("void_method",          &ns_foo::method_class::void_method)
-        .method("int_method",           &ns_foo::method_class::int_method)
-        .method("string_method",        &ns_foo::method_class::string_method)
-        .method("void_method_arg_1",    &ns_foo::method_class::void_method_arg_1)
-        .method("void_method_arg_2",    &ns_foo::method_class::void_method_arg_2)
-        .method("void_method_arg_3",    &ns_foo::method_class::void_method_arg_3)
-        .method("void_method_arg_8",    &ns_foo::method_class::void_method_arg_8)
-        .method("method_ptr_arg",       &ns_foo::method_class::method_ptr_arg)
-        ;
+            .constructor<>()
+            .method("method_0", &ns_foo::method_class::method_0)
+            .method("method_v", &ns_foo::method_class::method_v)
+            .method("void_method", &ns_foo::method_class::void_method)
+            .method("int_method", &ns_foo::method_class::int_method)
+            .method("string_method", &ns_foo::method_class::string_method)
+            .method("void_method_arg_1", &ns_foo::method_class::void_method_arg_1)
+            .method("void_method_arg_2", &ns_foo::method_class::void_method_arg_2)
+            .method("void_method_arg_3", &ns_foo::method_class::void_method_arg_3)
+            .method("void_method_arg_8", &ns_foo::method_class::void_method_arg_8)
+            .method("method_ptr_arg", &ns_foo::method_class::method_ptr_arg);
 
 
     CLASS_REGISTER(method_class_d_1, 1)
@@ -82,108 +80,91 @@ RTTR_REGISTRATION
 
     CLASS_REGISTER(class_multiple_final, 18)
     CLASS_REGISTER(class_multiple_final_D, 19)
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-namespace ns_foo
-{
+namespace ns_foo {
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    method_class::method_class() {
+    }
 
-method_class::method_class()
-{
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-}
+    method_class::~method_class() {
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-method_class::~method_class()
-{
-}
+    void method_class::method_0() {
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void method_class::method_0()
-{
-}
+    void method_class::method_v() {
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void method_class::method_v()
-{
-}
+    void method_class::void_method() {
+        method_void_called = true;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void method_class::void_method()
-{
-    method_void_called = true;
-}
+    int method_class::int_method() {
+        return 42;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-int method_class::int_method()
-{
-    return 42;
-}
+    std::string method_class::string_method() {
+        return std::string("some text");
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string method_class::string_method()
-{
-    return std::string("some text");
-}
+    void method_class::void_method_arg_1(int arg_1) {
+        value_1 = arg_1;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void method_class::void_method_arg_1(int arg_1)
-{
-    value_1 = arg_1;
-}
+    void method_class::void_method_arg_2(int arg_1, int arg_2) {
+        value_1 = arg_1;
+        value_2 = arg_2;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void method_class::void_method_arg_2(int arg_1, int arg_2)
-{
-    value_1 = arg_1;
-    value_2 = arg_2;
-}
+    void method_class::void_method_arg_3(int arg_1, int arg_2, int arg_3) {
+        value_1 = arg_1;
+        value_2 = arg_2;
+        value_3 = arg_3;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void method_class::void_method_arg_3(int arg_1, int arg_2, int arg_3)
-{
-    value_1 = arg_1;
-    value_2 = arg_2;
-    value_3 = arg_3;
-}
+    void method_class::void_method_arg_8(int arg_1, int arg_2, int arg_3,
+                                         int arg_4, int arg_5, int arg_6,
+                                         int arg_7, int arg_8) {
+        value_1 = arg_1;
+        value_2 = arg_2;
+        value_3 = arg_3;
+        value_4 = arg_4;
+        value_5 = arg_5;
+        value_6 = arg_6;
+        value_7 = arg_7;
+        value_8 = arg_8;
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-void method_class::void_method_arg_8(int arg_1, int arg_2, int arg_3,
-                                     int arg_4, int arg_5, int arg_6,
-                                     int arg_7, int arg_8)
-{
-    value_1 = arg_1;
-    value_2 = arg_2;
-    value_3 = arg_3;
-    value_4 = arg_4;
-    value_5 = arg_5;
-    value_6 = arg_6;
-    value_7 = arg_7;
-    value_8 = arg_8;
-}
+    void method_class::method_ptr_arg(int *ptr) {
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void method_class::method_ptr_arg(int* ptr)
-{
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////////////////////////////
 }

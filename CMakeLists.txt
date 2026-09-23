@@ -31,9 +31,9 @@
 # the build configuration options are initialized.                                 #
 ####################################################################################
 
-cmake_minimum_required (VERSION 4.2)
+cmake_minimum_required(VERSION 4.2)
 
-project ("rttr" LANGUAGES CXX)
+project("rttr" LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
@@ -41,9 +41,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 #set(CMAKE_CXX_STANDARD 11)
 
 if (CMAKE_BUILD_TYPE STREQUAL "")
-  # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
-  # differentiation between debug and release builds.
-  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
+    # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
+    # differentiation between debug and release builds.
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif ()
 
 # our little cmake helper functions
@@ -72,17 +72,17 @@ add_compile_definitions(_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 # to get it working, we need the feature to enable different source properties
 # for different targets
 if (USE_PCH)
-  if (BUILD_STATIC OR BUILD_WITH_STATIC_RUNTIME_LIBS)
-    set(USE_PCH FALSE)
-  endif()
-endif()
+    if (BUILD_STATIC OR BUILD_WITH_STATIC_RUNTIME_LIBS)
+        set(USE_PCH FALSE)
+    endif ()
+endif ()
 
-if(NOT BUILD_RTTR_DYNAMIC)
+if (NOT BUILD_RTTR_DYNAMIC)
     message(WARNING "Disabling the dynamic/shared version of RTTR will also disable Benchmarks, Examples, and Unit Tests.")
     set(BUILD_BENCHMARKS FALSE)
     set(BUILD_EXAMPLES FALSE)
     #set(BUILD_UNIT_TESTS FALSE)
-endif()
+endif ()
 
 set(BUILD_EXAMPLES TRUE)
 
@@ -91,11 +91,11 @@ include(3rd_party_libs)
 
 if (BUILD_PACKAGE)
     include(installer)
-endif()
+endif ()
 
 # here we add our source code
 add_subdirectory(src)
 # and the documentation
 if (BUILD_DOCUMENTATION)
     add_subdirectory(doc)
-endif()
+endif ()

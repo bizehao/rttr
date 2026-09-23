@@ -31,169 +31,144 @@
 #include <map>
 #include <mutex>
 
-namespace rttr
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-namespace detail
-{
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-/*!
+        /*!
  * A simple manager class, to hold all created library_private pointer objects. A private singleton.
  * After application exit it will unload all libs without any reference.
  */
-class library_manager
-{
-    public:
-        static std::shared_ptr<library_private> create_or_find_library(std::string_view file_name, std::string_view version)
-        {
-            auto& manager = get_instance();
-            std::lock_guard<std::mutex> lock(manager.m_library_mutex);
+        class library_manager {
+        public:
+            static std::shared_ptr<library_private> create_or_find_library(
+                std::string_view file_name, std::string_view version) {
+                auto &manager = get_instance();
+                std::lock_guard<std::mutex> lock(manager.m_library_mutex);
 
-            auto file_as_string = std::string{ file_name };
-            auto itr = manager.m_library_map.find(file_as_string);
-            if (itr != manager.m_library_map.end())
-                return itr->second;
+                auto file_as_string = std::string{file_name};
+                auto itr = manager.m_library_map.find(file_as_string);
+                if (itr != manager.m_library_map.end())
+                    return itr->second;
 
-            auto lib = std::make_shared<library_private>(file_name, version);
+                auto lib = std::make_shared<library_private>(file_name, version);
 
-            manager.m_library_map.emplace(std::move(file_as_string), lib);
+                manager.m_library_map.emplace(std::move(file_as_string), lib);
 
-            return lib;
-        }
+                return lib;
+            }
 
-        ~library_manager()
-        {
-            clean_all_libs();
-        }
+            ~library_manager() {
+                clean_all_libs();
+            }
 
-        static void remove_item(const std::shared_ptr<library_private>& item)
-        {
-            auto& manager = get_instance();
-            std::lock_guard<std::mutex> lock(manager.m_library_mutex);
+            static void remove_item(const std::shared_ptr<library_private> &item) {
+                auto &manager = get_instance();
+                std::lock_guard<std::mutex> lock(manager.m_library_mutex);
 
-            auto itr = manager.m_library_map.find(std::string{ item->get_file_name() }); // because we use string_view to find the item
-            if (itr != manager.m_library_map.end())
-                manager.m_library_map.erase(itr);
-        }
+                auto itr = manager.m_library_map.find(std::string{item->get_file_name()});
+                // because we use string_view to find the item
+                if (itr != manager.m_library_map.end())
+                    manager.m_library_map.erase(itr);
+            }
 
-    private:
-        library_manager() = default;
+        private:
+            library_manager() = default;
 
-        static library_manager& get_instance()
-        {
-            static library_manager obj;
-            return obj;
-        }
+            static library_manager &get_instance() {
+                static library_manager obj;
+                return obj;
+            }
 
-        void clean_all_libs()
-        {
-            for (auto& item : m_library_map)
-            {
-                // only the manager holds library pointer, thus we can now unload
-                if (item.second.use_count() == 1)
-                {
-                    item.second->set_load_count(1); // this will implicit force an unload of the library
-                    item.second->unload();
+            void clean_all_libs() {
+                for (auto &item: m_library_map) {
+                    // only the manager holds library pointer, thus we can now unload
+                    if (item.second.use_count() == 1) {
+                        item.second->set_load_count(1); // this will implicit force an unload of the library
+                        item.second->unload();
+                    }
                 }
             }
+
+            // use std::less in order to use string_view for finding the item
+            std::map<std::string, std::shared_ptr<library_private> > m_library_map;
+            std::mutex m_library_mutex;
+        };
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    library::library(std::string_view file_name, std::string_view version)
+        : m_pimpl(detail::library_manager::create_or_find_library(file_name, version)),
+          m_is_loaded(false) {
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    library::~library() {
+        // the library_manager holds an instance too, so the use_count is always >= 2
+        // when 2 are left, it means there exist only one "library" instance
+        if (m_pimpl.use_count() == 2 && m_pimpl->get_load_count() == 0)
+            detail::library_manager::remove_item(m_pimpl);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    bool library::load() {
+        if (m_is_loaded)
+            return m_pimpl->is_loaded();
+
+        m_is_loaded = true;
+        return m_pimpl->load();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    bool library::unload() {
+        if (m_is_loaded) {
+            m_is_loaded = false;
+            return m_pimpl->unload();
         }
+        else {
+            return false;
+        }
+    }
 
-        // use std::less in order to use string_view for finding the item
-        std::map<std::string, std::shared_ptr<library_private>> m_library_map;
-        std::mutex m_library_mutex;
-};
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-library::library(std::string_view file_name, std::string_view version)
-:   m_pimpl(detail::library_manager::create_or_find_library(file_name, version)),
-    m_is_loaded(false)
-{
-
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-library::~library()
-{
-    // the library_manager holds an instance too, so the use_count is always >= 2
-    // when 2 are left, it means there exist only one "library" instance
-    if (m_pimpl.use_count() == 2 && m_pimpl->get_load_count() == 0)
-        detail::library_manager::remove_item(m_pimpl);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool library::load()
-{
-    if (m_is_loaded)
+    bool library::is_loaded() const RTTR_NOEXCEPT {
         return m_pimpl->is_loaded();
-
-    m_is_loaded = true;
-    return m_pimpl->load();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool library::unload()
-{
-    if (m_is_loaded)
-    {
-        m_is_loaded = false;
-        return m_pimpl->unload();
     }
-    else
-    {
-        return false;
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    std::string_view library::get_file_name() const RTTR_NOEXCEPT {
+        return m_pimpl->get_qualified_filename().empty() ? m_pimpl->get_file_name() : m_pimpl->get_qualified_filename();
     }
-}
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool library::is_loaded() const RTTR_NOEXCEPT
-{
-    return m_pimpl->is_loaded();
-}
+    std::string_view library::get_error_string() const RTTR_NOEXCEPT {
+        return m_pimpl->get_error_string();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string_view library::get_file_name() const RTTR_NOEXCEPT
-{
-    return m_pimpl->get_qualified_filename().empty() ? m_pimpl->get_file_name() :
-                                                       m_pimpl->get_qualified_filename();
-}
+    std::span<const type> library::get_types() const RTTR_NOEXCEPT {
+        return m_pimpl->get_types();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string_view library::get_error_string() const RTTR_NOEXCEPT
-{
-    return m_pimpl->get_error_string();
-}
+    std::span<const property> library::get_global_properties() const RTTR_NOEXCEPT {
+        return m_pimpl->get_global_properties();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::span<const type> library::get_types() const RTTR_NOEXCEPT
-{
-    return m_pimpl->get_types();
-}
+    std::span<const method> library::get_global_methods() const RTTR_NOEXCEPT {
+        return m_pimpl->get_global_methods();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-std::span<const property> library::get_global_properties() const RTTR_NOEXCEPT
-{
-    return m_pimpl->get_global_properties();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-std::span<const method> library::get_global_methods() const RTTR_NOEXCEPT
-{
-    return m_pimpl->get_global_methods();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////////////////////////////
 } // end namespace rttr

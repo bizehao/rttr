@@ -32,8 +32,7 @@
 
 using namespace rttr;
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
     chaiscript::ChaiScript chai;
     chaiscript_visitor chai_vi(chai);
 
@@ -51,17 +50,14 @@ int main(int argc, char** argv)
                             print("bullets: ${obj.bullets}")
                             print("hp: ${obj.get_hp()}")
                             )";
-    try
-    {
+    try {
         chai.eval(script);
     }
-    catch(const chaiscript::exception::bad_boxed_cast& e)
-    {
+    catch (const chaiscript::exception::bad_boxed_cast &e) {
         auto f = e.what();
         std::cerr << f;
     }
-    catch (const chaiscript::exception::eval_error &e)
-    {
+    catch (const chaiscript::exception::eval_error &e) {
         auto f = e.reason;
         std::cerr << f;
     }

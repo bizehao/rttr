@@ -34,133 +34,109 @@
 #include "rttr/enumeration.h"
 
 
+namespace rttr {
+    namespace detail {
+        template<>
+        property create_item(const property_wrapper_base *wrapper) {
+            return property(wrapper);
+        }
 
-namespace rttr
-{
+        template<>
+        property create_invalid_item() {
+            static const detail::property_wrapper_base invalid_wrapper(std::string_view{}, detail::get_invalid_type());
+            return property(&invalid_wrapper);
+        }
+    } // end namespace detail;
 
-namespace detail
-{
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-template<>
-property create_item(const property_wrapper_base* wrapper)
-{
-    return property(wrapper);
-}
+    property::property(const detail::property_wrapper_base *wrapper) RTTR_NOEXCEPT
+        : m_wrapper(wrapper) {
+    }
 
-template<>
-property create_invalid_item()
-{
-    static const detail::property_wrapper_base invalid_wrapper(std::string_view{}, detail::get_invalid_type());
-    return property(&invalid_wrapper);
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-} // end namespace detail;
+    bool property::is_valid() const RTTR_NOEXCEPT {
+        return m_wrapper->is_valid();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-property::property(const detail::property_wrapper_base* wrapper) RTTR_NOEXCEPT
-:   m_wrapper(wrapper)
-{
-}
+    property::operator bool() const RTTR_NOEXCEPT {
+        return m_wrapper->is_valid();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool property::is_valid() const RTTR_NOEXCEPT
-{
-    return m_wrapper->is_valid();
-}
+    bool property::is_readonly() const RTTR_NOEXCEPT {
+        return m_wrapper->is_readonly();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-property::operator bool() const RTTR_NOEXCEPT
-{
-    return m_wrapper->is_valid();
-}
+    bool property::is_static() const RTTR_NOEXCEPT {
+        return m_wrapper->is_static();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool property::is_readonly() const RTTR_NOEXCEPT
-{
-    return m_wrapper->is_readonly();
-}
+    bool property::is_enumeration() const RTTR_NOEXCEPT {
+        return m_wrapper->get_type().is_enumeration();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool property::is_static() const RTTR_NOEXCEPT
-{
-    return m_wrapper->is_static();
-}
+    enumeration property::get_enumeration() const RTTR_NOEXCEPT {
+        return m_wrapper->get_type().get_enumeration();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool property::is_enumeration() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_type().is_enumeration();
-}
+    std::string_view property::get_name() const RTTR_NOEXCEPT {
+        return m_wrapper->get_name();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-enumeration property::get_enumeration() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_type().get_enumeration();
-}
+    type property::get_type() const RTTR_NOEXCEPT {
+        return m_wrapper->get_type();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string_view property::get_name() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_name();
-}
+    variant property::get_metadata(const std::string_view &key) const {
+        return m_wrapper->get_metadata(key);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-type property::get_type() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_type();
-}
+    type property::get_declaring_type() const RTTR_NOEXCEPT {
+        return m_wrapper->get_declaring_type();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant property::get_metadata(const std::string_view& key) const
-{
-    return m_wrapper->get_metadata(key);
-}
+    bool property::set_value(instance object, argument arg) const {
+        return m_wrapper->set_value(object, arg);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-type property::get_declaring_type() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_declaring_type();
-}
+    variant property::get_value(instance object) const {
+        return m_wrapper->get_value(object);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-bool property::set_value(instance object, argument arg) const
-{
-    return m_wrapper->set_value(object, arg);
-}
+    bool property::operator==(const property &other) const RTTR_NOEXCEPT {
+        return (m_wrapper == other.m_wrapper);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant property::get_value(instance object) const
-{
-    return m_wrapper->get_value(object);
-}
+    bool property::operator!=(const property &other) const RTTR_NOEXCEPT {
+        return (m_wrapper != other.m_wrapper);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool property::operator==(const property& other) const RTTR_NOEXCEPT
-{
-    return (m_wrapper == other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool property::operator!=(const property& other) const RTTR_NOEXCEPT
-{
-    return (m_wrapper != other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////////////////////////////
 } // end namespace rttr

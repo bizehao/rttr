@@ -39,19 +39,19 @@ if (BUILD_BENCHMARKS)
         # there is a the moment a problem with finding multiple versions of boost,
         # i.e. the static AND the static runtime version; that is not possible atm.
         # Because of that, the benchmarks cannot be build with the static runtime lib option enabled
-        set(Boost_USE_STATIC_LIBS       ON)
-        set(Boost_USE_STATIC_RUNTIME    OFF)
-        set(BOOST_ALL_DYN_LINK          OFF)
+        set(Boost_USE_STATIC_LIBS ON)
+        set(Boost_USE_STATIC_RUNTIME OFF)
+        set(BOOST_ALL_DYN_LINK OFF)
 
         find_package(Boost COMPONENTS chrono system)
-    else()
+    else ()
         find_package(Boost)
-    endif()
-endif()
+    endif ()
+endif ()
 
 if (BUILD_BENCHMARKS OR BUILD_EXAMPLES)
     find_package(Threads REQUIRED)
-endif()
+endif ()
 
 set(RAPID_JSON_DIR ${RTTR_3RD_PARTY_DIR}/rapidjson-1.1.0)
 set(NONIUS_DIR ${RTTR_3RD_PARTY_DIR}/nonius-1.1.2)

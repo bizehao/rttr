@@ -31,54 +31,51 @@
 
 using namespace rttr;
 
-struct method_order_test_base
-{
+struct method_order_test_base {
     method_order_test_base() = default ;
+
     virtual ~method_order_test_base() = default ;
 
-    std::string whoami() { return "I am a base method" ; }
-    virtual std::string vwhoami() { return "I am a virtual base method" ; }
+    std::string whoami() { return "I am a base method"; }
+    virtual std::string vwhoami() { return "I am a virtual base method"; }
 
     RTTR_ENABLE()
-
 };
 
-struct method_order_test_derived : method_order_test_base
-{
+struct method_order_test_derived : method_order_test_base {
     method_order_test_derived() = default ;
+
     ~method_order_test_derived() override = default ;
 
-    std::string whoami() { return "I am a non-virtual derived method with same name" ; }
-    std::string vwhoami() override { return "I am a virtual derived method with same name" ; }
+    std::string whoami() { return "I am a non-virtual derived method with same name"; }
+    std::string vwhoami() override { return "I am a virtual derived method with same name"; }
 
     RTTR_ENABLE(method_order_test_base)
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^method_order_test_base>("method_order_test_base");
-    registration::do_class<^^method_order_test_derived>("method_order_test_derived");
+RTTR_REGISTRATION {
+    registration::do_class < ^^method_order_test_base > ("method_order_test_base");
+    registration::do_class < ^^method_order_test_derived > ("method_order_test_derived");
 }
 
 // approach 1 looks up the "method instance"
 // without considering argument type
 // then invokes the function
 std::string rttr_invoke_approach1(
-        const rttr::instance& vinst,
-        const std::string_view& meth_name) {
-
-    const auto& inst_t = vinst.get_type();
+    const rttr::instance &vinst,
+    const std::string_view &meth_name) {
+    const auto &inst_t = vinst.get_type();
 
     // find method
-    const auto& meth = inst_t.get_method(meth_name);
+    const auto &meth = inst_t.get_method(meth_name);
     REQUIRE(meth.is_valid() == true);
 
     // invoke via method
-    const auto& iam_var = meth.invoke(vinst);
+    const auto &iam_var = meth.invoke(vinst);
     REQUIRE(iam_var.is_valid() == true);
-    REQUIRE(iam_var.is_type<std::string>() == true) ;
+    REQUIRE(iam_var.is_type<std::string>() == true);
 
     return iam_var.get_value<std::string>();
 }
@@ -86,15 +83,14 @@ std::string rttr_invoke_approach1(
 // approach 2 invokes the method via rttr::type
 // different rttr code - range based for loop
 std::string rttr_invoke_approach2(
-        const rttr::instance& vinst,
-        const std::string_view& meth_name) {
-
-    const auto& inst_t = vinst.get_type();
+    const rttr::instance &vinst,
+    const std::string_view &meth_name) {
+    const auto &inst_t = vinst.get_type();
 
     // invoke via type
-    const auto& iam_var = inst_t.invoke(meth_name, vinst, {});
+    const auto &iam_var = inst_t.invoke(meth_name, vinst, {});
     REQUIRE(iam_var.is_valid() == true);
-    REQUIRE(iam_var.is_type<std::string>() == true) ;
+    REQUIRE(iam_var.is_type<std::string>() == true);
 
     return iam_var.get_value<std::string>();
 }
@@ -125,42 +121,74 @@ void check_virt_meth_order2() {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - approach1_order_nonvirt_methods_base()", "[method]")
+TEST_CASE (
+"method - approach1_order_nonvirt_methods_base()"
+,
+"[method]"
+)
 {
     check_nonvirt_meth_order1<method_order_test_base>();
 }
 
-TEST_CASE("method - approach1_order_nonvirt_methods_derived()", "[method]")
+TEST_CASE (
+"method - approach1_order_nonvirt_methods_derived()"
+,
+"[method]"
+)
 {
     check_nonvirt_meth_order1<method_order_test_derived>();
 }
 
-TEST_CASE("method - approach1_order_virt_methods_base()", "[method]")
+TEST_CASE (
+"method - approach1_order_virt_methods_base()"
+,
+"[method]"
+)
 {
     check_virt_meth_order1<method_order_test_base>();
 }
 
-TEST_CASE("method - approach1_order_nvirt_methods_derived()", "[method]")
+TEST_CASE (
+"method - approach1_order_nvirt_methods_derived()"
+,
+"[method]"
+)
 {
     check_virt_meth_order1<method_order_test_derived>();
 }
 
-TEST_CASE("method - approach2_order_nonvirt_methods_base()", "[method]")
+TEST_CASE (
+"method - approach2_order_nonvirt_methods_base()"
+,
+"[method]"
+)
 {
     check_nonvirt_meth_order2<method_order_test_base>();
 }
 
-TEST_CASE("method - approach2_order_nonvirt_methods_derived()", "[method]")
+TEST_CASE (
+"method - approach2_order_nonvirt_methods_derived()"
+,
+"[method]"
+)
 {
     check_nonvirt_meth_order2<method_order_test_derived>();
 }
 
-TEST_CASE("method - approach2_order_virt_methods_base()", "[method]")
+TEST_CASE (
+"method - approach2_order_virt_methods_base()"
+,
+"[method]"
+)
 {
     check_virt_meth_order2<method_order_test_base>();
 }
 
-TEST_CASE("method - approach2_order_nvirt_methods_derived()", "[method]")
+TEST_CASE (
+"method - approach2_order_nvirt_methods_derived()"
+,
+"[method]"
+)
 {
     check_virt_meth_order2<method_order_test_derived>();
 }

@@ -31,20 +31,18 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/class_item_mapper.h"
 
-namespace rttr
-{
+namespace rttr {
+    class variant;
+    class type;
 
-class variant;
-class type;
+    namespace detail {
+        class destructor_wrapper_base;
 
-namespace detail
-{
-class destructor_wrapper_base;
-template<>
+        template<>
 RTTR_API destructor create_invalid_item();
-}
+    }
 
-/*!
+    /*!
  * The \ref destructor class provides a destructor for registered types.
  *
  * A instance of a destructor class can only be obtained from the \ref type class.
@@ -69,8 +67,7 @@ RTTR_API destructor create_invalid_item();
  *
  * \see method, property, enumeration, constructor and type
  */
-class RTTR_API destructor
-{
+    class RTTR_API destructor {
     public:
         /*!
          * \brief Returns true whether this destructor object is valid; otherwise false.
@@ -102,7 +99,7 @@ class RTTR_API destructor
          */
         type get_destructed_type() const RTTR_NOEXCEPT;
 
-        variant get_metadata(const std::string_view& key) const;
+        variant get_metadata(const std::string_view &key) const;
 
         /*!
          * \brief Destroys the contained object in the variant \p obj.
@@ -112,34 +109,34 @@ class RTTR_API destructor
          *
          * \return True if the destructor of the object could be invoked, otherwise false.
          */
-        bool invoke(variant& obj) const RTTR_NOEXCEPT;
+        bool invoke(variant &obj) const RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns true if this destructor is the same like the \p other.
          *
          * \return True if both destructors are equal, otherwise false.
          */
-        bool operator==(const destructor& other) const RTTR_NOEXCEPT;
+        bool operator==(const destructor &other) const RTTR_NOEXCEPT;
 
         /*!
          * Returns true if this destructor is the not the same like the \p other.
          *
          * \return True if both destructors are different, otherwise false.
          */
-        bool operator!=(const destructor& other) const RTTR_NOEXCEPT;
+        bool operator!=(const destructor &other) const RTTR_NOEXCEPT;
 
     private:
-        destructor(const detail::destructor_wrapper_base* wrapper) RTTR_NOEXCEPT;
+        destructor(const detail::destructor_wrapper_base *wrapper) RTTR_NOEXCEPT;
 
         template<typename T>
-        friend T detail::create_item(const detail::class_item_to_wrapper_t<T>* wrapper);
+        friend T detail::create_item(const detail::class_item_to_wrapper_t<T> *wrapper);
+
         template<typename T>
         friend T detail::create_invalid_item();
 
     private:
-        const detail::destructor_wrapper_base* m_wrapper;
-};
-
+        const detail::destructor_wrapper_base *m_wrapper;
+    };
 } // end namespace rttr
 
 #endif // RTTR_DESTRUCTOR_H_

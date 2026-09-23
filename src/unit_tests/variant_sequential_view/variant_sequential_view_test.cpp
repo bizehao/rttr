@@ -38,7 +38,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::ctor", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::ctor"
+,
+"[variant_sequential_view]"
+)
 {
    SECTION("empty")
    {
@@ -96,7 +100,11 @@ TEST_CASE("variant_sequential_view::ctor", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::other ctor", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::other ctor"
+,
+"[variant_sequential_view]"
+)
 {
     variant var = std::vector<int>({1, 2, 3});
     variant_sequential_view a(var.create_sequential_view());
@@ -107,7 +115,11 @@ TEST_CASE("variant_sequential_view::other ctor", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::get_type", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::get_type"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("valid test")
     {
@@ -133,7 +145,11 @@ TEST_CASE("variant_sequential_view::get_type", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::get_value_type", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::get_value_type"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("valid test")
     {
@@ -155,7 +171,11 @@ TEST_CASE("variant_sequential_view::get_value_type", "[variant_sequential_view]"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::is_sequential_container", "[variant_sequential_view]")
+TEST_CASE (
+"variant::is_sequential_container"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("invalid")
     {
@@ -262,7 +282,11 @@ TEST_CASE("variant::is_sequential_container", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::is_empty()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::is_empty()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("valid")
     {
@@ -287,7 +311,11 @@ TEST_CASE("variant_sequential_view::is_empty()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::is_dynamic()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::is_dynamic()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -314,7 +342,11 @@ TEST_CASE("variant_sequential_view::is_dynamic()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::get_rank()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::get_rank()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -353,7 +385,11 @@ TEST_CASE("variant_sequential_view::get_rank()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::get_rank_type()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::get_rank_type()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -395,7 +431,11 @@ TEST_CASE("variant_sequential_view::get_rank_type()", "[variant_sequential_view]
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::get_size()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::get_size()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -442,7 +482,11 @@ TEST_CASE("variant_sequential_view::get_size()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::set_size()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::set_size()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -501,7 +545,11 @@ TEST_CASE("variant_sequential_view::set_size()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::insert()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::insert()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -563,7 +611,11 @@ TEST_CASE("variant_sequential_view::insert()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::erase()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::erase()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -613,7 +665,11 @@ TEST_CASE("variant_sequential_view::erase()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::clear()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::clear()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -657,7 +713,11 @@ TEST_CASE("variant_sequential_view::clear()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::set_value()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::set_value()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -779,7 +839,11 @@ TEST_CASE("variant_sequential_view::set_value()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::get_value()", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::get_value()"
+,
+"[variant_sequential_view]"
+)
 {
     SECTION("std::vector")
     {
@@ -861,7 +925,11 @@ TEST_CASE("variant_sequential_view::get_value()", "[variant_sequential_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_sequential_view::begin/end", "[variant_sequential_view]")
+TEST_CASE (
+"variant_sequential_view::begin/end"
+,
+"[variant_sequential_view]"
+)
 {
 
     SECTION("valid test")

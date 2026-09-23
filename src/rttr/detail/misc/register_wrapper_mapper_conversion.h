@@ -34,64 +34,63 @@
 
 #include <type_traits>
 
-namespace rttr
-{
-template<typename... U> struct type_list;
+namespace rttr {
+    template<typename... U>
+    struct type_list;
 
-namespace detail
-{
-
-/*!
+    namespace detail {
+        /*!
  * Determine if the given type \a T has a wrapper_mapper method called `convert`.
  */
-template <typename T>
-concept has_conversion_function_impl = requires()
-{
-    &wrapper_mapper<raw_type_t<T>>::convert;
-};
+        template<typename T>
+        concept has_conversion_function_impl = requires()
+        {
+            &wrapper_mapper<raw_type_t<T> >::convert;
+        };
 
-/*!
+        /*!
  * If \a T has a wrapper_mapper function `convert` then is the same like `std::true_type`, otherwise inherits from `std::false_type`.
  */
-template<typename T>
-using has_wrapper_conv_func = std::integral_constant<bool, has_conversion_function_impl<T>>;
+        template<typename T>
+        using has_wrapper_conv_func = std::integral_constant<bool, has_conversion_function_impl<T> >;
 
-/////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
-/*!
+        /*!
  * Registers for the given type \p DerivedClass a conversion function
  * from \ref wrapper_mapper<T> from and to the types in the list `T...`.
  */
-template<std::meta::info info, std::meta::info baseInfo>
-static RTTR_INLINE void perform()
-{
-    using DerivedClass = [:info:];
-    using BaseClass = [:baseInfo:];
-    type::register_converter_func(wrapper_mapper<DerivedClass>::template convert<BaseClass>);
-    using return_type = typename function_traits<decltype(&wrapper_mapper<DerivedClass>::template convert<BaseClass>)>::return_type;
-    // TO DO: remove raw_type_t, std::shared_ptr<const T> should also be converted, when necessary
-    using wrapped_derived_t = raw_type_t<wrapper_mapper_t<DerivedClass>>;
-    type::register_converter_func(wrapper_mapper<return_type>::template convert<wrapped_derived_t>);
+        template<std::meta::info info, std::meta::info baseInfo>
+        static RTTR_INLINE void perform() {
+            using DerivedClass = [:info:];
+            using BaseClass = [:baseInfo:];
+            type::register_converter_func(wrapper_mapper<DerivedClass>::template convert<BaseClass>);
+            using return_type = typename function_traits<decltype(&wrapper_mapper<DerivedClass>::template convert<
+                BaseClass>)>::return_type;
+            // TO DO: remove raw_type_t, std::shared_ptr<const T> should also be converted, when necessary
+            using wrapped_derived_t = raw_type_t<wrapper_mapper_t<DerivedClass> >;
+            type::register_converter_func(wrapper_mapper<return_type>::template convert<wrapped_derived_t>);
 
-    template for (constexpr auto b : std::define_static_array(std::meta::bases_of(baseInfo, std::meta::access_context::unprivileged()))) {
-        perform<info, std::meta::type_of(b)>();
-    }
-}
-/////////////////////////////////////////////////////////////////////////////////////
+            template for (constexpr auto b: std::define_static_array(
+                std::meta::bases_of(baseInfo, std::meta::access_context::unprivileged()))) {
+                perform<info, std::meta::type_of(b)>();
+            }
+        }
 
-template<typename T> requires (is_wrapper<T>::value)
-void reg_wrapper_converter_for_base_classes()
-{
-    constexpr auto info = ^^T;
-    constexpr auto raw_info = ^^raw_type_t<wrapper_mapper_t<T>>;
-    template for (constexpr auto b : std::define_static_array(std::meta::bases_of(raw_info, std::meta::access_context::unprivileged()))) {
-        perform<info, std::meta::type_of(b)>();
-    }
-};
+        /////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////
+        template<typename T> requires (is_wrapper<T>::value)
+        void reg_wrapper_converter_for_base_classes() {
+            constexpr auto info = ^^T;
+            constexpr auto raw_info = ^^raw_type_t<wrapper_mapper_t<T> >;
+            template for (constexpr auto b: std::define_static_array(
+                std::meta::bases_of(raw_info, std::meta::access_context::unprivileged()))) {
+                perform<info, std::meta::type_of(b)>();
+            }
+        };
 
-}   // end namespace detail
-}   // end namespace rttr
+        /////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
+} // end namespace rttr
 
 #endif // RTTR_REGISTER_WRAPPER_MAPPER_CONVERSION_H_

@@ -31,17 +31,17 @@
 
 using namespace rttr;
 
-struct simple_type
-{
-    simple_type() {}
-    simple_type(const simple_type& other)
-    :   moved(other.moved),
-        moved_from(other.moved_from)
-    {
+struct simple_type {
+    simple_type() {
     }
-    simple_type(simple_type&& other)
-    :   moved(true)
-    {
+
+    simple_type(const simple_type &other)
+        : moved(other.moved),
+          moved_from(other.moved_from) {
+    }
+
+    simple_type(simple_type &&other)
+        : moved(true) {
         other.moved_from = true;
     }
 
@@ -49,12 +49,15 @@ struct simple_type
     bool moved_from = false;
 };
 
-struct big_type : simple_type
-{
-    big_type() {}
-    big_type(const big_type& other) : simple_type(other) {}
+struct big_type : simple_type {
+    big_type() {
+    }
 
-    big_type(big_type&& other) : simple_type(std::forward<simple_type>(other)) {}
+    big_type(const big_type &other) : simple_type(other) {
+    }
+
+    big_type(big_type &&other) : simple_type(std::forward<simple_type>(other)) {
+    }
 
     double value;
     double value_2;
@@ -62,7 +65,11 @@ struct big_type : simple_type
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("basic assignment", "[variant]")
+TEST_CASE (
+"basic assignment"
+,
+"[variant]"
+)
 {
     SECTION("empty type")
     {
@@ -117,7 +124,11 @@ TEST_CASE("basic assignment", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("move assignment", "[variant]")
+TEST_CASE (
+"move assignment"
+,
+"[variant]"
+)
 {
     SECTION("small type")
     {
@@ -148,7 +159,11 @@ TEST_CASE("move assignment", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::operator=() - self assignment", "[variant]")
+TEST_CASE (
+"variant::operator=() - self assignment"
+,
+"[variant]"
+)
 {
     SECTION("self assign - empty")
     {

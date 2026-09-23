@@ -36,50 +36,46 @@
 #include <vector>
 #include <initializer_list>
 
-namespace rttr
-{
-class argument;
+namespace rttr {
+    class argument;
 
-namespace detail
-{
-
-/*!
+    namespace detail {
+        /*!
  * Abstract class for a method.
  *
  * This is the base class for all methods.
  * You can invoke the method.
  */
-class RTTR_API enumeration_wrapper_base
-{
-    public:
-        enumeration_wrapper_base() RTTR_NOEXCEPT;
-        virtual ~enumeration_wrapper_base() RTTR_NOEXCEPT;
+        class RTTR_API enumeration_wrapper_base {
+        public:
+            enumeration_wrapper_base() RTTR_NOEXCEPT;
 
-        rttr::type get_declaring_type() const RTTR_NOEXCEPT;
+            virtual ~enumeration_wrapper_base() RTTR_NOEXCEPT;
 
-        virtual variant get_metadata(const std::string_view& key) const;
+            rttr::type get_declaring_type() const RTTR_NOEXCEPT;
 
-        virtual bool is_valid() const RTTR_NOEXCEPT;
+            virtual variant get_metadata(const std::string_view &key) const;
 
-        virtual rttr::type get_underlying_type() const RTTR_NOEXCEPT;
+            virtual bool is_valid() const RTTR_NOEXCEPT;
 
-        virtual rttr::type get_type() const RTTR_NOEXCEPT;
+            virtual rttr::type get_underlying_type() const RTTR_NOEXCEPT;
 
-        virtual std::span<const std::string_view> get_names() const RTTR_NOEXCEPT;
+            virtual rttr::type get_type() const RTTR_NOEXCEPT;
 
-        virtual std::span<const variant> get_values() const RTTR_NOEXCEPT;
+            virtual std::span<const std::string_view> get_names() const RTTR_NOEXCEPT;
 
-        virtual std::string_view value_to_name(argument& value) const;
+            virtual std::span<const variant> get_values() const RTTR_NOEXCEPT;
 
-        virtual variant name_to_value(std::string_view name) const;
+            virtual std::string_view value_to_name(argument &value) const;
 
-        void set_declaring_type(rttr::type declaring_type) RTTR_NOEXCEPT;
+            virtual variant name_to_value(std::string_view name) const;
 
-    private:
-        rttr::type m_declaring_type;
-};
+            void set_declaring_type(rttr::type declaring_type) RTTR_NOEXCEPT;
 
-} // end namespace detail
+        private:
+            rttr::type m_declaring_type;
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_ENUMERATION_WRAPPER_BASE_H_

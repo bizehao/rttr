@@ -34,21 +34,19 @@
 #include <cstdint>
 #include <string_view>
 
-namespace rttr
-{
+namespace rttr {
+    class variant;
+    class type;
+    class parameter_info;
 
-class variant;
-class type;
-class parameter_info;
+    namespace detail {
+        class parameter_info_wrapper_base;
 
-namespace detail
-{
-    class parameter_info_wrapper_base;
-    template<typename T>
-    static parameter_info create_param_info(const T&);
-}
+        template<typename T>
+        static parameter_info create_param_info(const T &);
+    }
 
-/*!
+    /*!
  * The \ref parameter_info class provides several meta information about a parameter.
  *
  * A instance of a parameter_info class can be obtained from the \ref method or \ref constructor class.
@@ -104,10 +102,9 @@ namespace detail
  *
  * \see method and constructor
  */
-class RTTR_API parameter_info
-{
+    class RTTR_API parameter_info {
     public:
-        parameter_info(const detail::parameter_info_wrapper_base* wrapper) RTTR_NOEXCEPT;
+        parameter_info(const detail::parameter_info_wrapper_base *wrapper) RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns type of this parameter.
@@ -144,22 +141,22 @@ class RTTR_API parameter_info
          *
          * \return True if both properties are equal, otherwise false.
          */
-        bool operator==(const parameter_info& other) const RTTR_NOEXCEPT;
+        bool operator==(const parameter_info &other) const RTTR_NOEXCEPT;
 
         /*!
          * Returns true if this property is the not the same like the \p other.
          *
          * \return True if both properties are different, otherwise false.
          */
-        bool operator!=(const parameter_info& other) const RTTR_NOEXCEPT;
+        bool operator!=(const parameter_info &other) const RTTR_NOEXCEPT;
 
     private:
         template<typename T>
-        friend parameter_info detail::create_param_info(const T&);
-    private:
-        const detail::parameter_info_wrapper_base* m_wrapper;
-};
+        friend parameter_info detail::create_param_info(const T &);
 
+    private:
+        const detail::parameter_info_wrapper_base *m_wrapper;
+    };
 } // end namespace rttr
 
 #endif // RTTR_PARAMETER_INFO_H_

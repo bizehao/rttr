@@ -36,17 +36,16 @@
 using namespace rttr;
 
 
+struct property_wrapper_test_base {
+    virtual ~property_wrapper_test_base() {
+    }
 
-struct property_wrapper_test_base
-{
-    virtual ~property_wrapper_test_base() {}
     int p1;
 
     RTTR_ENABLE();
 };
 
-struct property_wrapper_test : property_wrapper_test_base
-{
+struct property_wrapper_test : property_wrapper_test_base {
     bool p2;
 
     RTTR_ENABLE(property_wrapper_test_base)
@@ -54,16 +53,19 @@ struct property_wrapper_test : property_wrapper_test_base
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^property_wrapper_test_base>("property_wrapper_test_base");
+RTTR_REGISTRATION {
+    registration::do_class < ^^property_wrapper_test_base > ("property_wrapper_test_base");
 
-    registration::do_class<^^property_wrapper_test>("property_wrapper_test");
+    registration::do_class < ^^property_wrapper_test > ("property_wrapper_test");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class - get/set - std::shared_ptr", "[property]")
+TEST_CASE (
+"property - class - get/set - std::shared_ptr"
+,
+"[property]"
+)
 {
     std::shared_ptr<property_wrapper_test_base> obj = std::make_shared<property_wrapper_test_base>();
 
@@ -88,7 +90,11 @@ TEST_CASE("property - class - get/set - std::shared_ptr", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class - get/set - std::shared_ptr in variant", "[property]")
+TEST_CASE (
+"property - class - get/set - std::shared_ptr in variant"
+,
+"[property]"
+)
 {
     variant var = std::make_shared<property_wrapper_test_base>();
     CHECK(var.get_type().is_wrapper() == true);
@@ -109,7 +115,11 @@ TEST_CASE("property - class - get/set - std::shared_ptr in variant", "[property]
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class - get/set - reference_wrapper", "[property]")
+TEST_CASE (
+"property - class - get/set - reference_wrapper"
+,
+"[property]"
+)
 {
     property_wrapper_test_base instance;
     std::reference_wrapper<property_wrapper_test_base> obj = std::ref(instance);
@@ -136,7 +146,11 @@ TEST_CASE("property - class - get/set - reference_wrapper", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class - get/set - shared_ptr with inheritance", "[property]")
+TEST_CASE (
+"property - class - get/set - shared_ptr with inheritance"
+,
+"[property]"
+)
 {
     SECTION("from bottom to base")
     {

@@ -33,48 +33,60 @@
 #include <vector>
 #include <type_traits>
 
-namespace rttr
-{
+namespace rttr {
+    class property;
+    class method;
+    class constructor;
+    class enumeration;
+    class destructor;
 
-class property;
-class method;
-class constructor;
-class enumeration;
-class destructor;
+    namespace detail {
+        class property_wrapper_base;
+        class method_wrapper_base;
+        class constructor_wrapper_base;
+        class destructor_wrapper_base;
+        class enumeration_wrapper_base;
 
-namespace detail
-{
+        template<typename T>
+        struct class_item_to_wrapper {
+            using type = void;
+        };
 
-class property_wrapper_base;
-class method_wrapper_base;
-class constructor_wrapper_base;
-class destructor_wrapper_base;
-class enumeration_wrapper_base;
+        template<>
+        struct class_item_to_wrapper<property> {
+            using type = property_wrapper_base;
+        };
 
-template<typename T>
-struct class_item_to_wrapper { using type = void; };
-template<> 
-struct class_item_to_wrapper<property> { using type = property_wrapper_base; };
-template<> 
-struct class_item_to_wrapper<method> { using type = method_wrapper_base; };
-template<> 
-struct class_item_to_wrapper<constructor> { using type = constructor_wrapper_base; };
-template<> 
-struct class_item_to_wrapper<destructor> { using type = destructor_wrapper_base; };
-template<> 
-struct class_item_to_wrapper<enumeration> { using type = enumeration_wrapper_base; };
+        template<>
+        struct class_item_to_wrapper<method> {
+            using type = method_wrapper_base;
+        };
 
-template<typename T>
-using class_item_to_wrapper_t = typename class_item_to_wrapper<T>::type;
+        template<>
+        struct class_item_to_wrapper<constructor> {
+            using type = constructor_wrapper_base;
+        };
+
+        template<>
+        struct class_item_to_wrapper<destructor> {
+            using type = destructor_wrapper_base;
+        };
+
+        template<>
+        struct class_item_to_wrapper<enumeration> {
+            using type = enumeration_wrapper_base;
+        };
+
+        template<typename T>
+        using class_item_to_wrapper_t = typename class_item_to_wrapper<T>::type;
 
 
-template<typename T>
-T create_item(const class_item_to_wrapper_t<T>* wrapper);
+        template<typename T>
+        T create_item(const class_item_to_wrapper_t<T> *wrapper);
 
-template<typename T>
-T create_invalid_item();
-
-} // end namespace detail
+        template<typename T>
+        T create_invalid_item();
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_CLASS_ITEM_MAPPER_H_

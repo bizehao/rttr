@@ -30,19 +30,15 @@
 
 #include "rttr/detail/base/core_prerequisites.h"
 
-namespace rttr
-{
-/*!
+namespace rttr {
+    /*!
  * \brief Contains a list of template parameters.
  *
  */
-template<typename...T>
-struct type_list
-{
-    static RTTR_CONSTEXPR_OR_CONST auto size = sizeof...(T); //!< The amount of template parameters
-};
-
-
+    template<typename... T>
+    struct type_list {
+        static RTTR_CONSTEXPR_OR_CONST auto size = sizeof...(T); //!< The amount of template parameters
+    };
 } // end namespace rttr
 
 #endif // RTTR_TYPE_LIST_H_

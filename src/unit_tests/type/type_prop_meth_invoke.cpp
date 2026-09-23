@@ -28,15 +28,13 @@
 #include <rttr/registration>
 #include <catch/catch.hpp>
 
-struct type_prop_invoke_test_base
-{
+struct type_prop_invoke_test_base {
     int p1 = 12;
 
     RTTR_ENABLE()
 };
 
-struct type_prop_invoke_test : type_prop_invoke_test_base
-{
+struct type_prop_invoke_test : type_prop_invoke_test_base {
     std::string p2 = "text";
 
     RTTR_ENABLE(type_prop_invoke_test_base)
@@ -47,18 +45,21 @@ static int g_prop_invoke = 42;
 
 using namespace rttr;
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^type_prop_invoke_test_base>("type_prop_invoke_test_base");
+RTTR_REGISTRATION {
+    registration::do_class < ^^type_prop_invoke_test_base > ("type_prop_invoke_test_base");
 
-    registration::do_class<^^type_prop_invoke_test>("type_prop_invoke_test");
+    registration::do_class < ^^type_prop_invoke_test > ("type_prop_invoke_test");
 
-    registration::do_property<^^g_prop_invoke>("g_prop_invoke");
+    registration::do_property < ^^g_prop_invoke > ("g_prop_invoke");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test property shortcuts to set/get property", "[property]")
+TEST_CASE (
+"Test property shortcuts to set/get property"
+,
+"[property]"
+)
 {
     SECTION("test set property with instance")
     {

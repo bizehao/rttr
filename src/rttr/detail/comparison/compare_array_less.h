@@ -35,22 +35,18 @@
 #include <cstring>
 #include <string_view>
 
-namespace rttr
-{
-namespace detail
-{
-
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-// compare whether array lhs is less than rhs
-// the comparison will go down till element wise comparison
+        // compare whether array lhs is less than rhs
+        // the comparison will go down till element wise comparison
 
-template<typename ElementType, std::size_t Count>
-RTTR_INLINE bool compare_array_less(const ElementType(&lhs)[Count], const ElementType(&rhs)[Count]);
+        template<typename ElementType, std::size_t Count>
+RTTR_INLINE bool compare_array_less(const ElementType (&lhs)[Count], const ElementType (&rhs)[Count]);
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #include "rttr/detail/comparison/compare_array_less_impl.h"

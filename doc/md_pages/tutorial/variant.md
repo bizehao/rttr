@@ -1,8 +1,9 @@
 Variant {#register_variant_page}
 =======
 
-The variant class acts as return value container for properties and methods. This class allows to store data of any type and convert between these types transparently.
-It can hold one value at a time (using containers you can hold multiple types e.g. `std::vector<int>`). 
+The variant class acts as return value container for properties and methods. This class allows to store data of any type
+and convert between these types transparently.
+It can hold one value at a time (using containers you can hold multiple types e.g. `std::vector<int>`).
 Remark that the content is copied into the variant class. Even raw arrays (e.g. `int[10]`) are copied.
 When you would like to avoid copies, use pointer types or wrap your type in a `std::reference_wrapper<T>`
 A typical usage is the following example:

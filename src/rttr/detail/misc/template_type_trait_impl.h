@@ -31,26 +31,25 @@
 #include "rttr/type.h"
 
 namespace rttr {
-
     template<auto T>
-    struct constant_value{};
+    struct constant_value {
+    };
 
     namespace detail {
-
         template<typename T>
-        struct template_type_trait
-        {
+        struct template_type_trait {
             static std::vector<::rttr::type> get_template_arguments() {
-                static auto result = [](){
+                static auto result = []() {
                     std::vector<::rttr::type> tmp;
-                    if constexpr(value) {
-                        template for (constexpr auto arg : std::define_static_array(std::meta::template_arguments_of(^^T))) {
-                            if constexpr(std::meta::is_type(arg)) {
-                                tmp.push_back(rttr::type::get<typename[:arg:]>());
+                    if constexpr (value) {
+                        template for (constexpr auto arg: std::define_static_array(
+                            std::meta::template_arguments_of(^^T))) {
+                            if constexpr (std::meta::is_type(arg)) {
+                                tmp.push_back(rttr::type::get<typename [:arg:]>());
                             }
                             else {
                                 constexpr auto v = [:arg:];
-                                tmp.push_back(rttr::type::get<constant_value<v>>());
+                                tmp.push_back(rttr::type::get<constant_value<v> >());
                             }
                         }
                     }
@@ -58,15 +57,16 @@ namespace rttr {
                 }();
                 return result;
             }
+
             static constexpr bool value = std::meta::has_template_arguments(^^T);
         };
 
         template<auto _Xv>
-        struct template_type_trait<constant_value<_Xv>>
-        {
+        struct template_type_trait<constant_value<_Xv> > {
             static std::vector<::rttr::type> get_template_arguments() {
                 return {};
             }
+
             static constexpr bool value = true;
         };
     }

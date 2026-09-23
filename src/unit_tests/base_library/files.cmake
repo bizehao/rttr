@@ -26,8 +26,8 @@
 ####################################################################################
 
 set(HEADER_FILES version.rc.in
-                 base_class.h
-                 )
+        base_class.h
+)
 
 set(SOURCE_FILES base_class.cpp
-                 )
+)

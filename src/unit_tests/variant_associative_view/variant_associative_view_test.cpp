@@ -38,7 +38,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::ctor", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::ctor"
+,
+"[variant_associative_view]"
+)
 {
    SECTION("empty")
    {
@@ -90,7 +94,11 @@ TEST_CASE("variant_associative_view::ctor", "[variant_associative_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::other ctor", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::other ctor"
+,
+"[variant_associative_view]"
+)
 {
     variant var = std::set<int>({1, 2, 3});
     variant_associative_view a(var.create_associative_view());
@@ -101,7 +109,11 @@ TEST_CASE("variant_associative_view::other ctor", "[variant_associative_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::get_type", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::get_type"
+,
+"[variant_associative_view]"
+)
 {
 
     SECTION("valid test")
@@ -129,7 +141,11 @@ TEST_CASE("variant_associative_view::get_type", "[variant_associative_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::get_key_type/get_value_type/has_value_type", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::get_key_type/get_value_type/has_value_type"
+,
+"[variant_associative_view]"
+)
 {
 
     SECTION("valid test")
@@ -163,7 +179,11 @@ TEST_CASE("variant_associative_view::get_key_type/get_value_type/has_value_type"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::is_associative_container", "[variant_associative_view]")
+TEST_CASE (
+"variant::is_associative_container"
+,
+"[variant_associative_view]"
+)
 {
     SECTION("invalid")
     {
@@ -257,7 +277,11 @@ TEST_CASE("variant::is_associative_container", "[variant_associative_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::iterator operations", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::iterator operations"
+,
+"[variant_associative_view]"
+)
 {
     auto set = std::set<int>{ 1, 2, 3, 4 };
 
@@ -293,7 +317,11 @@ TEST_CASE("variant_associative_view::iterator operations", "[variant_associative
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::insert", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::insert"
+,
+"[variant_associative_view]"
+)
 {
     SECTION("valid test - std::set")
     {
@@ -388,7 +416,11 @@ TEST_CASE("variant_associative_view::insert", "[variant_associative_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::find", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::find"
+,
+"[variant_associative_view]"
+)
 {
     SECTION("valid test")
     {
@@ -422,7 +454,11 @@ TEST_CASE("variant_associative_view::find", "[variant_associative_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::equal_range", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::equal_range"
+,
+"[variant_associative_view]"
+)
 {
     SECTION("std::set")
     {
@@ -492,7 +528,11 @@ TEST_CASE("variant_associative_view::equal_range", "[variant_associative_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::erase", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::erase"
+,
+"[variant_associative_view]"
+)
 {
     SECTION("std::set")
     {
@@ -543,7 +583,11 @@ TEST_CASE("variant_associative_view::erase", "[variant_associative_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_associative_view::clear", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::clear"
+,
+"[variant_associative_view]"
+)
 {
     SECTION("std::set")
     {
@@ -602,7 +646,11 @@ TEST_CASE("variant_associative_view::clear", "[variant_associative_view]")
     }
 }
 
-TEST_CASE("variant_associative_view::begin/end", "[variant_associative_view]")
+TEST_CASE (
+"variant_associative_view::begin/end"
+,
+"[variant_associative_view]"
+)
 {
 
     SECTION("valid test")

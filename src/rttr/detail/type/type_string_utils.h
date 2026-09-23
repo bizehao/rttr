@@ -37,85 +37,76 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+RTTR_INLINE void remove_whitespaces(std::string &text) {
+            text.erase(std::remove_if(text.begin(), text.end(), static_cast<int(*)(int)>(&std::isspace)), text.end());
+        }
 
-RTTR_INLINE void remove_whitespaces(std::string& text)
-{
-    text.erase(std::remove_if(text.begin(), text.end(), static_cast<int(*)(int)>(&std::isspace)), text.end());
-}
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+RTTR_INLINE bool is_space_after(const std::string &text, const std::string &part) {
+            auto found_pos = text.find(part);
 
-RTTR_INLINE bool is_space_after(const std::string& text, const std::string& part)
-{
-    auto found_pos = text.find(part);
+            if (found_pos == std::string::npos)
+                return false;
 
-    if (found_pos == std::string::npos)
-        return false;
+            found_pos = found_pos + part.length();
 
-    found_pos = found_pos + part.length();
+            if (found_pos == std::string::npos || found_pos > text.length())
+                return false;
 
-    if (found_pos == std::string::npos || found_pos > text.length())
-        return false;
+            return std::isspace(text[found_pos]) ? true : false;
+        }
 
-    return std::isspace(text[found_pos]) ? true : false;
-}
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+RTTR_INLINE bool is_space_before(const std::string &text, const std::string &part) {
+            auto found_pos = text.find_last_of(part);
 
-RTTR_INLINE bool is_space_before(const std::string& text, const std::string& part)
-{
-    auto found_pos = text.find_last_of(part);
+            if (found_pos == std::string::npos)
+                return false;
 
-    if (found_pos == std::string::npos)
-        return false;
+            found_pos = found_pos - 1;
 
-    found_pos = found_pos - 1;
+            if (found_pos == std::string::npos || found_pos > text.length())
+                return false;
 
-    if (found_pos == std::string::npos || found_pos > text.length())
-        return false;
+            return std::isspace(text[found_pos]) ? true : false;
+        }
 
-    return std::isspace(text[found_pos]) ? true : false;
-}
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+RTTR_INLINE void insert_space_after(std::string &text, const std::string &part) {
+            auto found_pos = text.find(part);
 
-RTTR_INLINE void insert_space_after(std::string& text, const std::string& part)
-{
-    auto found_pos = text.find(part);
+            if (found_pos == std::string::npos)
+                return;
 
-    if (found_pos == std::string::npos)
-        return;
+            found_pos = found_pos + part.length();
 
-    found_pos = found_pos + part.length();
+            if (found_pos == std::string::npos || found_pos > text.length())
+                return;
 
-    if (found_pos == std::string::npos || found_pos > text.length())
-        return;
+            text.insert(found_pos, " ");
+        }
 
-    text.insert(found_pos, " ");
-}
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+RTTR_INLINE void insert_space_before(std::string &text, const std::string &part) {
+            auto found_pos = text.find_last_of(part);
 
-RTTR_INLINE void insert_space_before(std::string& text, const std::string& part)
-{
-   auto found_pos = text.find_last_of(part);
+            if (found_pos == std::string::npos)
+                return;
 
-    if (found_pos == std::string::npos)
-        return;
+            if (found_pos == std::string::npos || found_pos > text.length())
+                return;
 
-    if (found_pos == std::string::npos || found_pos > text.length())
-        return;
+            text.insert(found_pos, " ");
+        }
 
-    text.insert(found_pos, " ");
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_TYPE_NAME_H_

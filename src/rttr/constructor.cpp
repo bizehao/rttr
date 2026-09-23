@@ -32,158 +32,130 @@
 #include <utility>
 
 
+namespace rttr {
+    namespace detail {
+        template<>
+        constructor create_item(const constructor_wrapper_base *wrapper) {
+            return constructor(wrapper);
+        }
+
+        template<>
+        constructor create_invalid_item() {
+            static const constructor_wrapper_base invalid_wrapper;
+            return constructor(&invalid_wrapper);
+        }
+    } // end namespace detail
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    constructor::constructor(const detail::constructor_wrapper_base *wrapper) RTTR_NOEXCEPT
+        : m_wrapper(wrapper) {
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    variant constructor::get_metadata(const std::string_view &key) const {
+        return m_wrapper->get_metadata(key);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    bool constructor::is_valid() const RTTR_NOEXCEPT {
+        return m_wrapper->is_valid();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    constructor::operator bool() const RTTR_NOEXCEPT {
+        return m_wrapper->is_valid();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    type constructor::get_instantiated_type() const RTTR_NOEXCEPT {
+        return m_wrapper->get_instantiated_type();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    type constructor::get_declaring_type() const RTTR_NOEXCEPT {
+        return m_wrapper->get_declaring_type();
+    }
 
 
-namespace rttr
-{
-namespace detail
-{
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-template<>
-constructor create_item(const constructor_wrapper_base* wrapper)
-{
-    return constructor(wrapper);
-}
+    std::string_view constructor::get_signature() const RTTR_NOEXCEPT {
+        return m_wrapper->get_signature();
+    }
 
-template<>
-constructor create_invalid_item()
-{
-    static const constructor_wrapper_base invalid_wrapper;
-    return constructor(&invalid_wrapper);
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-} // end namespace detail
+    std::span<const parameter_info> constructor::get_parameter_infos() const RTTR_NOEXCEPT {
+        return m_wrapper->get_parameter_infos();
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-constructor::constructor(const detail::constructor_wrapper_base* wrapper) RTTR_NOEXCEPT
-:   m_wrapper(wrapper)
-{
+    variant constructor::invoke() const {
+        return m_wrapper->invoke();
+    }
 
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant constructor::invoke(argument arg1) const {
+        return m_wrapper->invoke(arg1);
+    }
 
-variant constructor::get_metadata(const std::string_view& key) const
-{
-    return m_wrapper->get_metadata(key);
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant constructor::invoke(argument arg1, argument arg2) const {
+        return m_wrapper->invoke(arg1, arg2);
+    }
 
-bool constructor::is_valid() const RTTR_NOEXCEPT
-{
-    return m_wrapper->is_valid();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant constructor::invoke(argument arg1, argument arg2, argument arg3) const {
+        return m_wrapper->invoke(arg1, arg2, arg3);
+    }
 
-constructor::operator bool() const RTTR_NOEXCEPT
-{
-    return m_wrapper->is_valid();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant constructor::invoke(argument arg1, argument arg2, argument arg3, argument arg4) const {
+        return m_wrapper->invoke(arg1, arg2, arg3, arg4);
+    }
 
-type constructor::get_instantiated_type() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_instantiated_type();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    variant constructor::invoke(argument arg1, argument arg2, argument arg3, argument arg4,
+                                argument arg5) const {
+        return m_wrapper->invoke(arg1, arg2, arg3, arg4, arg5);
+    }
 
-type constructor::get_declaring_type() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_declaring_type();
-}
+    /////////////////////////////////////////////////////////////////////////////////////////
 
+    variant constructor::invoke(argument arg1, argument arg2, argument arg3, argument arg4,
+                                argument arg5, argument arg6) const {
+        return m_wrapper->invoke(arg1, arg2, arg3, arg4, arg5, arg6);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string_view constructor::get_signature() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_signature();
-}
+    variant constructor::invoke_variadic(std::vector<argument> args) const {
+        return m_wrapper->invoke_variadic(args);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-std::span<const parameter_info> constructor::get_parameter_infos() const RTTR_NOEXCEPT
-{
-    return m_wrapper->get_parameter_infos();
-}
+    bool constructor::operator==(const constructor &other) const RTTR_NOEXCEPT {
+        return (m_wrapper == other.m_wrapper);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-variant constructor::invoke() const
-{
-    return m_wrapper->invoke();
-}
+    bool constructor::operator!=(const constructor &other) const RTTR_NOEXCEPT {
+        return (m_wrapper != other.m_wrapper);
+    }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor::invoke(argument arg1) const
-{
-    return m_wrapper->invoke(arg1);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor::invoke(argument arg1, argument arg2) const
-{
-    return m_wrapper->invoke(arg1, arg2);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor::invoke(argument arg1, argument arg2, argument arg3) const
-{
-    return m_wrapper->invoke(arg1, arg2, arg3);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor::invoke(argument arg1, argument arg2, argument arg3, argument arg4) const
-{
-    return m_wrapper->invoke(arg1, arg2, arg3, arg4);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor::invoke(argument arg1, argument arg2, argument arg3, argument arg4,
-                            argument arg5) const
-{
-    return m_wrapper->invoke(arg1, arg2, arg3, arg4, arg5);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor::invoke(argument arg1, argument arg2, argument arg3, argument arg4,
-                            argument arg5, argument arg6) const
-{
-    return m_wrapper->invoke(arg1, arg2, arg3, arg4, arg5, arg6);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-variant constructor::invoke_variadic(std::vector<argument> args) const
-{
-    return m_wrapper->invoke_variadic(args);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool constructor::operator==(const constructor& other) const RTTR_NOEXCEPT
-{
-    return (m_wrapper == other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool constructor::operator!=(const constructor& other) const RTTR_NOEXCEPT
-{
-    return (m_wrapper != other.m_wrapper);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////////////////////////////
 } // end namespace rttr

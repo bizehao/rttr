@@ -1,10 +1,11 @@
-5 minute Tutorial  {#five_minute_tutorial_page}
+5 minute Tutorial {#five_minute_tutorial_page}
 =================
 This shortcut tutorial will show you all basic information to use RTTR.
 
 Class declaration
 ------------------
 Suppose you have a class called `node` which you want to introspect with RTTR.
+
 ~~~~{.cpp}
 // node.h
 #include <rttr/type>
@@ -36,9 +37,10 @@ private:
 };
 }
 ~~~~
+
 The standard include file of rttr is: `<rttr/type>`<br>
-Remark the two added macros: \ref RTTR_ENABLE() and \ref RTTR_REGISTRATION_FRIEND. They are optional.<br>
-However, when you use class hierarchies you should add to every class: \ref RTTR_ENABLE().<br>
+Remark the two added macros: \ref RTTR_ENABLE () and \ref RTTR_REGISTRATION_FRIEND. They are optional.<br>
+However, when you use class hierarchies you should add to every class: \ref RTTR_ENABLE ().<br>
 When you want to reflect private data of a class, add: \ref RTTR_REGISTRATION_FRIEND.
 
 Registration
@@ -76,15 +78,19 @@ RTTR_REGISTRATION
         ;
 }
 ~~~~
-The standard include file for registration types in rttr is: `<rttr/registration>`<br>Include this file only when you want to register something.
-The \ref rttr::registration "registration" class is here the entry point. 
-This registration process creates internally wrapper classes, which store for example function pointers or object pointers of the specific class.
+
+The standard include file for registration types in rttr is: `<rttr/registration>`<br>Include this file only when you
+want to register something.
+The \ref rttr::registration "registration" class is here the entry point.
+This registration process creates internally wrapper classes, which store for example function pointers or object
+pointers of the specific class.
 For these pointers you have to provide the data manually.
 
 Yeah, and that's it. Now you can use RTTR to retrieve this information.
 
 Basic usage
 -----------
+
 ~~~~{.cpp}
 #include <rttr/type>
 #include <iostream>
@@ -136,6 +142,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 ~~~~
+
 Remark, that there is actual no include of `node.h`.
 See the output below:
 ###Output###
@@ -159,10 +166,10 @@ See the output below:
         param 1: name: cascade
       name: render  signature: render( )
 
-
 Derived classes
 ----------------
 Suppose you create now from `node` a derived class called `mesh`.
+
 ~~~~{.cpp}
 // mesh.h
 #include <rttr/type>
@@ -190,7 +197,8 @@ private:
     RTTR_ENABLE(node) // include the names of all direct base classes
 };
 ~~~~
-Now you put in \ref RTTR_ENABLE() the name of the base class, in this case: `node`.
+
+Now you put in \ref RTTR_ENABLE () the name of the base class, in this case: `node`.
 
 Registration part
 -----------------
@@ -212,10 +220,12 @@ RTTR_REGISTRATION
         );
 }
 ~~~~
+
 Remark that it is not necessary to register again the `render()` method.
 
 Basic Usage
 -----------
+
 ~~~~{.cpp}
 #include <rttr/type>
 #include <iostream>
@@ -277,9 +287,10 @@ See the output below:
     ns_3d::node
     invoke of method 'render' was successfully: true
 
-That's it. 
+That's it.
 
-However, in order to see all the possibilities of RTTR, it is recommend to go through the in-depth tutorial: [Start Tutorial](@ref rttr_type_get_page)       
+However, in order to see all the possibilities of RTTR, it is recommend to go through the in-depth
+tutorial: [Start Tutorial](@ref rttr_type_get_page)
 
 <hr>
 

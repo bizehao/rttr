@@ -1,10 +1,11 @@
 Register Plugins {#register_plugins}
 =================
-RTTR has build in support to register your types into shared libraries, which can be loaded 
+RTTR has build in support to register your types into shared libraries, which can be loaded
 and unloaded at runtime. Furthermore, it has a simple wrapper class called \ref rttr::library "library"
 which wraps the platform dependent calls to load the library.
 
 See following example:
+
 ~~~~{.cpp}
 #include <rttr/registration>
 
@@ -35,12 +36,14 @@ RTTR_PLUGIN_REGISTRATION // remark the different registration macro!
         ;
 }
 ~~~~
+
 In order to register your types inside a plugin, you have to use the macro
 \ref RTTR_PLUGIN_REGISTRATION.
 Then the containing code will be executed every time you load the library
 and it makes sure to unregister yours types, when your library will be unloaded.
 
 Now the following code will load the plugin into your application:
+
 ~~~~{.cpp}
 #include <rttr/type>
 
@@ -81,29 +84,35 @@ int main(int argc, char** argv)
     return 0;
 }
 ~~~~
+
 Output:
+
 ~~~~{.cpp}
 MyPluginClass
 perform_calculation( )
 perform_calculation( int )
 12
 ~~~~
+
 \remark When you compile your plugin with the `gcc` toolchain, make sure you use the compiler option: `-fno-gnu-unique`.
 otherwise the unregistration will not work properly.
 
 Summary
 -------
+
 - Using plugins you can work with types without having access to the concrete type itself
 - You don't have to explicit export (e.g. using `__declspec( dllexport )`) your types in the shared library
 - You can export classes, without a generic abstract interface
 - You can export overloaded methods (not possible in C)
-- With all this functionality, it is easily possible to implement \b hot-reload of shared libraries. 
-You could serialize your object into JSON-Format, unload the library, load the new version and deserialize it again.
-- \remark Make sure you throw away all retrieved items (\ref rttr::type "types", \ref rttr::property "properties", \ref rttr::method "methods" etc...) of the loaded library when unloading.
- Otherwise UB may occur. (e.g. Invoking a method of an unloaded library is not possible)
-When you want to create dynamic plugins with RTTR, make sure you link dynamically against the host application and the plugin, otherwise you will get UB.
-Also see `/src/examples/library_loading` for example of hot reloading.
-  
+- With all this functionality, it is easily possible to implement \b hot-reload of shared libraries.
+  You could serialize your object into JSON-Format, unload the library, load the new version and deserialize it again.
+- \remark Make sure you throw away all retrieved items (\ref rttr::type "types", \ref rttr::property "properties", \ref
+  rttr::method "methods" etc...) of the loaded library when unloading.
+  Otherwise UB may occur. (e.g. Invoking a method of an unloaded library is not possible)
+  When you want to create dynamic plugins with RTTR, make sure you link dynamically against the host application and the
+  plugin, otherwise you will get UB.
+  Also see `/src/examples/library_loading` for example of hot reloading.
+
 <hr>
 
 <div type="button" class="btn btn-default doxy-button">[previous](@ref register_policies_page "Register Policies")</div><div class="btn btn-default doxy-button">[finished](@ref tutorial_page "Tutorial")</div>

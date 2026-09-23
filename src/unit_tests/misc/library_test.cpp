@@ -38,22 +38,25 @@ using namespace rttr;
 /////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NDEBUG
-    static string_view library_name("unit_test_plugin");
+static string_view library_name("unit_test_plugin");
 #else
-    static string_view library_name("unit_test_plugin_d");
+static string_view library_name("unit_test_plugin_d");
 #endif
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-bool does_plugin_type_exist()
-{
+bool does_plugin_type_exist() {
     return type::get_by_name("test_plugin_class").is_valid() &&
            type::get_by_name("test_container_plugin").is_valid();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("library - load", "[library]")
+TEST_CASE (
+"library - load"
+,
+"[library]"
+)
 {
     SECTION("positive test")
     {
@@ -103,7 +106,7 @@ TEST_CASE("library - load", "[library]")
 #elif RTTR_PLATFORM == RTTR_PLATFORM_APPLE
         library lib(library_name + std::string(".dylib"));
 #else
-    #error "Don't know library suffix on this plattform!"
+#error "Don't know library suffix on this plattform!"
 #endif
         CHECK(does_plugin_type_exist()          == false);
         CHECK(lib.load()                        == true);
@@ -119,7 +122,11 @@ TEST_CASE("library - load", "[library]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("library - multi load", "[library]")
+TEST_CASE (
+"library - multi load"
+,
+"[library]"
+)
 {
     SECTION("load multiple times")
     {
@@ -184,7 +191,11 @@ TEST_CASE("library - multi load", "[library]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("library - using types", "[library]")
+TEST_CASE (
+"library - using types"
+,
+"[library]"
+)
 {
     SECTION("property invoke")
     {
@@ -249,7 +260,11 @@ TEST_CASE("library - using types", "[library]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("library - unload derived types", "[library]")
+TEST_CASE (
+"library - unload derived types"
+,
+"[library]"
+)
 {
     base_test_class obj;
     type::get<base_test_class>();

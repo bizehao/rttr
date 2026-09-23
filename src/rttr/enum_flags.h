@@ -33,15 +33,12 @@
 #include <type_traits>
 #include <cstdint>
 
-namespace rttr
-{
+namespace rttr {
+    namespace detail {
+        class enum_flag;
+    }
 
-namespace detail
-{
-class enum_flag;
-}
-
-/*!
+    /*!
  * The \ref enum_flags class template is used to store OR-combinations of enum values in a type-safe way.
  *
  * The values are stored internally inside an integer (unsigned or signed, depending on the underlying type of the enum).
@@ -81,27 +78,30 @@ class enum_flag;
  *
  * \endcode
  */
-template<typename Enum>
-class enum_flags
-{
-    static_assert(sizeof(Enum) <= sizeof(int32_t), "Cannot store enums value with the given type."
-                                                   "Please use an enum which fits into an 'int32_t'." );
+    template<typename Enum>
+    class enum_flags {
+        static_assert(sizeof(Enum) <= sizeof(int32_t), "Cannot store enums value with the given type."
+                      "Please use an enum which fits into an 'int32_t'.");
+
     public:
         using type = Enum;
-        using enum_type = std::conditional_t<std::is_signed_v<std::underlying_type_t<Enum>>,
-                                                int32_t,
-                                                uint32_t>;
-        using zero = enum_type*;
+        using enum_type = std::conditional_t<std::is_signed_v<std::underlying_type_t<Enum> >,
+            int32_t,
+            uint32_t>;
+        using zero = enum_type *;
 
         /*!
          * Creates an enum_flags object with no flags set.
          */
-        RTTR_CONSTEXPR RTTR_INLINE enum_flags(zero = nullptr) RTTR_NOEXCEPT;
+        RTTR_CONSTEXPR RTTR_INLINE enum_flags (zero =
+        nullptr
+        )
+        RTTR_NOEXCEPT;
 
         /*!
          * Creates a enum_flags object with the given flag \p flag.
          */
-        RTTR_CONSTEXPR RTTR_INLINE enum_flags(Enum flag) RTTR_NOEXCEPT;
+        RTTR_CONSTEXPR RTTR_INLINE enum_flags (Enum flag) RTTR_NOEXCEPT;
 
         /*!
          * Creates an enum_flags object initialized with the given integer value \p value.
@@ -109,7 +109,7 @@ class enum_flags
          * \remark enum_flag is a wrapper class around an integer to avoid creation
          *          of enum_flags object from enum values.
          */
-        RTTR_CONSTEXPR RTTR_INLINE enum_flags(detail::enum_flag v) RTTR_NOEXCEPT;
+        RTTR_CONSTEXPR RTTR_INLINE enum_flags (detail::enum_flag v) RTTR_NOEXCEPT;
 
         /////////////////////////////////////////////////////////////////////////////////
 
@@ -119,7 +119,7 @@ class enum_flags
          *
          * \return A reference to this object.
          */
-        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags& operator&=(int mask) RTTR_NOEXCEPT;
+        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags &operator&=(int mask) RTTR_NOEXCEPT;
 
         /*!
          * \brief Performs a bitwise `AND` operation with \p mask
@@ -127,7 +127,7 @@ class enum_flags
          *
          * \return A reference to this object.
          */
-        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags& operator&=(uint32_t mask) RTTR_NOEXCEPT;
+        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags &operator&=(uint32_t mask) RTTR_NOEXCEPT;
 
         /*!
          * \brief Performs a bitwise `AND` operation with \p mask
@@ -135,7 +135,7 @@ class enum_flags
          *
          * \return A reference to this object.
          */
-        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags& operator&=(Enum mask) RTTR_NOEXCEPT;
+        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags &operator&=(Enum mask) RTTR_NOEXCEPT;
 
         /*!
          * \brief Performs a bitwise `OR` operation with \p f
@@ -143,7 +143,7 @@ class enum_flags
          *
          * \return A reference to this object.
          */
-        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags& operator|=(enum_flags f) RTTR_NOEXCEPT;
+        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags &operator|=(enum_flags f) RTTR_NOEXCEPT;
 
         /*!
          * \brief Performs a bitwise `OR` operation with \p f
@@ -151,7 +151,7 @@ class enum_flags
          *
          * \return A reference to this object.
          */
-        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags& operator|=(Enum f) RTTR_NOEXCEPT;
+        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags &operator|=(Enum f) RTTR_NOEXCEPT;
 
         /*!
          * \brief Performs a bitwise `XOR` operation with \p f
@@ -159,7 +159,7 @@ class enum_flags
          *
          * \return A reference to this object.
          */
-        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags& operator^=(enum_flags f) RTTR_NOEXCEPT;
+        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags &operator^=(enum_flags f) RTTR_NOEXCEPT;
 
         /*!
          * \brief Performs a bitwise `XOR` operation with \p f
@@ -167,7 +167,7 @@ class enum_flags
          *
          * \return A reference to this object.
          */
-        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags& operator^=(Enum f) RTTR_NOEXCEPT;
+        RTTR_CXX14_CONSTEXPR RTTR_INLINE enum_flags &operator^=(Enum f) RTTR_NOEXCEPT;
 
         /*!
          * \brief Performs a bitwise `XOR` operation with \p f
@@ -261,26 +261,25 @@ class enum_flags
 
     private:
         enum_type m_value;
-};
+    };
 
-namespace detail
-{
-
-/*!
+    namespace detail {
+        /*!
  * Simple helper class to avoid the creation of `OR` combination with enum values and raw integers.
  *
  */
-class invalid_enum_flag
-{
-    public:
-        RTTR_CONSTEXPR RTTR_INLINE explicit invalid_enum_flag(int v){}
-};
-
-} // end namespace detail
+        class invalid_enum_flag {
+        public:
+        RTTR_CONSTEXPR RTTR_INLINE explicit invalid_enum_flag (
+            int v
+            )
+{}
+        };
+    } // end namespace detail
 
 #ifdef DOXYGEN
 
-/*!
+    /*!
  * This macro expands to:
  * \code{.cpp}
  *    using Flags = rttr::enum_flags<Enum>;
@@ -292,7 +291,7 @@ class invalid_enum_flag
  */
 #define RTTR_DECLARE_FLAGS(Flags, Enum)
 
-/*!
+    /*!
  * This macro declares the a global operator `|` for enums of type \ref enum_flags<T>
  *
  * \see RTTR_DECLARE_FLAGS()
@@ -319,7 +318,6 @@ RTTR_CONSTEXPR RTTR_INLINE rttr::detail::invalid_enum_flag operator|(Flags::type
 }
 
 #endif
-
 } // end namespace rttr
 
 #include "rttr/detail/impl/enum_flags_impl.h"

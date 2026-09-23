@@ -33,8 +33,7 @@
 using namespace rttr;
 
 
-enum class enum_test_flag
-{
+enum class enum_test_flag {
     value_1 = 1,
     value_2 = 2,
     value_3 = 4,
@@ -42,11 +41,15 @@ enum class enum_test_flag
 };
 
 RTTR_DECLARE_FLAGS(enum_test_flags, enum_test_flag)
-RTTR_DECLARE_ENUM_FLAGS_OPERATORS(enum_test_flags)
+RTTR_DECLARE_ENUM_FLAGS_OPERATORS (enum_test_flags)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enum_flags<T> - default ctor", "[enum_flags<T>]")
+TEST_CASE (
+"enum_flags<T> - default ctor"
+,
+"[enum_flags<T>]"
+)
 {
     enum_test_flags f1;
     enum_test_flags f2;
@@ -57,7 +60,11 @@ TEST_CASE("enum_flags<T> - default ctor", "[enum_flags<T>]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enum_flags<T> - enum_flags(enum)", "[enum_flags<T>]")
+TEST_CASE (
+"enum_flags<T> - enum_flags(enum)"
+,
+"[enum_flags<T>]"
+)
 {
     enum_test_flags f1(enum_test_flag::value_1);
     enum_test_flags f2(enum_test_flag::value_1);
@@ -67,7 +74,11 @@ TEST_CASE("enum_flags<T> - enum_flags(enum)", "[enum_flags<T>]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enum_flags<T> - enum_flags(enum_flags)", "[enum_flags<T>]")
+TEST_CASE (
+"enum_flags<T> - enum_flags(enum_flags)"
+,
+"[enum_flags<T>]"
+)
 {
     enum_test_flags f1(enum_test_flag::value_1);
     enum_test_flags f2(f1);
@@ -77,7 +88,11 @@ TEST_CASE("enum_flags<T> - enum_flags(enum_flags)", "[enum_flags<T>]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enum_flags<T> - operator&", "[enum_flags<T>]")
+TEST_CASE (
+"enum_flags<T> - operator&"
+,
+"[enum_flags<T>]"
+)
 {
     SECTION("return reference")
     {
@@ -114,7 +129,11 @@ TEST_CASE("enum_flags<T> - operator&", "[enum_flags<T>]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enum_flags<T> - operator|", "[enum_flags<T>]")
+TEST_CASE (
+"enum_flags<T> - operator|"
+,
+"[enum_flags<T>]"
+)
 {
     SECTION("return reference")
     {
@@ -150,7 +169,11 @@ TEST_CASE("enum_flags<T> - operator|", "[enum_flags<T>]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enum_flags<T> - operator^", "[enum_flags<T>]")
+TEST_CASE (
+"enum_flags<T> - operator^"
+,
+"[enum_flags<T>]"
+)
 {
     SECTION("return reference")
     {
@@ -203,7 +226,11 @@ TEST_CASE("enum_flags<T> - operator^", "[enum_flags<T>]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enum_flags<T> - operator~", "[enum_flags<T>]")
+TEST_CASE (
+"enum_flags<T> - operator~"
+,
+"[enum_flags<T>]"
+)
 {
     enum_test_flags f1 = enum_test_flag::value_1 | enum_test_flag::value_2;
 
@@ -217,7 +244,11 @@ TEST_CASE("enum_flags<T> - operator~", "[enum_flags<T>]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enum_flags<T> - test_flag", "[enum_flags<T>]")
+TEST_CASE (
+"enum_flags<T> - test_flag"
+,
+"[enum_flags<T>]"
+)
 {
     enum_test_flags f = enum_test_flag::value_1 | enum_test_flag::value_2;
 

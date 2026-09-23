@@ -34,34 +34,31 @@
 #include "rttr/detail/misc/template_type_trait.h"
 #include <type_traits>
 
-namespace rttr
-{
-class type;
+namespace rttr {
+    class type;
 
-namespace detail
-{
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-RTTR_API bool compare_types_less_than(const void* lhs, const void* rhs, const type& t, int& result);
+RTTR_API bool compare_types_less_than(const void *lhs, const void *rhs, const type &t, int &result);
 
 
-template<typename T>
-using has_less_than_operator_impl = std::integral_constant<bool, has_less_than_operator<T>::value && !std::is_array_v<T> &&
-                                                                 !is_template_instance<T>>;
+        template<typename T>
+        using has_less_than_operator_impl = std::integral_constant<bool,
+            has_less_than_operator<T>::value && !std::is_array_v<T> &&
+            !is_template_instance<T>>;
 
-template<typename T>
-using is_less_than_comparable = std::integral_constant<bool, has_less_than_operator_impl<T>::value ||
-                                                             is_comparable_type<T>::value>;
+        template<typename T>
+        using is_less_than_comparable = std::integral_constant<bool, has_less_than_operator_impl<T>::value ||
+                                                                     is_comparable_type<T>::value>;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-RTTR_INLINE bool compare_less_than(const T& lhs, const T& rhs, int& result);
+        template<typename T>
+RTTR_INLINE bool compare_less_than(const T &lhs, const T &rhs, int &result);
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #include "rttr/detail/comparison/compare_less_impl.h"

@@ -41,40 +41,38 @@
 #include <string>
 #include <concepts>
 
-namespace rttr
-{
+namespace rttr {
+    class variant_associative_view;
+    class variant_sequential_view;
+    class type;
+    class variant;
+    class argument;
+    class instance;
 
-class variant_associative_view;
-class variant_sequential_view;
-class type;
-class variant;
-class argument;
-class instance;
+    namespace detail {
+        template<class T>
+    RTTR_INLINE T *unsafe_variant_cast(variant *operand) RTTR_NOEXCEPT;
 
-namespace detail
-{
-    template<class T>
-    RTTR_INLINE T* unsafe_variant_cast(variant* operand) RTTR_NOEXCEPT;
-    template<class T>
-    RTTR_INLINE const T* unsafe_variant_cast(const variant* operand) RTTR_NOEXCEPT;
+        template<class T>
+    RTTR_INLINE const T *unsafe_variant_cast(const variant *operand) RTTR_NOEXCEPT;
 
-    struct data_address_container;
-    template<typename T>
-    struct empty_type_converter;
+        struct data_address_container;
+        template<typename T>
+        struct empty_type_converter;
 
-    template<typename T, typename Tp, typename Converter = empty_type_converter<T>>
-    struct variant_data_base_policy;
-    struct variant_data_policy_nullptr_t;
+        template<typename T, typename Tp, typename Converter = empty_type_converter<T> >
+        struct variant_data_base_policy;
+        struct variant_data_policy_nullptr_t;
 
-    enum class variant_policy_operation : uint8_t;
+        enum class variant_policy_operation : uint8_t;
 
-    template<typename T>
-    concept decay_variant_t = !std::is_same_v<decay_except_array_t<T>, variant>;
+        template<typename T>
+        concept decay_variant_t = !std::is_same_v<decay_except_array_t<T>, variant>;
 
-    using variant_policy_func = bool (*)(variant_policy_operation, const variant_data&, argument_wrapper);
-}
+        using variant_policy_func = bool (*)(variant_policy_operation, const variant_data &, argument_wrapper);
+    }
 
-/*!
+    /*!
  * The \ref variant class allows to store data of any type and convert between these types transparently.
  *
  * This class serves as container for any given single \ref get_type() "type". It can hold one value at a time
@@ -196,8 +194,7 @@ namespace detail
  *
  * \see variant_array_view
  */
-class RTTR_API variant
-{
+    class RTTR_API variant {
     public:
         /*!
          * \brief Constructs an invalid variant. That means a valid which contains no data.
@@ -211,17 +208,17 @@ class RTTR_API variant
          *        The value will be copied or moved into the variant.
          */
         template<detail::decay_variant_t T>
-        variant(T&& val);
+        variant(T &&val);
 
         /*!
          * \brief Constructs a new variant object from the given variant \p other.
          */
-        variant(const variant& other);
+        variant(const variant &other);
 
         /*!
          * \brief Constructs a new variant via move constructor.
          */
-        variant(variant&& other);
+        variant(variant &&other);
 
         /*!
          * \brief Destroys the variant and the contained object.
@@ -234,21 +231,21 @@ class RTTR_API variant
          * \return A reference to the variant with the new data.
          */
         template<detail::decay_variant_t T>
-        variant& operator=(T&& other);
+        variant &operator=(T &&other);
 
         /*!
          * \brief Assigns the value of the \a other variant to this variant.
          *
          * \return A reference to the variant with the new data.
          */
-        variant& operator=(variant&& other);
+        variant &operator=(variant &&other);
 
         /*!
          * \brief Assigns the value of the \a other variant to this variant.
          *
          * \return A reference to the variant with the new data.
          */
-        variant& operator=(const variant& other);
+        variant &operator=(const variant &other);
 
         /*!
          * \brief Compares this variant with \p other and returns `true` if they are equal; otherwise returns `false`.
@@ -266,7 +263,7 @@ class RTTR_API variant
          *
          * \return A boolean with value `true`, that indicates both variant's are equal, otherwise `false`.
          */
-        RTTR_INLINE bool operator==(const variant& other) const;
+        RTTR_INLINE bool operator==(const variant &other) const;
 
         /*!
          * \brief Compares this variant with \p other and returns `true` if they are **not** equal; otherwise returns `false`.
@@ -281,7 +278,7 @@ class RTTR_API variant
          *
          * \return A boolean with value `true`, that indicates both variant's are **not** equal, otherwise `false`.
          */
-        RTTR_INLINE bool operator!=(const variant& other) const;
+        RTTR_INLINE bool operator!=(const variant &other) const;
 
         /*!
          * \brief Compares this variant with \p other and returns `true` if this is *less than* \p other, otherwise returns `false`.
@@ -299,7 +296,7 @@ class RTTR_API variant
          *
          * \return A boolean with value `true`, that indicates that this variant is *less than* \p other, otherwise `false`.
          */
-        RTTR_INLINE bool operator<(const variant& other) const;
+        RTTR_INLINE bool operator<(const variant &other) const;
 
 
         /*!
@@ -315,7 +312,7 @@ class RTTR_API variant
          *
          * \return A boolean with value `true`, that indicates that this variant is *less* or *equal* than \p other, otherwise `false`.
          */
-        RTTR_INLINE bool operator<=(const variant& other) const;
+        RTTR_INLINE bool operator<=(const variant &other) const;
 
         /*!
          * \brief Compares this variant with \p other and returns `true` if this is *greater* or *equal* then \p other, otherwise returns `false`.
@@ -330,7 +327,7 @@ class RTTR_API variant
          *
          * \return A boolean with value `true`, that indicates that this variant is *greater* or *equal* than \p other, otherwise `false`.
          */
-        RTTR_INLINE bool operator>=(const variant& other) const;
+        RTTR_INLINE bool operator>=(const variant &other) const;
 
         /*!
          * \brief Compares this variant with \p other and returns `true` if this is *greater than* \p other, otherwise returns `false`.
@@ -344,7 +341,7 @@ class RTTR_API variant
          *
          * \return A boolean with value `true`, that indicates that this variant is *greater than* \p other, otherwise `false`.
          */
-        RTTR_INLINE bool operator>(const variant& other) const;
+        RTTR_INLINE bool operator>(const variant &other) const;
 
         /*!
          * \brief When the variant contains a value, then this function will clear the content.
@@ -356,7 +353,7 @@ class RTTR_API variant
         /*!
          * \brief Swaps the content of this variant with \p other variant.
          */
-        void swap(variant& other);
+        void swap(variant &other);
 
         /*!
          * \brief Returns `true` if the containing variant data is of the given template type `T`.
@@ -437,7 +434,7 @@ class RTTR_API variant
          * \return A reference to the stored value.
          */
         template<typename T>
-        T& get_value();
+        T &get_value();
 
         /*!
          * \brief Returns a reference to the containing value as type \p T.
@@ -463,7 +460,7 @@ class RTTR_API variant
          * \return A reference to the stored value.
          */
         template<typename T>
-        const T& get_value() const;
+        const T &get_value() const;
 
         /*!
          * \brief Returns a reference to the contained wrapped value as type \p T.
@@ -485,7 +482,7 @@ class RTTR_API variant
          * \return A reference to the stored wrapped value.
          */
         template<typename T>
-        const T& get_wrapped_value() const;
+        const T &get_wrapped_value() const;
 
         /*!
          * \brief Extracts the wrapped value and copies its content into a new variant.
@@ -536,7 +533,7 @@ class RTTR_API variant
          *
          * \see convert(), type::register_converter_func()
          */
-        bool can_convert(const type& target_type) const;
+        bool can_convert(const type &target_type) const;
 
         /*!
          * \brief Converts the containing variant internally to the given type \p target_type.
@@ -567,7 +564,7 @@ class RTTR_API variant
          *
          * \see can_convert(), type::register_converter_func()
          */
-        bool convert(const type& target_type);
+        bool convert(const type &target_type);
 
         /*!
          * \brief Converts the containing data to a *new value* of type \p T and return this *value*.
@@ -596,7 +593,7 @@ class RTTR_API variant
          * \see can_convert(), type::register_converter_func()
          */
         template<typename T>
-        T convert(bool* ok = nullptr) const;
+        T convert(bool *ok = nullptr) const;
 
         /*!
          * \brief Converts the containing data to the given value \p value and returns a `bool` flag that indicated whether the conversion
@@ -627,7 +624,7 @@ class RTTR_API variant
          * \see can_convert(), type::register_converter_func()
          */
         template<typename T>
-        bool convert(T& value) const;
+        bool convert(T &value) const;
 
         /*!
          * \brief Creates a \ref variant_associative_view from the containing value,
@@ -745,7 +742,7 @@ class RTTR_API variant
          *
          * \return A `float` value.
          */
-        float to_float(bool* ok = nullptr) const;
+        float to_float(bool *ok = nullptr) const;
 
         /*!
          * \brief Returns the containing variant as a `double` when the \ref is_type() "type" is a `double`.
@@ -764,7 +761,7 @@ class RTTR_API variant
          *
          * \return A `double` value.
          */
-        double to_double(bool* ok = nullptr) const;
+        double to_double(bool *ok = nullptr) const;
 
         /*!
          * \brief Returns the containing variant as a `std::string` when the \ref is_type() "type" is a `std::string`.
@@ -948,9 +945,9 @@ class RTTR_API variant
          *
          * \return
          */
-        RTTR_INLINE void* get_ptr() const;
+        RTTR_INLINE void *get_ptr() const;
 
-         /*!
+        /*!
          * \brief Returns the type object of the underlying data
          *
          * \remark You do not have to use this method directly.
@@ -967,17 +964,17 @@ class RTTR_API variant
          *
          * \return Raw void pointer.
          */
-        RTTR_INLINE void* get_raw_ptr() const;
+        RTTR_INLINE void *get_raw_ptr() const;
 
         //! Helper function to initialize all arithmetic types
-		template<typename T> requires (std::is_arithmetic_v<T>)
-        T convert_impl(bool* ok = nullptr) const;
+        template<typename T> requires (std::is_arithmetic_v<T>)
+        T convert_impl(bool *ok = nullptr) const;
 
-		template<typename T> requires (!std::is_arithmetic_v<T> && !std::is_enum_v<T>)
-        T convert_impl(bool* ok = nullptr) const;
+        template<typename T> requires (!std::is_arithmetic_v<T> && !std::is_enum_v<T>)
+        T convert_impl(bool *ok = nullptr) const;
 
-		template<typename T> requires (std::is_enum_v<T>)
-        T convert_impl(bool* ok = nullptr) const;
+        template<typename T> requires (std::is_enum_v<T>)
+        T convert_impl(bool *ok = nullptr) const;
 
         /*!
          * \brief Returns a pointer to the underlying object pointer wrapped in a smart_ptr.
@@ -988,7 +985,7 @@ class RTTR_API variant
          */
         RTTR_INLINE detail::data_address_container get_data_address_container() const;
 
-        bool convert(const type& target_type, variant& var) const;
+        bool convert(const type &target_type, variant &var) const;
 
         /*!
          * \brief Tries to convert the internal type to the given type \p to.
@@ -996,7 +993,7 @@ class RTTR_API variant
          * \return `True`, when the conversion was successful, otherwise `false`.
          */
         template<typename T>
-        bool try_basic_type_conversion(T& to) const;
+        bool try_basic_type_conversion(T &to) const;
 
         /*!
          * \brief Tries to convert the internal pointer type to the given pointer type \p T.
@@ -1004,13 +1001,13 @@ class RTTR_API variant
          * \return `True`, when the conversion was successful, otherwise `false`.
          */
 
-         /*!
+        /*!
           * \brief A dummy method which does in fact always return `falsev.
           *
           * \return `False`.
           */
-		template<typename T>
-        bool try_pointer_conversion(T& to, const type& source_type, const type& target_type) const;
+        template<typename T>
+        bool try_pointer_conversion(T &to, const type &source_type, const type &target_type) const;
 
         /*!
          * \brief Compares the containing and the given variant \p other for equality.
@@ -1019,7 +1016,7 @@ class RTTR_API variant
          *
          * \return A boolean with value `true`, that indicates both variant's are equal, otherwise `false`.
          */
-        bool compare_equal(const variant& other, bool& ok) const;
+        bool compare_equal(const variant &other, bool &ok) const;
 
         /*!
          * \brief Compares the containing and the given variant \p other for less than.
@@ -1028,7 +1025,7 @@ class RTTR_API variant
          *
          * \return A boolean with value `true`, that indicates this variant is less than the \p other, otherwise `false`.
          */
-        bool compare_less(const variant& other, bool& ok) const;
+        bool compare_less(const variant &other, bool &ok) const;
 
         /*!
          * \brief A function to check whether the contained pointer type is a `nullptr` or not.
@@ -1038,7 +1035,7 @@ class RTTR_API variant
         RTTR_INLINE bool is_nullptr() const;
 
 
-        variant create_wrapped_value(const type& wrapped_type) const;
+        variant create_wrapped_value(const type &wrapped_type) const;
 
     private:
         friend class argument;
@@ -1047,18 +1044,21 @@ class RTTR_API variant
         template<typename T, typename Tp, typename Converter>
         friend struct detail::variant_data_base_policy;
         friend struct detail::variant_data_policy_nullptr_t;
-        friend RTTR_API bool detail::variant_compare_less(const variant&, const type&, const variant&, const type&, bool& ok);
+
+        friend RTTR_API bool detail::variant_compare_less(const variant &, const type &, const variant &, const type &,
+                                                          bool &ok);
+
         template<class T>
-        friend RTTR_INLINE T* detail::unsafe_variant_cast(variant* operand) RTTR_NOEXCEPT;
+        friend RTTR_INLINE T *detail::unsafe_variant_cast(variant *operand) RTTR_NOEXCEPT;
 
 
-        detail::variant_data            m_data;
-        detail::variant_policy_func     m_policy;
-};
+        detail::variant_data m_data;
+        detail::variant_policy_func m_policy;
+    };
 
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-/*!
+    /*!
  * \brief Returns a reference to the containing value as type \p T.
  *
  * \code{.cpp}
@@ -1072,10 +1072,10 @@ class RTTR_API variant
  * \remark Extracting a value type, which is not stored in the variant, leads to undefined behaviour.
  *         No exception or error code will be returned!
  */
-template<class T>
-T variant_cast(const variant& operand);
+    template<class T>
+    T variant_cast(const variant &operand);
 
-/*!
+    /*!
  * \brief Returns a reference to the containing value as type \p T.
  *
  * \code{.cpp}
@@ -1089,10 +1089,10 @@ T variant_cast(const variant& operand);
  * \remark Extracting a value type, which is not stored in the variant, leads to undefined behaviour.
  *         No exception or error code will be returned!
  */
-template<class T>
-T variant_cast(variant& operand);
+    template<class T>
+    T variant_cast(variant &operand);
 
-/*!
+    /*!
  * \brief Move the containing value from the variant into a type \p T.
  *
  * \code{.cpp}
@@ -1108,10 +1108,10 @@ T variant_cast(variant& operand);
  * \remark Extracting a value type, which is not stored in the variant, leads to undefined behaviour.
  *         No exception or error code will be returned!
  */
-template<class T>
-T variant_cast(variant&& operand);
+    template<class T>
+    T variant_cast(variant &&operand);
 
-/*!
+    /*!
  * \brief Returns a pointer to the containing value with type \p T.
  *        When the containing value is of type \p T, a valid pointer to the type will be returned.
  *        Otherwise a `nullptr` is returned.
@@ -1127,10 +1127,10 @@ T variant_cast(variant&& operand);
  *
  * \return A valid pointer, when the containing type is of type \p T; otherwise a `nullptr`.
  */
-template<class T>
-const T* variant_cast(const variant* operand) RTTR_NOEXCEPT;
+    template<class T>
+    const T *variant_cast(const variant *operand) RTTR_NOEXCEPT;
 
-/*!
+    /*!
  * \brief Returns a pointer to the containing value with type \p T.
  *        When the containing value is of type \p T, a valid pointer to the type will be returned.
  *        Otherwise a `nullptr` is returned.
@@ -1146,9 +1146,8 @@ const T* variant_cast(const variant* operand) RTTR_NOEXCEPT;
  *
  * \return A valid pointer, when the containing type is of type \p T; otherwise a `nullptr`.
  */
-template<class T>
-T* variant_cast(variant* operand) RTTR_NOEXCEPT;
-
+    template<class T>
+    T *variant_cast(variant *operand) RTTR_NOEXCEPT;
 } // end namespace rttr
 
 #include "rttr/detail/variant/variant_impl.h"

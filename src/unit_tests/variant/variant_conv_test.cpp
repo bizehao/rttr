@@ -31,78 +31,78 @@
 
 using namespace rttr;
 
-namespace
-{
+namespace {
+    struct point {
+        point(int x, int y) : _x(x), _y(y) {
+        }
 
-struct point
-{
-    point(int x, int y) : _x(x), _y(y) {}
+        point(const point &other) : _x(other._x), _y(other._y) {
+        }
 
-    point(const point& other) : _x(other._x), _y(other._y) { }
+        point(point &&other) : _x(other._x), _y(other._y) {
+            other._x = 0;
+            other._y = 0;
+        }
 
-    point(point&& other) : _x(other._x), _y(other._y) { other._x = 0; other._y = 0; }
+        bool operator ==(const point &other) const { return (_x == other._x && _y == other._y); }
+        int _x;
+        int _y;
+    };
 
-    bool operator ==(const point& other) const { return (_x == other._x && _y == other._y); }
-    int _x;
-    int _y;
-};
+    template<class T> requires (!std::numeric_limits<T>::is_integer)
+    static bool almost_equal(T x, T y) {
+        return std::abs(x - y) <= std::numeric_limits<T>::epsilon();
+    }
 
-template<class T> requires (!std::numeric_limits<T>::is_integer)
-static bool almost_equal(T x, T y)
-{
-    return std::abs(x - y) <= std::numeric_limits<T>::epsilon();
-}
+    struct vector2d {
+        vector2d(int x, int y) : _x(x), _y(y) {
+        }
 
-struct vector2d
-{
-    vector2d(int x, int y) : _x(x), _y(y) {}
-    int _x;
-    int _y;
-};
+        int _x;
+        int _y;
+    };
 
-static std::string convert_to_string(const point& p, bool& ok)
-{
-    ok = true;
-    return std::to_string(p._x) + ", " + std::to_string(p._y);
-}
+    static std::string convert_to_string(const point &p, bool &ok) {
+        ok = true;
+        return std::to_string(p._x) + ", " + std::to_string(p._y);
+    }
 
-static vector2d convert_to_vector(const point& p, bool& ok)
-{
-    ok = true;
-    return vector2d(p._x, p._y);
-}
+    static vector2d convert_to_vector(const point &p, bool &ok) {
+        ok = true;
+        return vector2d(p._x, p._y);
+    }
 
-struct base
-{
-    virtual ~base() {};
-    int dummy;
-    RTTR_ENABLE()
-};
+    struct base {
+        virtual ~base() {
+        };
+        int dummy;
 
-struct derived : virtual base
-{
-    virtual ~derived() {};
-    double dummy2;
-    RTTR_ENABLE()
-};
+        RTTR_ENABLE()
+    };
 
-struct other_derived : virtual base
-{
-    virtual ~other_derived() {};
-    double dummy3;
-    RTTR_ENABLE()
-};
+    struct derived : virtual base {
+        virtual ~derived() {
+        };
+        double dummy2;
 
-enum class test_enum
-{
-    first = 1,
-    second = 2
-};
+        RTTR_ENABLE()
+    };
 
+    struct other_derived : virtual base {
+        virtual ~other_derived() {
+        };
+        double dummy3;
+
+        RTTR_ENABLE()
+    };
+
+    enum class test_enum {
+        first = 1,
+        second = 2
+    };
 } // end anonymous namespace
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     type::register_converter_func(convert_to_string);
     type::register_converter_func(convert_to_vector);
 
@@ -111,7 +111,11 @@ RTTR_REGISTRATION
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant - basic - can_convert()", "[variant]")
+TEST_CASE (
+"variant - basic - can_convert()"
+,
+"[variant]"
+)
 {
     variant var;
     CHECK(var.can_convert(type::get<int>()) == false);
@@ -119,7 +123,11 @@ TEST_CASE("variant - basic - can_convert()", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant conversion - to int", "[variant]")
+TEST_CASE (
+"variant conversion - to int"
+,
+"[variant]"
+)
 {
     SECTION("int to int")
     {
@@ -237,7 +245,11 @@ TEST_CASE("variant conversion - to int", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant conversion - to std::string", "[variant]")
+TEST_CASE (
+"variant conversion - to std::string"
+,
+"[variant]"
+)
 {
     SECTION("int to std::string")
     {
@@ -338,7 +350,11 @@ TEST_CASE("variant conversion - to std::string", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant conversion - to float", "[variant]")
+TEST_CASE (
+"variant conversion - to float"
+,
+"[variant]"
+)
 {
     SECTION("int to float")
     {
@@ -452,7 +468,11 @@ TEST_CASE("variant conversion - to float", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant conversion - to double", "[variant]")
+TEST_CASE (
+"variant conversion - to double"
+,
+"[variant]"
+)
 {
     SECTION("int to double")
     {
@@ -562,7 +582,11 @@ TEST_CASE("variant conversion - to double", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant test - convert custom types", "[variant]")
+TEST_CASE (
+"variant test - convert custom types"
+,
+"[variant]"
+)
 {
     variant var = point(12, 34);
     REQUIRE(var.is_type<point>() == true);
@@ -586,7 +610,11 @@ TEST_CASE("variant test - convert custom types", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant test - convert internal", "[variant]")
+TEST_CASE (
+"variant test - convert internal"
+,
+"[variant]"
+)
 {
     variant var = 23;
     bool ret = var.convert(type::get<std::string>());
@@ -623,7 +651,11 @@ TEST_CASE("variant test - convert internal", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant test - convert to nullptr", "[variant]")
+TEST_CASE (
+"variant test - convert to nullptr"
+,
+"[variant]"
+)
 {
     SECTION("Invalid conversion")
     {
@@ -662,7 +694,11 @@ TEST_CASE("variant test - convert to nullptr", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant test - convert from wrapped value", "[variant]")
+TEST_CASE (
+"variant test - convert from wrapped value"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {
@@ -722,7 +758,11 @@ TEST_CASE("variant test - convert from wrapped value", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant test - convert to wrapped value", "[variant]")
+TEST_CASE (
+"variant test - convert to wrapped value"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {
@@ -787,7 +827,11 @@ TEST_CASE("variant test - convert to wrapped value", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant test - convert from enum", "[variant]")
+TEST_CASE (
+"variant test - convert from enum"
+,
+"[variant]"
+)
 {
     auto ok = false;
     rttr::variant var = type::get<test_enum>().get_enumeration().name_to_value("second");
@@ -801,7 +845,11 @@ TEST_CASE("variant test - convert from enum", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant test - register_wrapper_converter_for_base_classes<std::shared_ptr<T>>", "[variant]")
+TEST_CASE (
+"variant test - register_wrapper_converter_for_base_classes<std::shared_ptr<T>>"
+,
+"[variant]"
+)
 {
     variant var = std::make_shared<derived>();
     CHECK(var.convert(type::get<std::shared_ptr<base>>())           == false);

@@ -33,27 +33,20 @@
 
 #include <type_traits>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        bool compare_types_less_than(const void *lhs, const void *rhs, const type &t, int &result) {
+            if (auto cmp_f = t.get_less_than_comparator()) {
+                result = cmp_f->cmp(lhs, rhs) ? -1 : cmp_f->cmp(rhs, lhs) ? 1 : 0;
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
 
-bool compare_types_less_than(const void* lhs, const void* rhs, const type& t, int& result)
-{
-    if (auto cmp_f = t.get_less_than_comparator())
-    {
-        result = cmp_f->cmp(lhs, rhs) ? -1 : cmp_f->cmp(rhs, lhs) ? 1 : 0;
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr

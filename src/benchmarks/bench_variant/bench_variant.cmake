@@ -28,5 +28,5 @@
 set(HEADER_FILES version.rc.in)
 
 set(SOURCE_FILES main.cpp
-                 bench_variant_conversion.cpp
-                 bench_variant_create.cpp)
+        bench_variant_conversion.cpp
+        bench_variant_create.cpp)

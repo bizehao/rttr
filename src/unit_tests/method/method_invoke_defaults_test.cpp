@@ -26,18 +26,15 @@
 *************************************************************************************/
 
 
-
 #include <rttr/registration>
 #include <catch/catch.hpp>
 
 using namespace rttr;
 
 
-
-struct method_invoke_defaults_test
-{
-    method_invoke_defaults_test() { for (auto& item : m_invoked) { item = false; } }
-    void func_0(){ m_invoked[0] = true; }
+struct method_invoke_defaults_test {
+    method_invoke_defaults_test() { for (auto &item: m_invoked) { item = false; } }
+    void func_0() { m_invoked[0] = true; }
     void func_1(int a = 1) { m_invoked[1] = true; }
     void func_2(int a = 1, int b = 2) { m_invoked[2] = true; }
     void func_3(int a = 1, int b = 2, int c = 3) { m_invoked[3] = true; }
@@ -50,17 +47,19 @@ struct method_invoke_defaults_test
 };
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_class<^^method_invoke_defaults_test>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke - defaults", "[method]")
+TEST_CASE (
+"method - invoke - defaults"
+,
+"[method]"
+)
 {
     type t = type::get<method_invoke_defaults_test>();
     const auto meth_range = t.get_methods();
@@ -95,7 +94,11 @@ TEST_CASE("method - invoke - defaults", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke - defaults - skip last value", "[method]")
+TEST_CASE (
+"method - invoke - defaults - skip last value"
+,
+"[method]"
+)
 {
     type t = type::get<method_invoke_defaults_test>();
     const auto meth_range = t.get_methods();
@@ -128,7 +131,11 @@ TEST_CASE("method - invoke - defaults - skip last value", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke - NEGATIVE - defaults", "[method]")
+TEST_CASE (
+"method - invoke - NEGATIVE - defaults"
+,
+"[method]"
+)
 {
     method meth = type::get_by_name("").get_method("");
     REQUIRE(meth.is_valid() == false);

@@ -36,70 +36,60 @@
 #include <vector>
 #include <span>
 
-namespace rttr
-{
+namespace rttr {
+    class parameter_info;
+    class type;
 
-class parameter_info;
-class type;
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-namespace detail
-{
+        struct compare_with_type_list {
+            static RTTR_INLINE bool compare(const std::span<const parameter_info> &param_list,
+                                            const std::vector<type> &arg_types) {
+                const auto param_count = param_list.size();
+                if (param_count != arg_types.size())
+                    return false;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+                auto itr = param_list.begin();
+                std::size_t index = 0;
+                for (; itr != param_list.end(); ++itr, ++index) {
+                    if ((itr->get_type() != arg_types[index]))
+                        return false;
+                }
 
-struct compare_with_type_list
-{
-    static RTTR_INLINE bool compare(const std::span<const parameter_info>& param_list, const std::vector<type>& arg_types)
-    {
-        const auto param_count = param_list.size();
-        if (param_count != arg_types.size())
-            return false;
+                return true;
+            }
+        };
 
-        auto itr = param_list.begin();
-        std::size_t index = 0;
-        for (;itr != param_list.end(); ++itr, ++index)
-        {
-            if ((itr->get_type() != arg_types[index]))
-                return false;
-        }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-        return true;
-    }
-};
+        struct compare_with_arg_list {
+            static RTTR_INLINE bool compare(const std::span<const parameter_info> &param_list,
+                                            const std::vector<argument> &args) {
+                const auto param_count = param_list.size();
+                const auto arg_count = args.size();
+                if (arg_count > param_count)
+                    return false;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+                auto itr = param_list.begin();
+                std::size_t index = 0;
+                for (; index < arg_count; ++itr, ++index) {
+                    if ((itr->get_type() != args[index].get_type()))
+                        return false;
+                }
 
-struct compare_with_arg_list
-{
-    static RTTR_INLINE bool compare(const std::span<const parameter_info>& param_list, const std::vector<argument>& args)
-    {
-        const auto param_count = param_list.size();
-        const auto arg_count = args.size();
-        if (arg_count > param_count)
-            return false;
+                // when there are still some parameter left, check if they are default values or not
+                for (; itr != param_list.end(); ++itr) {
+                    if (!itr->has_default_value())
+                        return false;
+                }
 
-        auto itr = param_list.begin();
-        std::size_t index = 0;
-        for (; index < arg_count; ++itr, ++index)
-        {
-            if ((itr->get_type() != args[index].get_type()))
-                return false;
-        }
+                return true;
+            }
+        };
 
-        // when there are still some parameter left, check if they are default values or not
-        for (;itr != param_list.end(); ++itr)
-        {
-            if (!itr->has_default_value())
-                return false;
-        }
-
-        return true;
-    }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_PARAMETER_INFOS_COMPARE_H_

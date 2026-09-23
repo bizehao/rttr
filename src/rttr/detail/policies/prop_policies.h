@@ -31,23 +31,18 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/misc_type_traits.h"
 
-namespace rttr
-{
-namespace detail
-{
-
-enum class prop_policy {
-    return_as_ptr,
-    set_as_ptr,
-    set_as_ref_wrapper,
-    get_as_ref_wrapper,
-    return_as_copy,
-    read_only,
-    set_value,
-};
-
-} // end namespace detail;
-
+namespace rttr {
+    namespace detail {
+        enum class prop_policy {
+            return_as_ptr,
+            set_as_ptr,
+            set_as_ref_wrapper,
+            get_as_ref_wrapper,
+            return_as_copy,
+            read_only,
+            set_value,
+        };
+    } // end namespace detail;
 } // end namespace rttr
 
 #endif // RTTR_PROP_POLICIES_H_

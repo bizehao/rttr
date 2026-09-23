@@ -36,7 +36,6 @@
 using namespace rttr;
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////
 // init static variables and some global functions added as properties to the test class
 
@@ -44,18 +43,15 @@ static std::string g_name;
 
 int get_value() { return 512; }
 
-static const std::string& get_name()
-{
+static const std::string &get_name() {
     return g_name;
 }
 
-static void set_name(const std::string& text)
-{
+static void set_name(const std::string &text) {
     g_name = text;
 }
 
-static int& get_int_value()
-{
+static int &get_int_value() {
     static int value = 42;
     return value;
 }
@@ -63,23 +59,22 @@ static int& get_int_value()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-auto get_global_func_5 = [](){ return 45;};
+auto get_global_func_5 = []() { return 45; };
 
 int lambda_var = 500;
-auto get_global_lambda = [](){ return lambda_var;};
-auto set_global_lambda = [](int v){ return lambda_var = v;};
+auto get_global_lambda = []() { return lambda_var; };
+auto set_global_lambda = [](int v) { return lambda_var = v; };
 
-RTTR_REGISTRATION
-{
-    registration::do_property<^^get_name, ^^set_name>("global_func_1");
-    registration::do_property_readonly<^^get_value>("global_func_2");
-    registration::do_property<^^get_name, ^^set_name, policy::prop::op_bind_as_ptr>("global_func_3");
-    registration::do_property_readonly<^^get_int_value, policy::prop::op_bind_as_ptr>("global_func_4");
+RTTR_REGISTRATION {
+    registration::do_property < ^^get_name, ^^set_name > ("global_func_1");
+    registration::do_property_readonly < ^^get_value > ("global_func_2");
+    registration::do_property < ^^get_name, ^^set_name, policy::prop::op_bind_as_ptr > ("global_func_3");
+    registration::do_property_readonly < ^^get_int_value, policy::prop::op_bind_as_ptr > ("global_func_4");
 
-    registration::do_property_readonly<^^get_global_func_5>("global_func_5");
-    registration::do_property_readonly<^^get_int_value, policy::prop::op_as_reference_wrapper>("global_func_6");
-    registration::do_property<^^get_name, ^^set_name, policy::prop::op_as_reference_wrapper>("global_func_7");
-    registration::do_property<^^get_global_lambda, ^^set_global_lambda>("global_func_8");
+    registration::do_property_readonly < ^^get_global_func_5 > ("global_func_5");
+    registration::do_property_readonly < ^^get_int_value, policy::prop::op_as_reference_wrapper > ("global_func_6");
+    registration::do_property < ^^get_name, ^^set_name, policy::prop::op_as_reference_wrapper > ("global_func_7");
+    registration::do_property < ^^get_global_lambda, ^^set_global_lambda > ("global_func_8");
 
     // registration::property("global_func_1", &get_name, &set_name) ( metadata("Description", "Some Text") )
     //     .property_readonly("global_func_2", &get_value) ( metadata("Description", "Some Text") )
@@ -109,7 +104,11 @@ RTTR_REGISTRATION
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global function", "[property]")
+TEST_CASE (
+"property - global function"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_func_1");
     REQUIRE(prop.is_valid() == true);
@@ -132,7 +131,11 @@ TEST_CASE("property - global function", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global function - read only", "[property]")
+TEST_CASE (
+"property - global function - read only"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_func_2");
     REQUIRE(prop.is_valid() == true);
@@ -153,7 +156,11 @@ TEST_CASE("property - global function - read only", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global function - bind as ptr", "[property]")
+TEST_CASE (
+"property - global function - bind as ptr"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_func_3");
     REQUIRE(prop.is_valid() == true);
@@ -176,7 +183,11 @@ TEST_CASE("property - global function - bind as ptr", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global function - read only - bind as ptr", "[property]")
+TEST_CASE (
+"property - global function - read only - bind as ptr"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_func_4");
     REQUIRE(prop.is_valid() == true);
@@ -200,7 +211,11 @@ TEST_CASE("property - global function - read only - bind as ptr", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global function - read only - std::function", "[property]")
+TEST_CASE (
+"property - global function - read only - std::function"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_func_5");
     REQUIRE(prop.is_valid() == true);
@@ -215,7 +230,11 @@ TEST_CASE("property - global function - read only - std::function", "[property]"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global function - read only - as_reference_wrapper", "[property]")
+TEST_CASE (
+"property - global function - read only - as_reference_wrapper"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_func_6");
     REQUIRE(prop.is_valid() == true);
@@ -237,7 +256,11 @@ TEST_CASE("property - global function - read only - as_reference_wrapper", "[pro
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global function - as_reference_wrapper", "[property]")
+TEST_CASE (
+"property - global function - as_reference_wrapper"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_func_7");
     REQUIRE(prop.is_valid() == true);
@@ -260,7 +283,11 @@ TEST_CASE("property - global function - as_reference_wrapper", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - global lambda", "[property]")
+TEST_CASE (
+"property - global lambda"
+,
+"[property]"
+)
 {
     property prop = type::get_global_property("global_func_8");
     REQUIRE(prop.is_valid() == true);

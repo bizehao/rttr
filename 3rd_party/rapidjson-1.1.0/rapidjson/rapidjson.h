@@ -389,18 +389,18 @@
 #define RAPIDJSON_NO_SIZETYPEDEFINE
 #endif
 RAPIDJSON_NAMESPACE_BEGIN
-//! Size type (for string lengths, array sizes, etc.)
-/*! RapidJSON uses 32-bit array/string indices even on 64-bit platforms,
+    //! Size type (for string lengths, array sizes, etc.)
+    /*! RapidJSON uses 32-bit array/string indices even on 64-bit platforms,
     instead of using \c size_t. Users may override the SizeType by defining
     \ref RAPIDJSON_NO_SIZETYPEDEFINE.
 */
-typedef unsigned SizeType;
+    typedef unsigned SizeType;
 RAPIDJSON_NAMESPACE_END
 #endif
 
 // always import std::size_t to rapidjson namespace
 RAPIDJSON_NAMESPACE_BEGIN
-using std::size_t;
+    using std::size_t;
 RAPIDJSON_NAMESPACE_END
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -428,20 +428,20 @@ RAPIDJSON_NAMESPACE_END
 //!@cond RAPIDJSON_HIDDEN_FROM_DOXYGEN
 #endif
 RAPIDJSON_NAMESPACE_BEGIN
-template <bool x>
-struct STATIC_ASSERTION_FAILURE;
-template <>
-struct STATIC_ASSERTION_FAILURE<true>
-{
-    enum
-    {
-        value = 1
+    template<bool x>
+    struct STATIC_ASSERTION_FAILURE;
+
+    template<>
+    struct STATIC_ASSERTION_FAILURE<true> {
+        enum {
+            value = 1
+        };
     };
-};
-template <int x>
-struct StaticAssertTest
-{
-};
+
+    template<int x>
+    struct StaticAssertTest {
+    };
+
 RAPIDJSON_NAMESPACE_END
 
 #define RAPIDJSON_JOIN(X, Y) RAPIDJSON_DO_JOIN(X, Y)
@@ -632,18 +632,16 @@ RAPIDJSON_NAMESPACE_END
     \see RAPIDJSON_NAMESPACE
 */
 RAPIDJSON_NAMESPACE_BEGIN
-
-//! Type of JSON value
-enum Type
-{
-    kNullType = 0,   //!< null
-    kFalseType = 1,  //!< false
-    kTrueType = 2,   //!< true
-    kObjectType = 3, //!< object
-    kArrayType = 4,  //!< array
-    kStringType = 5, //!< string
-    kNumberType = 6  //!< number
-};
+    //! Type of JSON value
+    enum Type {
+        kNullType = 0, //!< null
+        kFalseType = 1, //!< false
+        kTrueType = 2, //!< true
+        kObjectType = 3, //!< object
+        kArrayType = 4, //!< array
+        kStringType = 5, //!< string
+        kNumberType = 6 //!< number
+    };
 
 RAPIDJSON_NAMESPACE_END
 

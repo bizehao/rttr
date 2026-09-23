@@ -34,55 +34,50 @@
 
 #include <string_view>
 
-namespace rttr
-{
+namespace rttr {
+    class instance;
+    class argument;
 
-class instance;
-class argument;
-
-namespace detail
-{
-/*!
+    namespace detail {
+        /*!
  * Base class for an instance of a Property.
  *
  * This is the base class for all properties of the system.
  * It provide the basic mechanism for getting all meta data of a property,
  * but it also define a general interface to set/get properties via string: toString and fromString.
  */
-class RTTR_API property_wrapper_base
-{
-    public:
-        property_wrapper_base(std::string_view name, rttr::type declaring_type) RTTR_NOEXCEPT;
+        class RTTR_API property_wrapper_base {
+        public:
+            property_wrapper_base(std::string_view name, rttr::type declaring_type) RTTR_NOEXCEPT;
 
-        virtual ~property_wrapper_base();
+            virtual ~property_wrapper_base();
 
-        rttr::type get_declaring_type() const RTTR_NOEXCEPT;
+            rttr::type get_declaring_type() const RTTR_NOEXCEPT;
 
-        std::string_view get_name() const RTTR_NOEXCEPT;
+            std::string_view get_name() const RTTR_NOEXCEPT;
 
-        virtual bool is_valid() const RTTR_NOEXCEPT;
+            virtual bool is_valid() const RTTR_NOEXCEPT;
 
-        virtual bool is_readonly() const RTTR_NOEXCEPT;
+            virtual bool is_readonly() const RTTR_NOEXCEPT;
 
-        virtual bool is_static() const RTTR_NOEXCEPT;
+            virtual bool is_static() const RTTR_NOEXCEPT;
 
-        virtual rttr::type get_type() const RTTR_NOEXCEPT;
+            virtual rttr::type get_type() const RTTR_NOEXCEPT;
 
-        virtual variant get_metadata(const std::string_view& key) const;
+            virtual variant get_metadata(const std::string_view &key) const;
 
-        virtual bool set_value(instance& object, argument& arg) const;
+            virtual bool set_value(instance &object, argument &arg) const;
 
-        virtual variant get_value(instance& object) const;
+            virtual variant get_value(instance &object) const;
 
-    protected:
-        void init() RTTR_NOEXCEPT;
+        protected:
+            void init() RTTR_NOEXCEPT;
 
-    private:
-        std::string m_name;
-        rttr::type        m_declaring_type;
-};
-
-} // end namespace detail
+        private:
+            std::string m_name;
+            rttr::type m_declaring_type;
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_PROPERTY_WRAPPER_BASE_H_

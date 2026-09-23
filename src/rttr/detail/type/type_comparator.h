@@ -31,60 +31,52 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/type/type_register.h"
 
-namespace rttr
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-namespace detail
-{
+        struct type_comparator_base {
+            using cmp_func = bool (*)(const void *lhs, const void *rhs);
 
-/////////////////////////////////////////////////////////////////////////////////////////
+            type_comparator_base(cmp_func cmp_f = [](const void *, const void *) -> bool { return false; },
+                                 rttr::type t = get_invalid_type())
+                : cmp(cmp_f), cmp_type(t) {
+            }
 
-struct type_comparator_base
-{
-    using cmp_func = bool (*)(const void* lhs, const void* rhs);
+            cmp_func cmp;
+            rttr::type cmp_type;
+        };
 
-    type_comparator_base(cmp_func cmp_f = [](const void*, const void*) ->bool { return false; }, rttr::type t = get_invalid_type())
-    :   cmp(cmp_f), cmp_type(t)
-    {
-    }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-    cmp_func    cmp;
-    rttr::type        cmp_type;
-};
+        template<typename T>
+        struct type_equal_comparator : type_comparator_base {
+            type_equal_comparator() : type_comparator_base(equal, type::get<T>()) {
+            }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+            static bool equal(const void *lhs, const void *rhs) {
+                const T &l = *static_cast<const T *>(lhs);
+                const T &r = *static_cast<const T *>(rhs);
+                return (l == r);
+            }
+        };
 
-template<typename T>
-struct type_equal_comparator : type_comparator_base
-{
-    type_equal_comparator() : type_comparator_base(equal, type::get<T>()) {}
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-    static bool equal(const void* lhs, const void* rhs)
-    {
-        const T& l = *static_cast<const T*>(lhs);
-        const T& r = *static_cast<const T*>(rhs);
-        return (l == r);
-    }
-};
+        template<typename T>
+        struct type_less_than_comparator : type_comparator_base {
+            type_less_than_comparator() : type_comparator_base(less_than, type::get<T>()) {
+            }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+            static bool less_than(const void *lhs, const void *rhs) {
+                const T &l = *static_cast<const T *>(lhs);
+                const T &r = *static_cast<const T *>(rhs);
+                return (l < r);
+            }
+        };
 
-template<typename T>
-struct type_less_than_comparator : type_comparator_base
-{
-    type_less_than_comparator() : type_comparator_base(less_than, type::get<T>()) {}
-
-    static bool less_than(const void* lhs, const void* rhs)
-    {
-        const T& l = *static_cast<const T*>(lhs);
-        const T& r = *static_cast<const T*>(rhs);
-        return (l < r);
-    }
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_TYPE_COMPARATOR_H_

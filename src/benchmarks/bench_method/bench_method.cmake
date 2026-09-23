@@ -26,11 +26,11 @@
 ####################################################################################
 
 set(HEADER_FILES version.rc.in
-                  test_methods.h
-                  )
+        test_methods.h
+)
 
 set(SOURCE_FILES main.cpp
-                 bench_method.cpp
-                 bench_find_method.cpp
-                 bench_invoke_method.cpp
-                 test_methods.cpp)
+        bench_method.cpp
+        bench_find_method.cpp
+        bench_invoke_method.cpp
+        test_methods.cpp)

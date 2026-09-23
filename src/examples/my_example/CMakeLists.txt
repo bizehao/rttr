@@ -37,11 +37,11 @@ set(SRC_FILES "example_1.cpp" "other_impl.cpp")
 add_executable(example_1 ${SRC_FILES} ${HPP_FILES})
 target_link_libraries(example_1 rttr_core_lib stdc++exp)
 target_include_directories(example_1 PUBLIC ${RAPID_JSON_DIR})
-set_target_properties(example_1 PROPERTIES 
-                      DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
-                      FOLDER "Examples"
-                      INSTALL_RPATH "${RTTR_EXECUTABLE_INSTALL_RPATH}"
-                      CXX_STANDARD ${MAX_CXX_STANDARD})
+set_target_properties(example_1 PROPERTIES
+        DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
+        FOLDER "Examples"
+        INSTALL_RPATH "${RTTR_EXECUTABLE_INSTALL_RPATH}"
+        CXX_STANDARD ${MAX_CXX_STANDARD})
 
 #set_compiler_warnings(example_1)
 

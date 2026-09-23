@@ -26,10 +26,10 @@
 ####################################################################################
 
 set(HEADER_FILES chaiscript_visitor.h
-                 player.h
-                 version.rc.in
-                 )
+        player.h
+        version.rc.in
+)
 
 set(SOURCE_FILES main.cpp
-                 player.cpp
-                 )
+        player.cpp
+)

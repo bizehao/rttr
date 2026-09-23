@@ -34,15 +34,11 @@
 #include "rttr/argument.h"
 #include <type_traits>
 
-namespace rttr
-{
+namespace rttr {
+    namespace detail {
+        using variant_create_func = variant(*)(const argument &);
 
-namespace detail
-{
-
-using variant_create_func = variant(*)(const argument&);
-
-/*!
+        /*!
  * \brief The following code is used for the function bool variant::convert(const type& target_type).
  *
  * With the create_variant function it is possible to perform a rttr_cast internally in variant.
@@ -50,37 +46,32 @@ using variant_create_func = variant(*)(const argument&);
  *
  * Template arguments cannot be forwarded at runtime to some derived or base classes.
  */
-template<typename T>
-struct RTTR_LOCAL create_variant_policy
-{
-    static variant create_variant(const argument& data)
-    {
-        return data.get_value<T>();
-    }
-};
+        template<typename T>
+        struct RTTR_LOCAL create_variant_policy {
+            static variant create_variant(const argument &data) {
+                return data.get_value<T>();
+            }
+        };
 
-struct RTTR_LOCAL create_invalid_variant_policy
-{
-    static variant create_variant(const argument& data)
-    {
-        return variant();
-    }
-};
+        struct RTTR_LOCAL create_invalid_variant_policy {
+            static variant create_variant(const argument &data) {
+                return variant();
+            }
+        };
 
-/*!
+        /*!
  * \brief With this functions we want to create only variants for pointer types.
  *
  * \remark When we would create for every registered type such a function pointer,
  *         we might get infinite recursion for pointer types.
  */
-template<typename T>
-using create_variant_func = std::conditional_t<detail::pointer_count<T>::value == 1,
-                                          create_variant_policy<T>,
-                                          create_invalid_variant_policy>;
+        template<typename T>
+        using create_variant_func = std::conditional_t<detail::pointer_count<T>::value == 1,
+            create_variant_policy<T>,
+            create_invalid_variant_policy>;
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_GET_CREATE_VARIANT_FUNC_H_

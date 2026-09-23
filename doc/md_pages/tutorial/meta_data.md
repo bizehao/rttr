@@ -16,25 +16,29 @@ Please take a look at following example:
 
 enum class MetaData_Type
 {
-    SCRIPTABLE,
-    GUI
+SCRIPTABLE,
+GUI
 };
 
 RTTR_REGISTRATION
 {
-    using namespace rttr;
-    
+using namespace rttr;
+
     registration::property("value", &g_Value)
                   (    
                       metadata(MetaData_Type::SCRIPTABLE, false), 
                       metadata("Description", "This is a value.")
                   );
+
 }
 \endcode
-In order to add metadata to a registered item you have to use the `()` operator of the returned @ref rttr::registration::bind "bind" object.
-Then you call for every metadata item you want to add, the function @ref rttr::metadata(variant, variant) "metadata()".
+In order to add metadata to a registered item you have to use the `()` operator of the returned @ref rttr::
+registration::bind "bind" object.
+Then you call for every metadata item you want to add, the function @ref rttr::metadata (variant, variant) "metadata ()
+".
 
 It has following synopsis:
+
 ~~~~{.cpp}
   rttr::detail::metadata rttr::metadata( variant key, variant value );
 ~~~~
@@ -44,9 +48,9 @@ The first use an enum type as key, the second a string.
 
 And the following snippet shows, how to retrieve this information:
 \code{.cpp}
-int main()
+int main ()
 {
-    using namespace rttr;
+using namespace rttr;
 
     property prop = type::get_global_property("value");
     variant value = prop.get_metadata(MetaData_Type::SCRIPTABLE);
@@ -54,6 +58,7 @@ int main()
     
     value = prop.get_metadata("Description");
     std::cout << value.get_value<std::string>(); // prints "This is a value."
+
 }
 \endcode
 

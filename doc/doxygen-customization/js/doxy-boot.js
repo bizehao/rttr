@@ -1,19 +1,16 @@
-$( document ).ready(function() {
+$(document).ready(function () {
 
     $("div.headertitle").addClass("page-header");
     $("div.title").addClass("h1");
-    
+
     // some ugly hacks because of doxygen bugs
     var title = $("title");
-    if (title.text() == "rttr: Main Page")
-    {
-      title.text("RTTR - Run Time Type Reflection");
-      var header_title = $("div.title.h1");
-      if (header_title.text() == "rttr Documentation")
-        header_title.text("RTTR - Run Time Type Reflection");
-    }
-    else 
-    {
+    if (title.text() == "rttr: Main Page") {
+        title.text("RTTR - Run Time Type Reflection");
+        var header_title = $("div.title.h1");
+        if (header_title.text() == "rttr Documentation")
+            header_title.text("RTTR - Run Time Type Reflection");
+    } else {
         var new_title = title.text().replace("rttr:", "RTTR:");
         title.text(new_title);
     }
@@ -21,35 +18,32 @@ $( document ).ready(function() {
     $('li > a[href="index.html"] > span').before("<i class='fa fa-cog'></i> ");
     var tutorial_link = $('li > a[href="pages.html"]');
     tutorial_link.attr("href", "tutorial_page.html");
-    
+
     var install_link = $('li > a > span:contains("Installation")').parent();
     install_link.attr("href", "building_install_page.html");
-    
+
     var license_link = $('li > a > span:contains("License")').parent();
     license_link.attr("href", "license_page.html");
-    
-    if (title.text().search("Building & Installation") > - 1)
-    {
+
+    if (title.text().search("Building & Installation") > -1) {
         tutorial_link.parent().removeClass("current active");
         install_link.parent().addClass("current active");
-    }
-    else if (title.text().search("License") > -1)
-    {
+    } else if (title.text().search("License") > -1) {
         tutorial_link.parent().removeClass("current active");
         license_link.parent().addClass("current active");
     }
-    
+
     // replace the div tags with the <a> tags below,
     // the reason we are doing this, is because we cannot style directly the <a> tags with classes within doxygen
     // and explicit <a> tags cannot be using with internal links
-    var button_link = $("div.doxy-button").each(function(){
+    var button_link = $("div.doxy-button").each(function () {
         var a_tag = $(this).children().first();
         if (a_tag.length == 0)
             return;
         a_tag.addClass($(this).attr("class"));
         $(this).replaceWith(a_tag);
     });
-    
+
     $('li > a[href="modules.html"] > span').before("<i class='fa fa-square'></i> ");
     $('li > a[href="namespaces.html"] > span').before("<i class='fa fa-bars'></i> ");
     $('li > a[href="annotated.html"] > span').before("<i class='fa fa-list-ul'></i> ");
@@ -64,7 +58,7 @@ $( document ).ready(function() {
     $('img[src="ftv2cl.png"]').replaceWith('<span class="label label-danger">C</span> ');
 
     $("ul.tablist").addClass("nav nav-pills nav-justified");
-    
+
     $("ul.tablist").css("margin-top", "0.5em");
     $("ul.tablist").css("margin-bottom", "0.5em");
     $("li.current").addClass("active");
@@ -105,52 +99,51 @@ $( document ).ready(function() {
     $('div.fragment.well div.line:first').css('margin-top', '15px');
     $('div.fragment.well div.line:last').css('margin-bottom', '15px');
 
-    $('table.doxtable').removeClass('doxtable').addClass('table table-striped table-bordered').each(function(){
+    $('table.doxtable').removeClass('doxtable').addClass('table table-striped table-bordered').each(function () {
         $(this).prepend('<thead></thead>');
         $(this).find('tbody > tr:first').prependTo($(this).find('thead'));
-        
+
         $(this).find('td > span.success').parent().addClass('success');
         $(this).find('td > span.warning').parent().addClass('warning');
         $(this).find('td > span.danger').parent().addClass('danger');
     });
-    
 
-    if($('div.fragment.well div.ttc').length > 0)
-    {
+
+    if ($('div.fragment.well div.ttc').length > 0) {
         $('div.fragment.well div.line:first').parent().removeClass('fragment well');
     }
-    
-/*
-    $('table.memberdecls').find('.memItemRight').each(function(){
-        $(this).contents().appendTo($(this).siblings('.memItemLeft'));
-        $(this).siblings('.memItemLeft').attr('align', 'left');
-    });
-    */
 
-    $('.mdescLeft').each(function(){
-      $(this).parent().remove();
+    /*
+        $('table.memberdecls').find('.memItemRight').each(function(){
+            $(this).contents().appendTo($(this).siblings('.memItemLeft'));
+            $(this).siblings('.memItemLeft').attr('align', 'left');
+        });
+        */
+
+    $('.mdescLeft').each(function () {
+        $(this).parent().remove();
     });
-    
-    $('.memSeparator').each(function(){
-      $(this).parent().remove();
+
+    $('.memSeparator').each(function () {
+        $(this).parent().remove();
     });
-    
-     $('.memTemplParams').each(function(){
-      $(this).parent().remove();
+
+    $('.memTemplParams').each(function () {
+        $(this).parent().remove();
     });
-    
-    
+
+
     function getOriginalWidthOfImg(img_element) {
         var t = new Image();
         t.src = (img_element.getAttribute ? img_element.getAttribute("src") : false) || img_element.src;
         return t.width;
     }
-    
-    $('div.dyncontent').find('img').each(function(){
-        if(getOriginalWidthOfImg($(this)[0]) > $('#content>div.container').width())
+
+    $('div.dyncontent').find('img').each(function () {
+        if (getOriginalWidthOfImg($(this)[0]) > $('#content>div.container').width())
             $(this).css('width', '100%');
     });
-    
+
     $(".memitem").removeClass('memitem');
     $(".memproto").removeClass('memproto');
     $(".memdoc").removeClass('memdoc');

@@ -34,7 +34,11 @@ using namespace rttr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from empty", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from empty"
+,
+"[variant]"
+)
 {
     variant var;
     CHECK(var.to_bool() == false);
@@ -42,7 +46,11 @@ TEST_CASE("variant::to_bool() - from empty", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from bool", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from bool"
+,
+"[variant]"
+)
 {
     variant var = true;
     REQUIRE(var.is_valid() == true);
@@ -65,7 +73,11 @@ TEST_CASE("variant::to_bool() - from bool", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from char", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from char"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {
@@ -88,7 +100,11 @@ TEST_CASE("variant::to_bool() - from char", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from std::string", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from std::string"
+,
+"[variant]"
+)
 {
     variant var = std::string("true");
     REQUIRE(var.is_valid() == true);
@@ -113,7 +129,11 @@ TEST_CASE("variant::to_bool() - from std::string", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from int", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from int"
+,
+"[variant]"
+)
 {
     variant var = 1;
     REQUIRE(var.is_valid() == true);
@@ -133,7 +153,11 @@ TEST_CASE("variant::to_bool() - from int", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from float", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from float"
+,
+"[variant]"
+)
 {
 
     variant var = 1.0f;
@@ -159,7 +183,11 @@ TEST_CASE("variant::to_bool() - from float", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from double", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from double"
+,
+"[variant]"
+)
 {
     variant var = 1.0;
     REQUIRE(var.is_valid() == true);
@@ -176,7 +204,11 @@ TEST_CASE("variant::to_bool() - from double", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from int8_t", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from int8_t"
+,
+"[variant]"
+)
 {
     SECTION("positive")
     {
@@ -210,7 +242,11 @@ TEST_CASE("variant::to_bool() - from int8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from int16_t", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from int16_t"
+,
+"[variant]"
+)
 {
     SECTION("positive")
     {
@@ -244,7 +280,11 @@ TEST_CASE("variant::to_bool() - from int16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from int32_t", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from int32_t"
+,
+"[variant]"
+)
 {
     SECTION("positive")
     {
@@ -278,7 +318,11 @@ TEST_CASE("variant::to_bool() - from int32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from int64_t", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from int64_t"
+,
+"[variant]"
+)
 {
     SECTION("positive")
     {
@@ -312,7 +356,11 @@ TEST_CASE("variant::to_bool() - from int64_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from uint8_t", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from uint8_t"
+,
+"[variant]"
+)
 {
     SECTION("positive")
     {
@@ -337,7 +385,11 @@ TEST_CASE("variant::to_bool() - from uint8_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from uint16_t", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from uint16_t"
+,
+"[variant]"
+)
 {
     SECTION("positive")
     {
@@ -362,7 +414,11 @@ TEST_CASE("variant::to_bool() - from uint16_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from uint32_t", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from uint32_t"
+,
+"[variant]"
+)
 {
     SECTION("positive")
     {
@@ -387,7 +443,11 @@ TEST_CASE("variant::to_bool() - from uint32_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from uint64_t", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from uint64_t"
+,
+"[variant]"
+)
 {
     SECTION("positive")
     {
@@ -412,7 +472,11 @@ TEST_CASE("variant::to_bool() - from uint64_t", "[variant]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant::to_bool() - from enum", "[variant]")
+TEST_CASE (
+"variant::to_bool() - from enum"
+,
+"[variant]"
+)
 {
     SECTION("valid conversion")
     {

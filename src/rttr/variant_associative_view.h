@@ -37,13 +37,12 @@
 #include <vector>
 #include <memory>
 
-namespace rttr
-{
+namespace rttr {
     class type;
     class instance;
     class argument;
 
-/*!
+    /*!
  * The \ref variant_associative_view describes a class that refers to an
  * <a target="_blank" href=https://en.wikipedia.org/wiki/Associative_containers>associative container</a> (e.g: `std::map`)
  * inside a \ref variant.
@@ -89,8 +88,7 @@ namespace rttr
  *
  * \see variant
  */
-class RTTR_API variant_associative_view
-{
+    class RTTR_API variant_associative_view {
     public:
         class const_iterator;
 
@@ -104,7 +102,7 @@ class RTTR_API variant_associative_view
         /*!
          * \brief Constructs a copy of the given variant_associative_view \p other.
          */
-        variant_associative_view(const variant_associative_view& other);
+        variant_associative_view(const variant_associative_view &other);
 
         /*!
          * \brief Destroys the variant_associative_view.
@@ -118,7 +116,7 @@ class RTTR_API variant_associative_view
          *
          * \return A reference to the variant_associative_view with the new data.
          */
-        variant_associative_view& operator=(const variant_associative_view& other) RTTR_NOEXCEPT;
+        variant_associative_view &operator=(const variant_associative_view &other) RTTR_NOEXCEPT;
 
         /*!
          * \brief Returns true if this variant_associative_view is valid, that means the object is holding some data.
@@ -140,7 +138,7 @@ class RTTR_API variant_associative_view
         /*!
          * \brief Swaps this variant_associative_view with the \a other variant_associative_view.
          */
-        void swap(variant_associative_view& other) RTTR_NOEXCEPT;
+        void swap(variant_associative_view &other) RTTR_NOEXCEPT;
 
 
         /*!
@@ -312,133 +310,133 @@ class RTTR_API variant_associative_view
          *
          * \remark The iterator is valid as long as the variant_associative_view and it corresponding variant is valid and not modified.
          */
-        class RTTR_API const_iterator
-        {
-            public:
-                using self_type = const_iterator;
-                using value_type = variant;
+        class RTTR_API const_iterator {
+        public:
+            using self_type = const_iterator;
+            using value_type = variant;
 
-                /*!
+            /*!
                  * \brief Destroys the variant_associative_view::const_iterator
                  */
-                ~const_iterator();
+            ~const_iterator();
 
-                /*!
+            /*!
                  * \brief Creates a copy of \p other
                  */
-                const_iterator(const const_iterator& other);
+            const_iterator(const const_iterator &other);
 
-                 /*!
+            /*!
                  * \brief Assigns \p other to `this`.
                  */
-                const_iterator& operator=(const_iterator other);
+            const_iterator &operator=(const_iterator other);
 
-                /*!
+            /*!
                  * Returns the underlying key and value stored in a `std::pair<key, value>`.
                  * The actual data in the variant is stored inside a `std::reference_wrapper<T>`
                  *
                  * \see variant::extract_wrapped_value(), variant::get_wrapped_value<T>()
                  */
-                const std::pair<variant, variant> operator*() const;
+            const std::pair<variant, variant> operator*() const;
 
-                /*!
+            /*!
                  * \brief Returns the current key, stored inside a `std::reference_wrapper<T>`
                  *        and copied to a variant.
                  *
                  * \see variant::extract_wrapped_value(), variant::get_wrapped_value<T>()
                  */
-                const variant get_key() const;
+            const variant get_key() const;
 
-                /*!
+            /*!
                  * \brief Returns the current value, stored inside a `std::reference_wrapper<T>`
                  *        and copied to a variant.
                  *
                  * \see variant::extract_wrapped_value(), variant::get_wrapped_value<T>()
                  */
-                const variant get_value() const;
+            const variant get_value() const;
 
-                /*!
+            /*!
                  * \brief Pre-increment operator advances the iterator to the next item
                  *        in the container and returns an iterator to the new current item.
                  *
                  * \remark Calling this function on and iterator with value variant_associative_view::end()
                  *         leads to undefined behaviour.
                  */
-                const_iterator &operator++();
+            const_iterator &operator++();
 
-                /*!
+            /*!
                  * \brief Post-increment operator advances the iterator to the next item
                  *        in the container and returns an iterator to the previously current item.
                  */
-                const_iterator operator++(int);
+            const_iterator operator++(int);
 
-                /*!
+            /*!
                  * \brief Pre-decrement operator makes the preceding item current and returns
                  *        an iterator to the new current item.
                  *
                  * \remark Calling this function on and iterator with value variant_associative_view::begin()
                  *         leads to undefined behaviour.
                  */
-                const_iterator &operator--();
+            const_iterator &operator--();
 
-                /*!
+            /*!
                  * \brief Post-decrement operator makes the preceding item current
                  *        and returns an iterator to the previously current item.
                  */
-                const_iterator operator--(int);
+            const_iterator operator--(int);
 
-                /*!
+            /*!
                  * \brief Advances the iterator by i items.
                  */
-                const_iterator &operator+=(int i);
+            const_iterator &operator+=(int i);
 
-                /*!
+            /*!
                  * \brief Returns an iterator to the item at i positions backward from this iterator.
                  */
-                const_iterator &operator-=(int i);
+            const_iterator &operator-=(int i);
 
-                /*!
+            /*!
                  * \brief Returns an iterator to the item at i positions forward from this iterator.
                  */
-                const_iterator operator+(int i) const;
+            const_iterator operator+(int i) const;
 
-                /*!
+            /*!
                  * \brief Returns an iterator to the item at i positions backward from this iterator.
                  */
-                const_iterator operator-(int i) const;
+            const_iterator operator-(int i) const;
 
-                /*!
+            /*!
                  * \brief Returns `true` if \p other points to the same item
                  *        as this iterator; otherwise returns false.
                  *
                  * \see \ref const_iterator::operator!= "operator!="
                  */
-                bool operator==(const const_iterator& other) const;
+            bool operator==(const const_iterator &other) const;
 
-                /*!
+            /*!
                  * \brief Returns true if \p other points to a different item
                  *        than this iterator; otherwise returns false.
                  *
                  * \see \ref operator== "operator=="
                  */
-                bool operator!=(const const_iterator& other) const;
+            bool operator!=(const const_iterator &other) const;
 
-            private:
-                const_iterator(const detail::variant_associative_view_private* view) RTTR_NOEXCEPT;
-                void swap(const_iterator& other);
+        private:
+            const_iterator(const detail::variant_associative_view_private *view) RTTR_NOEXCEPT;
 
-                friend class variant_associative_view;
+            void swap(const_iterator &other);
 
-                const detail::variant_associative_view_private* m_view;
-                detail::iterator_data m_itr;
+            friend class variant_associative_view;
+
+            const detail::variant_associative_view_private *m_view;
+            detail::iterator_data m_itr;
         };
+
     private:
         friend class variant;
         friend class argument;
 
         detail::variant_associative_view_private m_view;
-};
-
+    };
 } // end namespace rttr
 
 #endif // RTTR_VARIANT_ASSOCIATIVE_VIEW_H_

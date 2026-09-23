@@ -40,15 +40,11 @@
 #include <functional>
 #include <meta>
 
-namespace rttr
-{
-namespace detail
-{
-
+namespace rttr {
+    namespace detail {
 #include "rttr/detail/property/property_wrapper_func.h"
 #include "rttr/detail/property/property_wrapper_object.h"
-
-} // end namespace detail
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_PROPERTY_WRAPPER_H_

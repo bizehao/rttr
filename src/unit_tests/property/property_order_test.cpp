@@ -31,107 +31,117 @@
 
 using namespace rttr;
 
-struct property_order_test_base
-{
+struct property_order_test_base {
     property_order_test_base()
-        : _whoami( "I am a base property" )
-    {}
+        : _whoami("I am a base property") {
+    }
+
     virtual ~property_order_test_base() = default ;
 
-    std::string _whoami ;
+    std::string _whoami;
 
     RTTR_ENABLE()
-
 };
 
-struct property_order_test_derived : property_order_test_base
-{
+struct property_order_test_derived : property_order_test_base {
     property_order_test_derived()
-        : _whoami( "I am a derived property with same name" )
-    {}
+        : _whoami("I am a derived property with same name") {
+    }
+
     ~property_order_test_derived() override = default ;
 
     // member with SAME name as base
-    std::string _whoami ;
+    std::string _whoami;
 
     RTTR_ENABLE(property_order_test_base)
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^property_order_test_base>("property_order_test_base");
-    registration::do_class<^^property_order_test_derived>("property_order_test_derived");
+RTTR_REGISTRATION {
+    registration::do_class < ^^property_order_test_base > ("property_order_test_base");
+    registration::do_class < ^^property_order_test_derived > ("property_order_test_derived");
 }
 
 // approach 1 looks up the "property instance"
 // and gets the value from the property
 std::string rttr_prop_approach1(
-        const rttr::instance& vinst,
-        const std::string_view& prop_name )
-{
-    const auto& inst_t = vinst.get_type();
+    const rttr::instance &vinst,
+    const std::string_view &prop_name) {
+    const auto &inst_t = vinst.get_type();
 
     // find property
-    const auto& prop = inst_t.get_property(prop_name);
+    const auto &prop = inst_t.get_property(prop_name);
     REQUIRE(prop.is_valid() == true);
 
     // get value from property
-    const auto& iam_var = prop.get_value(vinst);
+    const auto &iam_var = prop.get_value(vinst);
     REQUIRE(iam_var.is_valid() == true);
-    REQUIRE(iam_var.is_type<std::string>() == true) ;
+    REQUIRE(iam_var.is_type<std::string>() == true);
 
     return iam_var.get_value<std::string>();
 }
 
 // approach 2 gets the property value from rttr::type
 std::string rttr_prop_approach2(
-        const rttr::instance& vinst,
-        const std::string_view& prop_name )
-{
-    const auto& inst_t = vinst.get_type();
+    const rttr::instance &vinst,
+    const std::string_view &prop_name) {
+    const auto &inst_t = vinst.get_type();
 
     // get_value via type
-    const auto& iam_var = inst_t.get_property_value(prop_name, vinst);
+    const auto &iam_var = inst_t.get_property_value(prop_name, vinst);
     REQUIRE(iam_var.is_valid() == true);
-    REQUIRE(iam_var.is_type<std::string>() == true) ;
+    REQUIRE(iam_var.is_type<std::string>() == true);
 
     return iam_var.get_value<std::string>();
 }
 
 template<class TT>
-void check_prop_order1()
-{
+void check_prop_order1() {
     TT inst;
-    REQUIRE( inst._whoami == rttr_prop_approach1(inst, "_whoami") ) ;
+    REQUIRE(inst._whoami == rttr_prop_approach1(inst, "_whoami"));
 }
 
 template<class TT>
-void check_prop_order2()
-{
+void check_prop_order2() {
     TT inst;
-    REQUIRE( inst._whoami == rttr_prop_approach2(inst, "_whoami") ) ;
+    REQUIRE(inst._whoami == rttr_prop_approach2(inst, "_whoami"));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - approach1_order_properties_base()", "[property]")
+TEST_CASE (
+"property - approach1_order_properties_base()"
+,
+"[property]"
+)
 {
     check_prop_order1<property_order_test_base>();
 }
 
-TEST_CASE("property - approach1_order_properties_derived()", "[property]")
+TEST_CASE (
+"property - approach1_order_properties_derived()"
+,
+"[property]"
+)
 {
     check_prop_order1<property_order_test_derived>();
 }
 
-TEST_CASE("property - approach2_order_properties_base()", "[property]")
+TEST_CASE (
+"property - approach2_order_properties_base()"
+,
+"[property]"
+)
 {
     check_prop_order2<property_order_test_base>();
 }
 
-TEST_CASE("property - approach2_order_properties_derived()", "[property]")
+TEST_CASE (
+"property - approach2_order_properties_derived()"
+,
+"[property]"
+)
 {
     check_prop_order2<property_order_test_derived>();
 }

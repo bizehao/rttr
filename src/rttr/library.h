@@ -34,14 +34,12 @@
 
 #include <memory>
 
-namespace rttr
-{
-namespace detail
-{
-class library_private;
-} // end namespace detail
+namespace rttr {
+    namespace detail {
+        class library_private;
+    } // end namespace detail
 
-/*!
+    /*!
  * The \ref library class provides a cross platform way of explicit loading shared objects
  * (`.so` on Unix based system and `.DLL` on windows).
  *
@@ -96,11 +94,9 @@ class library_private;
  *   std::cout << t.get_property_value("value", var).to_string() << std::endl; // prints "12"
  *  \endcode
  */
-class RTTR_API library
-{
-public:
-
-    /*!
+    class RTTR_API library {
+    public:
+        /*!
      * \brief Constructs a library instance that will load the given library \p `file_name` and
      *        an optional version number \p version.
      *        The file name is expected to be encoded in UTF-8 format.
@@ -108,9 +104,9 @@ public:
      * It is recommend to omit the file suffix, the library class will automatically look for a file
      * with the native library suffix/prefix ( e.g. `lib`, `.so` on Unix, `.dylib` on macOS and iOS, and `.dll` on Windows)
      */
-    library(std::string_view file_name, std::string_view version = std::string_view());
+        library(std::string_view file_name, std::string_view version = std::string_view());
 
-     /*!
+        /*!
       * \brief Destroys the library instance.
       *
       * \remark This will not \ref unload() "unload" the library.
@@ -118,12 +114,13 @@ public:
       *
       * \see unload()
       */
-    ~library();
+        ~library();
 
-    library(const library&) = delete;
-    library& operator=(const library&) = delete;
+        library(const library &) = delete;
 
-     /*!
+        library &operator=(const library &) = delete;
+
+        /*!
       * \brief Loads the library and returns `true`; otherwise `false.`
       *        When the library could not be loaded, check the \ref get_error_string() "error string".
       *
@@ -131,9 +128,9 @@ public:
       *
       * \see unload(), get_error_string()
       */
-     bool load();
+        bool load();
 
-     /*!
+        /*!
       * \brief Unloads the library.
       *        On application exit this happens automatically, so usually you don't need to call this function.
       *        When the same library is loaded multiple times, this call will not succeed before every library instance was unloaded.
@@ -145,18 +142,18 @@ public:
       *
       * \see load(), get_error_string()
       */
-     bool unload();
+        bool unload();
 
-     /*!
+        /*!
       * \brief Returns true if the library is loaded; otherwise returns false
       *
       * \return `true` when the library is loaded; otherwise `false`.
       *
       * \see load(), unload()
       */
-     bool is_loaded() const RTTR_NOEXCEPT;
+        bool is_loaded() const RTTR_NOEXCEPT;
 
-     /*!
+        /*!
       * \brief When the library was not yet \ref load() "loaded", the file name given in the constructor will be returned.
       *        After a successful call to \ref load(), \ref get_file_name() returns the fully-qualified file name of the library,
       *        including the absolute path to the library if one was given in the constructor.
@@ -171,9 +168,9 @@ public:
       *
       * \see load(), unload()
       */
-     std::string_view get_file_name() const RTTR_NOEXCEPT;
+        std::string_view get_file_name() const RTTR_NOEXCEPT;
 
-     /*!
+        /*!
       * \brief Returns a text string with the description of the last error that occurred.
       *        The error string will be only set when the \ref load() "loading" or \ref unload() "unloading" fails.
       *
@@ -181,40 +178,39 @@ public:
       *
       * \see load(), unload()
       */
-     std::string_view get_error_string() const RTTR_NOEXCEPT;
+        std::string_view get_error_string() const RTTR_NOEXCEPT;
 
-     /*!
+        /*!
       * \brief A range of all registered type in this library.
       *
       * \return A range of all loaded types. Or empty if no \ref type "types" were loaded.
       *
       * \see type
       */
-     std::span<const type> get_types() const RTTR_NOEXCEPT;
+        std::span<const type> get_types() const RTTR_NOEXCEPT;
 
-     /*!
+        /*!
       * \brief A range of all registered global \ref property "properties" in this library.
       *
       * \return A range of all loaded properties. Or empty if no \ref property "properties" were loaded.
       *
       * \see property
       */
-     std::span<const property> get_global_properties() const RTTR_NOEXCEPT;
+        std::span<const property> get_global_properties() const RTTR_NOEXCEPT;
 
-     /*!
+        /*!
       * \brief A range of all registered global \ref method "methods" in this library.
       *
       * \return A range of all loaded methods. Or empty if no \ref method "methods" were loaded.
       *
       * \see method
       */
-     std::span<const method> get_global_methods() const RTTR_NOEXCEPT;
+        std::span<const method> get_global_methods() const RTTR_NOEXCEPT;
 
-private:
-    std::shared_ptr<detail::library_private> m_pimpl;
-    bool                                     m_is_loaded;
-};
-
+    private:
+        std::shared_ptr<detail::library_private> m_pimpl;
+        bool m_is_loaded;
+    };
 } // end namespace rttr
 
 #endif  // RTTR_LIBRARY_H_

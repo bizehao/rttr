@@ -32,8 +32,7 @@
 using namespace rttr;
 
 
-RTTR_PLUGIN_REGISTRATION
-{
+RTTR_PLUGIN_REGISTRATION {
     registration::do_class<^^base_test_class>();
 }
 

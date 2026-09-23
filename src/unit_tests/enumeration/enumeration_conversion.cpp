@@ -36,8 +36,7 @@ using namespace rttr;
 
 #include <catch/catch.hpp>
 
-enum class access_t : int
-{
+enum class access_t : int {
     read = 1,
     write = 2,
     exec = 4
@@ -46,8 +45,7 @@ enum class access_t : int
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     // registration::enumeration<access_t>("access_t")
     // (
     //     value("read",   access_t::read),
@@ -59,7 +57,11 @@ RTTR_REGISTRATION
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - value_to_name()", "[enumeration]")
+TEST_CASE (
+"enumeration - value_to_name()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("access_t").get_enumeration();
 
@@ -82,7 +84,11 @@ TEST_CASE("enumeration - value_to_name()", "[enumeration]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("enumeration - name_to_value()", "[enumeration]")
+TEST_CASE (
+"enumeration - name_to_value()"
+,
+"[enumeration]"
+)
 {
     enumeration e = type::get_by_name("access_t").get_enumeration();
 

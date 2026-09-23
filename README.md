@@ -16,7 +16,8 @@ RTTR
 > C++ Reflection Library
 
 RTTR stands for Run Time Type Reflection.
-It describes the ability of a computer program to introspect and modify an object at runtime. It is also the name of the library itself, which is written in C++ and released as open source library.
+It describes the ability of a computer program to introspect and modify an object at runtime. It is also the name of the
+library itself, which is written in C++ and released as open source library.
 You can find more information on: <a target="_blank" href="http://www.rttr.org">www.rttr.org</a>
 
 ----------
@@ -25,6 +26,7 @@ How to Use
 ----------
 
 ### Manual registration
+
 ```cpp
 #include <rttr/registration>
 using namespace rttr;
@@ -39,7 +41,9 @@ RTTR_REGISTRATION
          .method("func", &MyStruct::func);
 }
 ```
+
 ### Iterate over members
+
 ```cpp
 type t = type::get<MyStruct>();
 for (auto& prop : t.get_properties())
@@ -50,6 +54,7 @@ for (auto& meth : t.get_methods())
 ```
 
 ### Constructing types
+
 ```cpp
 type t = type::get_by_name("MyStruct");
 variant var = t.create();    // will invoke the previously registered ctor
@@ -60,6 +65,7 @@ std::cout << var.get_type().get_name(); // prints 'MyStruct'
 ```
 
 ### Set/get properties
+
 ```cpp
 MyStruct obj;
 
@@ -71,6 +77,7 @@ std::cout << var_prop.to_int(); // prints '23'
 ```
 
 ### Invoke Methods:
+
 ```cpp
 MyStruct obj;
 
@@ -83,14 +90,17 @@ meth.invoke(var, 42.0);
 
 Features
 ---------
+
 - reflect constructors, methods, data member or enums
 - classes; with *single*-, *multiple*- and *virtual*-inheritance
 - constructors (arbitrary argument count)
 - methods (*virtual*, *abstract*, *overloaded*, arbitrary argument count)
 - arrays (incl. raw-arrays; arbitrary dimension count)
 - ability to invoke properties and methods of classes from any arbitrary class level
-- no header pollution; the reflection information is created in the cpp file to minimize compile time when modifying the data
-- working with custom types without the need of having the declaration of the type available at compile time (useful for plugins)
+- no header pollution; the reflection information is created in the cpp file to minimize compile time when modifying the
+  data
+- working with custom types without the need of having the declaration of the type available at compile time (useful for
+  plugins)
 - possibility to add additional *metadata* to all reflection objects
 - possibility to add *default arguments* to methods or constructors
 - adjust registration behaviour through *policies*
@@ -103,6 +113,7 @@ Features
 Portability
 -----------
 Tested and compiled with:
+
 - Microsoft Visual Studio 2015 & 2017 (2013 support till version 0.9.6)
 - GCC 4.8.1
 - Clang 3.7
@@ -154,6 +165,7 @@ I am happy to receive any donation.
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JQ65KGGCSUZMS)
 
 <!-- Links -->
+
 [rttr.docs]: http://www.rttr.org/doc/master/classes.html
 [rttr.install]: http://www.rttr.org/doc/master/building_install_page.html
 [rttr.tutorial]: http://www.rttr.org/doc/master/tutorial_page.html

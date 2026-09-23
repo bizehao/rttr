@@ -37,30 +37,26 @@
 #include <dlfcn.h>
 #include <cstdio>
 
-namespace
-{
+namespace {
+    bool is_absolute_path(const std::string &file_name) {
+        return (!file_name.empty() && file_name[0] == '/');
+    }
 
-bool is_absolute_path(const std::string& file_name)
-{
-    return (!file_name.empty() && file_name[0] == '/');
-}
-
-std::vector<std::string> get_suffixes_sys(const std::string& version)
-{
-    std::vector<std::string> result;
+    std::vector<std::string> get_suffixes_sys(const std::string &version) {
+        std::vector<std::string> result;
 
 #if RTTR_PLATFORM == RTTR_PLATFORM_LINUX
 
-    if (!version.empty())
-        result.emplace_back(".so." + version);
+if (!version.empty())
+result.emplace_back (".so." + version);
     else
-        result.emplace_back(".so");
+result.emplace_back (".so");
 #endif
 
 
 #if RTTR_PLATFORM == RTTR_PLATFORM_APPLE
 
-    if (!version.empty())
+if (!version.empty())
     {
         result.emplace_back("." + version + ".bundle");
         result.emplace_back("." + version + ".dylib");
@@ -72,108 +68,89 @@ std::vector<std::string> get_suffixes_sys(const std::string& version)
     }
 #endif
 
-    return result;
+return result;
 }
 
-bool file_exist(const std::string& fileName)
-{
-    if (auto file = fopen(fileName.c_str(), "r"))
-    {
+bool file_exist(const std::string &fileName) {
+    if (auto file = fopen(fileName.c_str(), "r")) {
         fclose(file);
         return true;
-    } else
-    {
+    }
+    else {
         return false;
     }
 }
 
-static std::string_view get_error()
-{
+static std::string_view get_error() {
     using namespace rttr;
     auto err = dlerror();
-    return err ? std::string_view(err): std::string_view();
+    return err ? std::string_view(err) : std::string_view();
 }
 
 } // end namespace anonymous
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        bool library_private::load_native() {
+            std::vector<std::string> prefix_list = {"lib"};
+            std::vector<std::string> suffix_list = get_suffixes_sys(m_version);
 
-bool library_private::load_native()
-{
-    std::vector<std::string> prefix_list = {"lib"};
-    std::vector<std::string> suffix_list = get_suffixes_sys(m_version);
-
-    if (is_absolute_path(m_file_name))
-    {
-        suffix_list.insert(suffix_list.begin(), std::string());
-        prefix_list.insert(prefix_list.begin(), std::string());
-    }
-    else
-    {
-        suffix_list.push_back(std::string());
-        prefix_list.push_back(std::string());
-    }
-
-    int dl_flags = RTLD_NOW;
-    auto retry = true;
-    std::string attempt;
-
-    for (auto prefix = 0u; retry && !m_handle && prefix < prefix_list.size(); ++prefix)
-    {
-        for (auto suffix = 0u; retry && !m_handle && suffix < suffix_list.size(); ++suffix)
-        {
-            // don't attach prefix or suffix when it is already there
-            if (!prefix_list[prefix].empty() && starts_with(m_file_name, prefix_list[prefix]))
-                continue;
-            if (!suffix_list[suffix].empty() && ends_with(m_file_name, suffix_list[suffix]))
-                continue;
-
-            attempt = prefix_list[prefix] + m_file_name + suffix_list[suffix];
-
-            m_handle = dlopen(attempt.c_str(), dl_flags);
-            if (!m_handle && is_absolute_path(m_file_name) && file_exist(attempt))
-            {
-                retry = false;
+            if (is_absolute_path(m_file_name)) {
+                suffix_list.insert(suffix_list.begin(), std::string());
+                prefix_list.insert(prefix_list.begin(), std::string());
             }
+            else {
+                suffix_list.push_back(std::string());
+                prefix_list.push_back(std::string());
+            }
+
+            int dl_flags = RTLD_NOW;
+            auto retry = true;
+            std::string attempt;
+
+            for (auto prefix = 0u; retry && !m_handle && prefix < prefix_list.size(); ++prefix) {
+                for (auto suffix = 0u; retry && !m_handle && suffix < suffix_list.size(); ++suffix) {
+                    // don't attach prefix or suffix when it is already there
+                    if (!prefix_list[prefix].empty() && starts_with(m_file_name, prefix_list[prefix]))
+                        continue;
+                    if (!suffix_list[suffix].empty() && ends_with(m_file_name, suffix_list[suffix]))
+                        continue;
+
+                    attempt = prefix_list[prefix] + m_file_name + suffix_list[suffix];
+
+                    m_handle = dlopen(attempt.c_str(), dl_flags);
+                    if (!m_handle && is_absolute_path(m_file_name) && file_exist(attempt)) {
+                        retry = false;
+                    }
+                }
+            }
+
+            if (!m_handle) {
+                m_error_string = "Cannot load library " + m_file_name + " " + get_error();
+            }
+            else {
+                m_qualifed_file_name = attempt;
+                m_error_string.clear();
+            }
+
+            return (m_handle != nullptr);
         }
 
-    }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-    if (!m_handle)
-    {
-        m_error_string = "Cannot load library " + m_file_name + " " + get_error();
-    }
-    else
-    {
-        m_qualifed_file_name = attempt;
-        m_error_string.clear();
-    }
+        bool library_private::unload_native() {
+            if (dlclose(m_handle)) {
+                m_error_string = "Cannot unload library: '" + m_file_name + "'" + get_error();
+                return false;
+            }
 
-    return (m_handle != nullptr);
-}
+            return true;
+        }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-bool library_private::unload_native()
-{
-    if (dlclose(m_handle))
-    {
-         m_error_string = "Cannot unload library: '" + m_file_name + "'" +  get_error();
-         return false;
-    }
-
-    return true;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // NOT RTTR_PLATFORM_WINDOWS

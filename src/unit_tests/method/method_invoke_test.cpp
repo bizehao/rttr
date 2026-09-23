@@ -31,11 +31,9 @@
 using namespace rttr;
 
 
-
-struct method_invoke_test
-{
-    method_invoke_test() { for (auto& item : m_invoked) { item = false; } }
-    void func_0(){ m_invoked[0] = true; }
+struct method_invoke_test {
+    method_invoke_test() { for (auto &item: m_invoked) { item = false; } }
+    void func_0() { m_invoked[0] = true; }
     void func_1(int) { m_invoked[1] = true; }
     void func_2(int, int) { m_invoked[2] = true; }
     void func_3(int, int, int) { m_invoked[3] = true; }
@@ -48,22 +46,24 @@ struct method_invoke_test
 };
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////
 ///
-std::function<int(int)> func_8([](int value){ return value; });
-auto func_9 = [](int value){ return value; };
+std::function<int(int)> func_8([](int value) { return value; });
+auto func_9 = [](int value) { return value; };
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^method_invoke_test>("method_invoke_test");
-    registration::do_method<^^func_8>("func_8");
-    registration::do_method<^^func_9>("func_9");
+RTTR_REGISTRATION {
+    registration::do_class < ^^method_invoke_test > ("method_invoke_test");
+    registration::do_method < ^^func_8 > ("func_8");
+    registration::do_method < ^^func_9 > ("func_9");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke", "[method]")
+TEST_CASE (
+"method - invoke"
+,
+"[method]"
+)
 {
     type t = type::get<method_invoke_test>();
     const auto meth_range = t.get_methods();
@@ -97,7 +97,11 @@ TEST_CASE("method - invoke", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke - NEGATIVE - invalid method", "[method]")
+TEST_CASE (
+"method - invoke - NEGATIVE - invalid method"
+,
+"[method]"
+)
 {
     method meth = type::get_by_name("").get_method("");
     REQUIRE(meth.is_valid() == false);
@@ -130,7 +134,11 @@ TEST_CASE("method - invoke - NEGATIVE - invalid method", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke - NEGATIVE - invalid arg count", "[method]")
+TEST_CASE (
+"method - invoke - NEGATIVE - invalid arg count"
+,
+"[method]"
+)
 {
     type t = type::get<method_invoke_test>();
     const auto meth_range = t.get_methods();
@@ -165,7 +173,11 @@ TEST_CASE("method - invoke - NEGATIVE - invalid arg count", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke - std::function", "[method]")
+TEST_CASE (
+"method - invoke - std::function"
+,
+"[method]"
+)
 {
     auto t = type::get_global_method("func_8");
     variant var = t.invoke(instance(), {42});
@@ -175,7 +187,11 @@ TEST_CASE("method - invoke - std::function", "[method]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("method - invoke - lambda", "[method]")
+TEST_CASE (
+"method - invoke - lambda"
+,
+"[method]"
+)
 {
     auto t = type::get_global_method("func_9");
     auto param_infos = t.get_parameter_infos();

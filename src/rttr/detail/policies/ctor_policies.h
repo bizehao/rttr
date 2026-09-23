@@ -31,19 +31,14 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/detail/misc/misc_type_traits.h"
 
-namespace rttr
-{
-namespace detail
-{
-
-enum class ctor_policy {
-    as_raw_ptr,
-    as_std_shared_ptr,
-    as_object,
-};
-
-} // end namespace detail;
-
+namespace rttr {
+    namespace detail {
+        enum class ctor_policy {
+            as_raw_ptr,
+            as_std_shared_ptr,
+            as_object,
+        };
+    } // end namespace detail;
 } // end namespace rttr
 
 #endif // RTTR_CTOR_POLICIES_H_

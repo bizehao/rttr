@@ -28,10 +28,8 @@
 #ifndef RTTR_RTTR_CAST_H_
 #define RTTR_RTTR_CAST_H_
 
-namespace rttr
-{
-
-/*!
+namespace rttr {
+    /*!
  * \brief Casts the given \p object of type \p Source_Type to an object of type \p Target_Type.
  *
  * When the given the given \p object is an instance of type \p Target_Type, then this function will cast the pointer to the \p TargetType;
@@ -43,9 +41,8 @@ namespace rttr
  *
  * \return A pointer of type \p Target_Type
  */
-template<typename Target_Type, typename Source_Type>
-Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT;
-
+    template<typename Target_Type, typename Source_Type>
+    Target_Type rttr_cast(Source_Type object) RTTR_NOEXCEPT;
 }
 
 #include "rttr/detail/impl/rttr_cast_impl.h"

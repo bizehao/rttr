@@ -30,30 +30,22 @@
 
 #include "rttr/detail/variant_sequential_view/variant_sequential_view_private.h"
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        variant_sequential_view_private create_variant_sequential_view(T &&value) {
+            if constexpr (can_create_sequential_view<T>::value) {
+                return variant_sequential_view_private{wrapped_raw_addressof(value)};
+            }
+            else {
+                return variant_sequential_view_private{};
+            }
+        }
 
-template<typename T>
-variant_sequential_view_private create_variant_sequential_view(T&& value)
-{
-    if constexpr (can_create_sequential_view<T>::value)
-    {
-        return variant_sequential_view_private{ wrapped_raw_addressof(value) };
-    }
-    else
-    {
-        return variant_sequential_view_private{};
-    }
-    
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_VARIANT_SEQUENTIAL_CREATOR_IMPL_H_

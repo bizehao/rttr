@@ -34,157 +34,135 @@
 
 #include <memory>
 
-namespace rttr
-{
+namespace rttr {
+    class type;
 
-class type;
+    //////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////
+    template<typename T>
+    struct wrapper_mapper<std::shared_ptr<T> > {
+        using wrapped_type = decltype(std::shared_ptr<T>().get());
+        using type = std::shared_ptr<T>;
 
-template<typename T>
-struct wrapper_mapper<std::shared_ptr<T>>
-{
-    using wrapped_type = decltype(std::shared_ptr<T>().get());
-    using type = std::shared_ptr<T>;
-
-    static RTTR_INLINE wrapped_type get(const type& obj)
-    {
-        return obj.get();
-    }
-
-    static RTTR_INLINE type create(const wrapped_type& t)
-    {
-        return type(t);
-    }
-
-    template<typename U>
-    static std::shared_ptr<U> convert(const type& source, bool& ok)
-    {
-        if (auto p = rttr_cast<typename std::shared_ptr<U>::element_type*>(source.get()))
-        {
-            ok = true;
-            return std::shared_ptr<U>(source, p);
+        static RTTR_INLINE wrapped_type get(const type &obj) {
+            return obj.get();
         }
-        else
-        {
-            ok = false;
-            return std::shared_ptr<U>();
+
+        static RTTR_INLINE type create(const wrapped_type &t) {
+            return type(t);
         }
-    }
-};
 
-//////////////////////////////////////////////////////////////////////////////////////
+        template<typename U>
+        static std::shared_ptr<U> convert(const type &source, bool &ok) {
+            if (auto p = rttr_cast<typename std::shared_ptr<U>::element_type *>(source.get())) {
+                ok = true;
+                return std::shared_ptr<U>(source, p);
+            }
+            else {
+                ok = false;
+                return std::shared_ptr<U>();
+            }
+        }
+    };
 
-template<typename T>
-struct wrapper_mapper<std::reference_wrapper<T>>
-{
-    using wrapped_type  = decltype(std::declval<std::reference_wrapper<T>>().get());
-    using type          = std::reference_wrapper<T>;
+    //////////////////////////////////////////////////////////////////////////////////////
 
-    static RTTR_INLINE wrapped_type get(const type& obj)
-    {
-        return obj.get();
-    }
+    template<typename T>
+    struct wrapper_mapper<std::reference_wrapper<T> > {
+        using wrapped_type = decltype(std::declval<std::reference_wrapper<T> >().get());
+        using type = std::reference_wrapper<T>;
 
-    static RTTR_INLINE type create(const wrapped_type& t)
-    {
-        return type(t);
-    }
-};
+        static RTTR_INLINE wrapped_type get(const type &obj) {
+            return obj.get();
+        }
 
-//////////////////////////////////////////////////////////////////////////////////////
+        static RTTR_INLINE type create(const wrapped_type &t) {
+            return type(t);
+        }
+    };
 
-template<typename T>
-struct wrapper_mapper<std::unique_ptr<T>>
-{
-    using wrapped_type  = decltype(std::declval<std::unique_ptr<T>>().get());
-    using type          = std::unique_ptr<T>;
+    //////////////////////////////////////////////////////////////////////////////////////
 
-    static RTTR_INLINE wrapped_type get(const type& obj)
-    {
-        return obj.get();
-    }
+    template<typename T>
+    struct wrapper_mapper<std::unique_ptr<T> > {
+        using wrapped_type = decltype(std::declval<std::unique_ptr<T> >().get());
+        using type = std::unique_ptr<T>;
 
-    static RTTR_INLINE type create(const wrapped_type& t)
-    {
-        return type(t);
-    }
-};
+        static RTTR_INLINE wrapped_type get(const type &obj) {
+            return obj.get();
+        }
 
-//////////////////////////////////////////////////////////////////////////////////////
+        static RTTR_INLINE type create(const wrapped_type &t) {
+            return type(t);
+        }
+    };
 
-template<typename T>
-struct wrapper_mapper<std::weak_ptr<T>>
-{
-    using wrapped_type  = decltype(std::declval<std::weak_ptr<T>>().lock().get());
-    using type          = std::weak_ptr<T>;
+    //////////////////////////////////////////////////////////////////////////////////////
 
-    static RTTR_INLINE wrapped_type get(const type& obj)
-    {
-        return obj.lock().get();
-    }
+    template<typename T>
+    struct wrapper_mapper<std::weak_ptr<T> > {
+        using wrapped_type = decltype(std::declval<std::weak_ptr<T> >().lock().get());
+        using type = std::weak_ptr<T>;
 
-    // there is no create method because, weak pointer can only be created by a referencing a shared_ptr.
-    // And a tmp shared_ptr which goes out of scope immediately, result always in an empty weak_ptr.
+        static RTTR_INLINE wrapped_type get(const type &obj) {
+            return obj.lock().get();
+        }
 
-};
+        // there is no create method because, weak pointer can only be created by a referencing a shared_ptr.
+        // And a tmp shared_ptr which goes out of scope immediately, result always in an empty weak_ptr.
+    };
 
-namespace detail
-{
+    namespace detail {
+        //////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        using wrapper_mapper_t = typename wrapper_mapper<std::remove_cv_t<std::remove_reference_t<T> > >::wrapped_type;
 
-template<typename T>
-using wrapper_mapper_t = typename wrapper_mapper<std::remove_cv_t<std::remove_reference_t<T>>>::wrapped_type;
+        //////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        using is_wrapper = std::integral_constant<bool, !std::is_same_v<invalid_wrapper_type, wrapper_mapper_t<T> >>;
 
-template<typename T>
-using is_wrapper = std::integral_constant<bool, !std::is_same_v<invalid_wrapper_type, wrapper_mapper_t<T>> >;
+        //////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        using wrapper_address_return_type_t = std::conditional_t<is_wrapper<T>::value,
+            raw_addressof_return_type_t<wrapper_mapper_t<T> >,
+            raw_addressof_return_type_t<T> >;
 
-template<typename T>
-using wrapper_address_return_type_t = std::conditional_t<is_wrapper<T>::value,
-                                                    raw_addressof_return_type_t< wrapper_mapper_t< T > >,
-                                                    raw_addressof_return_type_t<T>>;
+        //////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////
+        template<typename T> requires (is_wrapper<T>::value)
+        raw_addressof_return_type_t<wrapper_mapper_t<T> > wrapped_raw_addressof(T &obj) {
+            using raw_wrapper_type = std::remove_cvref_t<T>;;
+            wrapper_mapper_t<T> value = wrapper_mapper<raw_wrapper_type>::get(obj);
+            return raw_addressof(value);
+        }
 
-template<typename T> requires (is_wrapper<T>::value)
-raw_addressof_return_type_t< wrapper_mapper_t<T>> wrapped_raw_addressof(T& obj)
-{
-    using raw_wrapper_type = std::remove_cvref_t<T>;;
-    wrapper_mapper_t<T> value = wrapper_mapper<raw_wrapper_type>::get(obj);
-    return raw_addressof(value);
-}
+        //////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////
+        template<typename T> requires (!is_wrapper<T>::value)
+        raw_addressof_return_type_t<T> wrapped_raw_addressof(T &obj) {
+            return raw_addressof(obj);
+        }
 
-template<typename T> requires (!is_wrapper<T>::value)
-raw_addressof_return_type_t<T> wrapped_raw_addressof(T& obj)
-{
-    return raw_addressof(obj);
-}
+        //////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////
-
-/*!
+        /*!
  * Determine if the given type \a T is a wrapper and has the member method
  * 'wrapper create(const wrapper_type&)' declared.
  */
-template <typename T>
-concept has_create_wrapper_func_impl = requires
-{
-    &wrapper_mapper<std::remove_cvref_t<T>>::create;
-};
+        template<typename T>
+        concept has_create_wrapper_func_impl = requires
+        {
+            &wrapper_mapper<std::remove_cvref_t<T> >::create;
+        };
 
-template<typename T>
-using has_create_wrapper_func = std::integral_constant<bool, has_create_wrapper_func_impl<T>>;
+        template<typename T>
+        using has_create_wrapper_func = std::integral_constant<bool, has_create_wrapper_func_impl<T> >;
 
-//////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        //////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_WRAPPER_MAPPER_IMPL_H_

@@ -25,5 +25,5 @@
 #                                                                                  #
 ####################################################################################
 
-add_subdirectory (library_loader_example)
-add_subdirectory (plugin_example)
+add_subdirectory(library_loader_example)
+add_subdirectory(plugin_example)

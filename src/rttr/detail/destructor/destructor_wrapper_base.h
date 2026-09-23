@@ -35,31 +35,31 @@
 #include <string>
 #include <initializer_list>
 
-namespace rttr
-{
-
-namespace detail
-{
-/*!
+namespace rttr {
+    namespace detail {
+        /*!
  * Abstract class for a method.
  *
  * This is the base class for all methods.
  * You can invoke the method.
  */
-class RTTR_API destructor_wrapper_base
-{
-    public:
-        destructor_wrapper_base() RTTR_NOEXCEPT;
-        virtual ~destructor_wrapper_base();
+        class RTTR_API destructor_wrapper_base {
+        public:
+            destructor_wrapper_base() RTTR_NOEXCEPT;
 
-        virtual variant get_metadata(const std::string_view& key) const;
-        virtual bool is_valid() const RTTR_NOEXCEPT;
-        virtual type get_declaring_type() const RTTR_NOEXCEPT;
-        virtual type get_destructed_type() const RTTR_NOEXCEPT;
-        virtual bool invoke(variant& obj) const RTTR_NOEXCEPT;
-};
+            virtual ~destructor_wrapper_base();
 
-} // end namespace detail
+            virtual variant get_metadata(const std::string_view &key) const;
+
+            virtual bool is_valid() const RTTR_NOEXCEPT;
+
+            virtual type get_declaring_type() const RTTR_NOEXCEPT;
+
+            virtual type get_destructed_type() const RTTR_NOEXCEPT;
+
+            virtual bool invoke(variant &obj) const RTTR_NOEXCEPT;
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_DESTRUCTOR_WRAPPER_BASE_H_

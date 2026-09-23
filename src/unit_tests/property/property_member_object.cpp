@@ -39,51 +39,49 @@ using namespace rttr;
 static int g_invalid_instance = 0;
 
 using func_ptr = void(*)(int);
-struct property_member_obj_test
-{
+
+struct property_member_obj_test {
     property_member_obj_test()
-    : _p1(0) , _p3(1000, 42), _p5(1000, 42)
-    {
+        : _p1(0), _p3(1000, 42), _p5(1000, 42) {
     }
 
 
     [[=class_op::rename("p1")]]
-    int                 _p1;
+    int _p1;
 
     [[=class_op::rename("p2")]]
-    const int           _p2 = 12;
+    const int _p2 = 12;
 
     [[=class_op::rename("p3"), =class_op::prop_policy(policy::prop::op_bind_as_ptr)]]
-    std::vector<int>    _p3;
+    std::vector<int> _p3;
 
     [[=class_op::rename("p4"), =class_op::prop_policy(policy::prop::op_bind_as_ptr)]]
-    const std::vector<int>    _p4 = std::vector<int>(50, 12);
+    const std::vector<int> _p4 = std::vector<int>(50, 12);
 
     [[=class_op::rename("p5"), =class_op::prop_policy(policy::prop::op_as_reference_wrapper)]]
-    std::vector<int>    _p5;
+    std::vector<int> _p5;
 
     [[=class_op::rename("p6"), =class_op::prop_policy(policy::prop::op_as_reference_wrapper)]]
-    const std::vector<int>    _p6 = std::vector<int>(50, 12);
+    const std::vector<int> _p6 = std::vector<int>(50, 12);
 
     [[=class_op::rename("p7")]]
-    rttr::variant             _p7 = std::string("hello");
+    rttr::variant _p7 = std::string("hello");
 
     [[=class_op::rename("p8")]]
-    const rttr::variant       _p8 = 23;
+    const rttr::variant _p8 = 23;
 
     [[=class_op::rename("p9")]]
-    int*                _p9 = nullptr;
+    int *_p9 = nullptr;
 
     [[=class_op::rename("p10")]]
-    int*                _p10 = &_p1;
+    int *_p10 = &_p1;
 
     [[=class_op::rename("p11")]]
     //int                 _p11[4] = {0, 0, 0, 0};
-    int                 _p11[4][4] = { {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} };
-
+    int _p11[4][4] = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
 
 private:
-    property_member_obj_test& operator=(const property_member_obj_test& obj);
+    property_member_obj_test &operator=(const property_member_obj_test &obj);
 };
 
 
@@ -92,14 +90,17 @@ private:
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     rttr::registration::do_class<^^property_member_obj_test>();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class object", "[property]")
+TEST_CASE (
+"property - class object"
+,
+"[property]"
+)
 {
     property_member_obj_test obj;
     type prop_type = type::get(obj);
@@ -127,7 +128,11 @@ TEST_CASE("property - class object", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class object - read only", "[property]")
+TEST_CASE (
+"property - class object - read only"
+,
+"[property]"
+)
 {
     property_member_obj_test obj;
     type prop_type = type::get(obj);
@@ -152,7 +157,11 @@ TEST_CASE("property - class object - read only", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class object - bind as ptr", "[property]")
+TEST_CASE (
+"property - class object - bind as ptr"
+,
+"[property]"
+)
 {
     property_member_obj_test obj;
     type prop_type = type::get(obj);
@@ -185,7 +194,11 @@ TEST_CASE("property - class object - bind as ptr", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class object - read only - bind as ptr", "[property]")
+TEST_CASE (
+"property - class object - read only - bind as ptr"
+,
+"[property]"
+)
 {
     property_member_obj_test obj;
     type prop_type = type::get(obj);
@@ -218,7 +231,11 @@ TEST_CASE("property - class object - read only - bind as ptr", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class object - as_reference_wrapper", "[property]")
+TEST_CASE (
+"property - class object - as_reference_wrapper"
+,
+"[property]"
+)
 {
     property_member_obj_test obj;
     type prop_type = type::get(obj);
@@ -260,7 +277,11 @@ TEST_CASE("property - class object - as_reference_wrapper", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - class object - read only - as_reference_wrapper", "[property]")
+TEST_CASE (
+"property - class object - read only - as_reference_wrapper"
+,
+"[property]"
+)
 {
     property_member_obj_test obj;
     type prop_type = type::get(obj);
@@ -303,7 +324,11 @@ TEST_CASE("property - class object - read only - as_reference_wrapper", "[proper
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - variant as property", "[property]")
+TEST_CASE (
+"property - variant as property"
+,
+"[property]"
+)
 {
     SECTION("Writable")
     {
@@ -337,7 +362,11 @@ TEST_CASE("property - variant as property", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - raw pointer as property", "[property]")
+TEST_CASE (
+"property - raw pointer as property"
+,
+"[property]"
+)
 {
     SECTION("Writable")
     {
@@ -374,7 +403,11 @@ TEST_CASE("property - raw pointer as property", "[property]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("property - array property", "[property]")
+TEST_CASE (
+"property - array property"
+,
+"[property]"
+)
 {
     property_member_obj_test obj;
     type t = type::get(obj);

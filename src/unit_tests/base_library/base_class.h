@@ -31,12 +31,10 @@ using namespace rttr;
 #include <vector>
 
 
-struct RTTR_API base_test_class
-{
+struct RTTR_API base_test_class {
 public:
-    base_test_class()
-    {}
+    base_test_class() {
+    }
 
     RTTR_ENABLE()
-
 };

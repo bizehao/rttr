@@ -36,41 +36,32 @@
 #include <type_traits>
 #include <cstring>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-/*!
+        /*!
  * \brief This function return the result of the expression `lhs == rhs` when the type \p T has the equal operator defined,
  *         otherwise this function will return false.
  */
-template<typename T>
-RTTR_INLINE bool compare_equal(const T& lhs, const T& rhs, bool& ok)
-{
-    if constexpr (is_equal_comparable<T>::value)
-    {
-        ok = true;
-        return (lhs == rhs);
-    }
-    else
-    {
-        if constexpr (std::is_array_v<T>)
-        {
-            return compare_array_equal(lhs, rhs, ok);
+        template<typename T>
+RTTR_INLINE bool compare_equal(const T &lhs, const T &rhs, bool &ok) {
+            if constexpr (is_equal_comparable<T>::value) {
+                ok = true;
+                return (lhs == rhs);
+            }
+            else {
+                if constexpr (std::is_array_v<T>) {
+                    return compare_array_equal(lhs, rhs, ok);
+                }
+                else {
+                    return compare_types_equal(&lhs, &rhs, type::get<T>(), ok);
+                }
+            }
         }
-        else
-        {
-            return compare_types_equal(&lhs, &rhs, type::get<T>(), ok);
-        }
-    }
-}
 
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_COMPARE_EQUAL_IMPL_H_

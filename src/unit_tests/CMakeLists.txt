@@ -32,40 +32,40 @@ set(SRC_FILES "")
 
 project(unit_tests LANGUAGES CXX)
 
-message(STATUS "Scanning "  ${PROJECT_NAME} " module.")
+message(STATUS "Scanning " ${PROJECT_NAME} " module.")
 message(STATUS "===========================")
 
 generateLibraryVersionVariables(${RTTR_VERSION_MAJOR} ${RTTR_VERSION_MINOR} ${RTTR_VERSION_PATCH}
-                                "RTTR unit_tests" "Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>" "MIT License")
+        "RTTR unit_tests" "Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>" "MIT License")
 
 loadFolder("unit_tests" HPP_FILES SRC_FILES)
 
 if (USE_PCH)
-  activate_precompiled_headers("pch.h" SRC_FILES)
-endif()
+    activate_precompiled_headers("pch.h" SRC_FILES)
+endif ()
 
 add_executable(unit_tests ${SRC_FILES} ${HPP_FILES})
 target_link_libraries(unit_tests RTTR::Core Catch2::Catch) #unit_test_base
 add_dependencies(unit_tests RTTR::Core)
 set_target_properties(unit_tests PROPERTIES DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
-                                            FOLDER "Testing"
-                                            INSTALL_RPATH "${RTTR_EXECUTABLE_INSTALL_RPATH}"
-                                            CXX_STANDARD ${MAX_CXX_STANDARD})
+        FOLDER "Testing"
+        INSTALL_RPATH "${RTTR_EXECUTABLE_INSTALL_RPATH}"
+        CXX_STANDARD ${MAX_CXX_STANDARD})
 
 #set_compiler_warnings(unit_tests)
 
 if (MSVC)
     target_compile_options(unit_tests PRIVATE /bigobj)
-endif()
+endif ()
 
 # run tests
 add_custom_target(run_tests ALL
-                  COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib "$<TARGET_FILE:unit_tests>"
-                  DEPENDS unit_tests
-                  COMMENT "Running unit_tests")
+        COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib "$<TARGET_FILE:unit_tests>"
+        DEPENDS unit_tests
+        COMMENT "Running unit_tests")
 
 set_target_properties(run_tests PROPERTIES
-                                FOLDER "Testing")
+        FOLDER "Testing")
 
 #add_subdirectory(plugin)
 

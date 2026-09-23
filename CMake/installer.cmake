@@ -26,17 +26,17 @@
 ####################################################################################
 
 # first step set up all necessary variables
-if(WIN32 AND NOT UNIX)
+if (WIN32 AND NOT UNIX)
     if (NOT CMAKE_VERSION VERSION_LESS 3.1.0)
         set(CPACK_GENERATOR 7Z)
-    else()
+    else ()
         set(CPACK_GENERATOR ZIP)
-    endif()
-elseif(UNIX AND NOT APPLE)
+    endif ()
+elseif (UNIX AND NOT APPLE)
     set(CPACK_GENERATOR TGZ;TBZ2)
-elseif(APPLE)
+elseif (APPLE)
     set(CPACK_GENERATOR TGZ;TBZ2;PackageMaker)
-endif()
+endif ()
 
 set(CPACK_PACKAGE_NAME "${RTTR_PRODUCT_NAME}")
 set(CPACK_PACKAGE_VENDOR "AMS")
@@ -52,14 +52,14 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_VENDOR}/RTTR")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "RTTR is a C++ runtime reflection library")
 
 # detect system
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(RTTR_OS_NAME "linux${RTTR_NATIVE_ARCH}")
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(RTTR_OS_NAME "win${RTTR_NATIVE_ARCH}")
-else()
+else ()
     message(WARNING "This system is not supported for packing")
     return()
-endif()
+endif ()
 
 getCompilerName(RTTR_COMPILER_NAME)
 

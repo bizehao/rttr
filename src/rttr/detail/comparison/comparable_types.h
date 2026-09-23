@@ -34,25 +34,21 @@
 #include <string_view>
 #include <string>
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        using is_comparable_type = std::integral_constant<bool, std::is_same_v<T, std::string> ||
+                                                                std::is_same_v<T, std::string_view> ||
+                                                                std::is_arithmetic_v<T> ||
+                                                                std::is_enum_v<T> ||
+                                                                std::is_same_v<T, std::nullptr_t> ||
+                                                                std::is_pointer_v<T>
+        >;
 
-template<typename T>
-using is_comparable_type = std::integral_constant<bool, std::is_same_v<T, std::string> ||
-                                                        std::is_same_v<T, std::string_view> ||
-                                                        std::is_arithmetic_v<T> ||
-                                                        std::is_enum_v<T> ||
-                                                        std::is_same_v<T, std::nullptr_t> ||
-                                                        std::is_pointer_v<T>
-                                                 >;
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_COMPARABLE_TYPES_H_

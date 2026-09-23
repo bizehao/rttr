@@ -27,30 +27,30 @@
 
 project(plugin_example LANGUAGES CXX)
 
-message(STATUS "Scanning "  ${PROJECT_NAME} " module.")
+message(STATUS "Scanning " ${PROJECT_NAME} " module.")
 message(STATUS "===========================")
 
 generateLibraryVersionVariables(${RTTR_VERSION_MAJOR} ${RTTR_VERSION_MINOR} ${RTTR_VERSION_PATCH}
-                                "RTTR Examples: library_loading" "Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>" "MIT License")
+        "RTTR Examples: library_loading" "Copyright (c) 2014 - 2018 Axel Menzel <info@rttr.org>" "MIT License")
 
 loadFolder("files" HPP_FILES SRC_FILES)
 
 if (USE_PCH)
-  activate_precompiled_headers("pch.h" SRC_FILES)
-endif()
+    activate_precompiled_headers("pch.h" SRC_FILES)
+endif ()
 
 add_library(plugin_example SHARED ${SRC_FILES} ${HPP_FILES})
 target_link_libraries(plugin_example RTTR::Core)
-set_target_properties(plugin_example PROPERTIES 
-                      DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
-                      FOLDER "Examples/library_loading"
-                      CXX_STANDARD ${MAX_CXX_STANDARD})
+set_target_properties(plugin_example PROPERTIES
+        DEBUG_POSTFIX ${RTTR_DEBUG_POSTFIX}
+        FOLDER "Examples/library_loading"
+        CXX_STANDARD ${MAX_CXX_STANDARD})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     # we have to use this flag, otherwise dlclose does not call the destructor function
     # of the library
     target_compile_options(plugin_example PRIVATE "-fno-gnu-unique")
-endif()
+endif ()
 
 message(STATUS "Scanning " ${PROJECT_NAME} " module finished!")
 message(STATUS "")

@@ -41,31 +41,31 @@ using namespace rttr;
 typedef std::map<int, std::string> IntToStringMap;
 typedef std::map<int, int> IntToIntMap;
 
-enum E_Alignment
-{
+enum E_Alignment {
     LEFT,
     RIGHT,
     BOTTOM,
     DOWN
 };
 
-template <typename... Args>
-struct my_class_template
-{
+template<typename... Args>
+struct my_class_template {
 };
 
-struct type_metadata_test
-{
+struct type_metadata_test {
 };
 
-static const char* key_data = "Test";
+static const char *key_data = "Test";
 
-RTTR_REGISTRATION
-{
-    registration::do_class<^^type_metadata_test>("type_metadata_test");
+RTTR_REGISTRATION {
+    registration::do_class < ^^type_metadata_test > ("type_metadata_test");
 }
 
-TEST_CASE("Test rttr::type - BasicTests", "[type]")
+TEST_CASE (
+"Test rttr::type - BasicTests"
+,
+"[type]"
+)
 {
     using namespace rttr;
 
@@ -127,7 +127,11 @@ TEST_CASE("Test rttr::type - BasicTests", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - ComplexerTypes", "[type]")
+TEST_CASE (
+"Test rttr::type - ComplexerTypes"
+,
+"[type]"
+)
 {
     std::vector<int> myList;
     std::vector<int> myList2;
@@ -154,7 +158,11 @@ TEST_CASE("Test rttr::type - ComplexerTypes", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - SingleClassInheritance", "[type]")
+TEST_CASE (
+"Test rttr::type - SingleClassInheritance"
+,
+"[type]"
+)
 {
 
     {
@@ -191,7 +199,11 @@ TEST_CASE("Test rttr::type - SingleClassInheritance", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - MultipleClassInheritance", "[type]")
+TEST_CASE (
+"Test rttr::type - MultipleClassInheritance"
+,
+"[type]"
+)
 {
     {
         FinalClass final;
@@ -251,7 +263,11 @@ TEST_CASE("Test rttr::type - MultipleClassInheritance", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Virtual Inheritance", "[type]")
+TEST_CASE (
+"Test rttr::type - Virtual Inheritance"
+,
+"[type]"
+)
 {
     DiamondBottom diamond;
 
@@ -267,7 +283,11 @@ TEST_CASE("Test rttr::type - Virtual Inheritance", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("type - get_base_classes()", "[type]")
+TEST_CASE (
+"type - get_base_classes()"
+,
+"[type]"
+)
 {
     DiamondBottom d;
     const auto base_list_range = type::get(d).get_base_classes();
@@ -281,7 +301,11 @@ TEST_CASE("type - get_base_classes()", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("type - is_base_of()", "[type]")
+TEST_CASE (
+"type - is_base_of()"
+,
+"[type]"
+)
 {
     auto t_base = type::get<ClassSingleBase>();
     auto t_derived = type::get<ClassSingle6A>();
@@ -292,7 +316,11 @@ TEST_CASE("type - is_base_of()", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("type - is_derived_from()", "[type]")
+TEST_CASE (
+"type - is_derived_from()"
+,
+"[type]"
+)
 {
     DiamondBottom d;
 
@@ -302,7 +330,11 @@ TEST_CASE("type - is_derived_from()", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - TypeId/ClassInheritance", "[type]")
+TEST_CASE (
+"Test rttr::type - TypeId/ClassInheritance"
+,
+"[type]"
+)
 {
     ClassSingle6A instance6A;
     ClassSingleBase& baseSingle = instance6A;
@@ -320,7 +352,11 @@ TEST_CASE("Test rttr::type - TypeId/ClassInheritance", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check get_sizeof", "[type]")
+TEST_CASE (
+"Test rttr::type - Check get_sizeof"
+,
+"[type]"
+)
 {
     CHECK(type::get<bool>().get_sizeof() == 1);
     CHECK(type::get<char>().get_sizeof() == 1);
@@ -331,13 +367,17 @@ TEST_CASE("Test rttr::type - Check get_sizeof", "[type]")
 #if RTTR_ARCH_TYPE == RTTR_ARCH_64
     CHECK(type::get<int*>().get_sizeof() == 8);
 #else
-    CHECK(type::get<int*>().get_sizeof() == 4);
+    CHECK (type::get<int *>().get_sizeof()== 4);
 #endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_arithmetic", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_arithmetic"
+,
+"[type]"
+)
 {
     CHECK(type::get<int>().is_arithmetic() == true);
     CHECK(type::get<float>().is_arithmetic() == true);
@@ -365,7 +405,11 @@ TEST_CASE("Test rttr::type - Check is_arithmetic", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_class", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_class"
+,
+"[type]"
+)
 {
 
     CHECK(type::get<std::string>().is_class() == true);
@@ -383,7 +427,11 @@ TEST_CASE("Test rttr::type - Check is_class", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_enum", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_enum"
+,
+"[type]"
+)
 {
     CHECK(type::get<E_Alignment>().is_enumeration() == true);
 
@@ -397,7 +445,11 @@ TEST_CASE("Test rttr::type - Check is_enum", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_pointer", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_pointer"
+,
+"[type]"
+)
 {
     CHECK(type::get<int*>().is_pointer() == true);
     CHECK(type::get<ClassSingle6A*>().is_pointer() == true);
@@ -414,7 +466,11 @@ TEST_CASE("Test rttr::type - Check is_pointer", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_array", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_array"
+,
+"[type]"
+)
 {
     CHECK(type::get<int[10]>().is_array() == true);
     CHECK(type::get<char[10]>().is_array() == true);
@@ -432,7 +488,11 @@ TEST_CASE("Test rttr::type - Check is_array", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - is_associative_container", "[type]")
+TEST_CASE (
+"Test rttr::type - is_associative_container"
+,
+"[type]"
+)
 {
     CHECK(type::get<std::set<int>>().is_associative_container() == true);
     CHECK((type::get<std::map<int, std::string>>().is_associative_container() == true));
@@ -457,7 +517,11 @@ TEST_CASE("Test rttr::type - is_associative_container", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - is_sequential_container", "[type]")
+TEST_CASE (
+"Test rttr::type - is_sequential_container"
+,
+"[type]"
+)
 {
     CHECK(type::get<std::vector<int>>().is_sequential_container() == true);
 
@@ -474,7 +538,11 @@ TEST_CASE("Test rttr::type - is_sequential_container", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_wrapper", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_wrapper"
+,
+"[type]"
+)
 {
     CHECK(type::get<std::shared_ptr<int>>().is_wrapper() == true);
     CHECK(type::get<std::reference_wrapper<int>>().is_wrapper() == true);
@@ -496,7 +564,11 @@ TEST_CASE("Test rttr::type - Check is_wrapper", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_function_pointer", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_function_pointer"
+,
+"[type]"
+)
 {
     using MyClass = ClassSingleBase;
     CHECK(type::get<void (*)()>().is_function_pointer() == true);
@@ -511,7 +583,11 @@ TEST_CASE("Test rttr::type - Check is_function_pointer", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_member_function_pointer", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_member_function_pointer"
+,
+"[type]"
+)
 {
     using MyClass = ClassSingleBase;
     CHECK(type::get<void (MyClass::*)()>().is_member_function_pointer() == true);
@@ -523,7 +599,11 @@ TEST_CASE("Test rttr::type - Check is_member_function_pointer", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_member_object_pointer", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_member_object_pointer"
+,
+"[type]"
+)
 {
     using MyClass = ClassSingleBase;
     CHECK(type::get<int(MyClass::*)>().is_member_object_pointer() == true);
@@ -535,7 +615,11 @@ TEST_CASE("Test rttr::type - Check is_member_object_pointer", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check is_template_instantiation", "[type]")
+TEST_CASE (
+"Test rttr::type - Check is_template_instantiation"
+,
+"[type]"
+)
 {
     CHECK(type::get<std::string>().is_template_instantiation() == true);
     CHECK(type::get<std::vector<int>>().is_template_instantiation() == true);
@@ -548,7 +632,11 @@ TEST_CASE("Test rttr::type - Check is_template_instantiation", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - get_template_arguments()", "[type]")
+TEST_CASE (
+"Test rttr::type - get_template_arguments()"
+,
+"[type]"
+)
 {
     SECTION("valid test - std::string")
     {
@@ -580,7 +668,11 @@ TEST_CASE("Test rttr::type - get_template_arguments()", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check get_wrapped_type", "[type]")
+TEST_CASE (
+"Test rttr::type - Check get_wrapped_type"
+,
+"[type]"
+)
 {
     CHECK(type::get<std::shared_ptr<int>>().get_wrapped_type() == type::get<int*>());
     CHECK(type::get<std::reference_wrapper<int>>().get_wrapped_type() == type::get<int>());
@@ -601,7 +693,11 @@ TEST_CASE("Test rttr::type - Check get_wrapped_type", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - Check custom wrapper type", "[type]")
+TEST_CASE (
+"Test rttr::type - Check custom wrapper type"
+,
+"[type]"
+)
 {
     CHECK(type::get<custom_wrapper<int>>().get_wrapped_type() == type::get<int>());
 
@@ -610,7 +706,11 @@ TEST_CASE("Test rttr::type - Check custom wrapper type", "[type]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("Test rttr::type - get_types()", "[type]")
+TEST_CASE (
+"Test rttr::type - get_types()"
+,
+"[type]"
+)
 {
     CHECK(type::get_types().size() > 1);
 }

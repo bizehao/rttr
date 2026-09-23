@@ -39,25 +39,27 @@
 
 using namespace rttr;
 
-enum class color
-{
+enum class color {
     red,
     green,
     blue
 };
 
-struct point2d
-{
+struct point2d {
     [[=rttr::class_op::ctor_policy(policy::ctor::op_as_object)]]
-    point2d() {}
-    point2d(int x_, int y_) : x(x_), y(y_) {}
+    point2d() {
+    }
+
+    point2d(int x_, int y_) : x(x_), y(y_) {
+    }
+
     int x = 0;
     int y = 0;
 };
 
-struct shape
-{
-    shape(std::string n) : name(n) {}
+struct shape {
+    shape(std::string n) : name(n) {
+    }
 
     virtual ~shape() = default;
 
@@ -71,9 +73,9 @@ struct shape
     RTTR_ENABLE()
 };
 
-struct circle : shape
-{
-    circle(std::string n) : shape(n) {}
+struct circle : shape {
+    circle(std::string n) : shape(n) {
+    }
 
     double radius = 5.2;
     std::vector<point2d> points;
@@ -84,26 +86,24 @@ struct circle : shape
     RTTR_ENABLE()
 };
 
-RTTR_REGISTRATION
-{
-    rttr::registration::do_class<^^shape>("shape");
+RTTR_REGISTRATION {
+    rttr::registration::do_class < ^^shape > ("shape");
 
     //NO_SERIALIZE
-    rttr::registration::do_class<^^circle>("circle");
+    rttr::registration::do_class < ^^circle > ("circle");
 
-    rttr::registration::do_class<^^point2d>("point2d");
+    rttr::registration::do_class < ^^point2d > ("point2d");
 
 
-    rttr::registration::do_enumeration<^^color>("color");
+    rttr::registration::do_enumeration < ^^color > ("color");
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
     std::string json_string;
 
     {
         circle c_1("Circle #1");
-        shape& my_shape = c_1;
+        shape &my_shape = c_1;
 
         c_1.visible = true;
         c_1.points = std::vector<point2d>(2, point2d(1, 1));
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
         c_1.color_ = color::red;
 
         // additional braces are needed for a VS 2013 bug
-        c_1.dictionary = { { {color::green, {1, 2} }, {color::blue, {3, 4} }, {color::red, {5, 6} } } };
+        c_1.dictionary = {{{color::green, {1, 2}}, {color::blue, {3, 4}}, {color::red, {5, 6}}}};
 
         c_1.no_serialize = 12345;
 

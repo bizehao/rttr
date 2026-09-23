@@ -31,24 +31,23 @@
 #include "rttr/detail/base/core_prerequisites.h"
 #include "rttr/type.h"
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        class RTTR_API parameter_info_wrapper_base {
+        public:
+            parameter_info_wrapper_base() RTTR_NOEXCEPT;
 
-class RTTR_API parameter_info_wrapper_base
-{
-    public:
-        parameter_info_wrapper_base() RTTR_NOEXCEPT;
-        virtual ~parameter_info_wrapper_base();
+            virtual ~parameter_info_wrapper_base();
 
-        virtual std::string_view get_name() const RTTR_NOEXCEPT = 0;
-        virtual rttr::type get_type() const RTTR_NOEXCEPT = 0;
-        virtual bool has_default_value() const RTTR_NOEXCEPT = 0;
-        virtual uint32_t get_index() const RTTR_NOEXCEPT = 0;
-};
+            virtual std::string_view get_name() const RTTR_NOEXCEPT = 0;
 
-} // end namespace detail
+            virtual rttr::type get_type() const RTTR_NOEXCEPT = 0;
+
+            virtual bool has_default_value() const RTTR_NOEXCEPT = 0;
+
+            virtual uint32_t get_index() const RTTR_NOEXCEPT = 0;
+        };
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_PARAMETER_INFO_WRAPPER_BASE_H_

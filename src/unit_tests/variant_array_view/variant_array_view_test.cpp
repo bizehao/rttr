@@ -40,10 +40,9 @@ RTTR_BEGIN_DISABLE_DEPRECATED_WARNING
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::ctor", "[variant_array_view]")
-{
-   SECTION("empty")
-   {
+TEST_CASE("variant_array_view::ctor", "[variant_array_view]") {
+    SECTION("empty")
+    {
         variant_array_view a;
         CHECK(a.is_valid() == false);
 
@@ -88,29 +87,33 @@ TEST_CASE("variant_array_view::ctor", "[variant_array_view]")
         CHECK(c.remove_value(0, 0) == false);
         CHECK(c.remove_value(0, 0, 0) == false);
         CHECK(c.remove_value_variadic({}) == false);
-   }
+    }
 
-   SECTION("invalid")
-   {
-       variant var = 2;
-       variant_array_view a = var.create_array_view();
-       CHECK(a.is_valid() == false);
-   }
+    SECTION("invalid")
+    {
+        variant var = 2;
+        variant_array_view a = var.create_array_view();
+        CHECK(a.is_valid() == false);
+    }
 
-   SECTION("full")
-   {
+    SECTION("full")
+    {
         variant var = std::array<int, 10>();
         variant_array_view a = var.create_array_view();
         CHECK(a.is_valid() == true);
 
         variant_array_view b(a);
         CHECK(b.is_valid() == true);
-   }
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::assignment", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::assignment"
+,
+"[variant_array_view]"
+)
 {
    SECTION("empty")
    {
@@ -140,7 +143,11 @@ TEST_CASE("variant_array_view::assignment", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::get_type", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::get_type"
+,
+"[variant_array_view]"
+)
 {
    SECTION("empty")
    {
@@ -186,7 +193,11 @@ TEST_CASE("variant_array_view::get_type", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::swap", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::swap"
+,
+"[variant_array_view]"
+)
 {
    SECTION("empty")
    {
@@ -214,7 +225,11 @@ TEST_CASE("variant_array_view::swap", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::is_dynamic", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::is_dynamic"
+,
+"[variant_array_view]"
+)
 {
     SECTION("static")
     {
@@ -233,7 +248,11 @@ TEST_CASE("variant_array_view::is_dynamic", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::get_rank", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::get_rank"
+,
+"[variant_array_view]"
+)
 {
     SECTION("1D")
     {
@@ -274,7 +293,11 @@ TEST_CASE("variant_array_view::get_rank", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::get_rank_type", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::get_rank_type"
+,
+"[variant_array_view]"
+)
 {
     SECTION("2D")
     {
@@ -291,7 +314,11 @@ TEST_CASE("variant_array_view::get_rank_type", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::get_size", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::get_size"
+,
+"[variant_array_view]"
+)
 {
     SECTION("1D")
     {
@@ -379,7 +406,11 @@ TEST_CASE("variant_array_view::get_size", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::set_size", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::set_size"
+,
+"[variant_array_view]"
+)
 {
     SECTION("empty")
     {
@@ -511,7 +542,11 @@ TEST_CASE("variant_array_view::set_size", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::get_value", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::get_value"
+,
+"[variant_array_view]"
+)
 {
     SECTION("empty")
     {
@@ -556,7 +591,11 @@ TEST_CASE("variant_array_view::get_value", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::set_value", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::set_value"
+,
+"[variant_array_view]"
+)
 {
     SECTION("empty")
     {
@@ -649,7 +688,11 @@ TEST_CASE("variant_array_view::set_value", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::insert_value", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::insert_value"
+,
+"[variant_array_view]"
+)
 {
     SECTION("static array")
     {
@@ -743,7 +786,11 @@ TEST_CASE("variant_array_view::insert_value", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::remove_value", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::remove_value"
+,
+"[variant_array_view]"
+)
 {
     SECTION("static array")
     {
@@ -833,7 +880,11 @@ TEST_CASE("variant_array_view::remove_value", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::get_value_as_ref", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::get_value_as_ref"
+,
+"[variant_array_view]"
+)
 {
     SECTION("positiv test")
     {
@@ -878,7 +929,11 @@ TEST_CASE("variant_array_view::get_value_as_ref", "[variant_array_view]")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("variant_array_view::misc", "[variant_array_view]")
+TEST_CASE (
+"variant_array_view::misc"
+,
+"[variant_array_view]"
+)
 {
     SECTION("check support of vector<bool>()")
     {

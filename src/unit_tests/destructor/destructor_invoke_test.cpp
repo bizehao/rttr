@@ -30,18 +30,13 @@
 
 using namespace rttr;
 
-struct dtor_invoke_test
-{
+struct dtor_invoke_test {
     [[=class_op::ctor_policy(policy::ctor::op_as_raw_ptr)]]
-    dtor_invoke_test()
-    {
-
+    dtor_invoke_test() {
     }
-
 };
 
-RTTR_REGISTRATION
-{
+RTTR_REGISTRATION {
     registration::do_class<^^dtor_invoke_test>();
     // registration::class_<dtor_invoke_test>("dtor_invoke_test")
     //     .constructor<>() (policy::ctor::as_raw_ptr)
@@ -50,7 +45,11 @@ RTTR_REGISTRATION
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("destructor - invoke", "[destructor]")
+TEST_CASE (
+"destructor - invoke"
+,
+"[destructor]"
+)
 {
     type t = type::get<dtor_invoke_test>();
     REQUIRE(t.is_valid() == true);
@@ -90,7 +89,11 @@ TEST_CASE("destructor - invoke", "[destructor]")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TEST_CASE("destructor - via type", "[destructor]")
+TEST_CASE (
+"destructor - via type"
+,
+"[destructor]"
+)
 {
     variant var = type::get<dtor_invoke_test>().create();
     REQUIRE(var.get_type() == type::get<dtor_invoke_test*>());

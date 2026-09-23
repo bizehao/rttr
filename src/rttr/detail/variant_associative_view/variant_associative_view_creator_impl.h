@@ -30,30 +30,22 @@
 
 #include "rttr/detail/variant_associative_view/variant_associative_view_private.h"
 
-namespace rttr
-{
-namespace detail
-{
+namespace rttr {
+    namespace detail {
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
+        template<typename T>
+        variant_associative_view_private create_variant_associative_view(T &&value) {
+            if constexpr (can_create_associative_view<T>::value) {
+                return variant_associative_view_private(wrapped_raw_addressof(value));
+            }
+            else {
+                return variant_associative_view_private();
+            }
+        }
 
-template<typename T>
-variant_associative_view_private create_variant_associative_view(T&& value)
-{
-    if constexpr (can_create_associative_view<T>::value)
-    {
-        return variant_associative_view_private(wrapped_raw_addressof(value));
-    }
-    else
-    {
-        return variant_associative_view_private();
-    }
-    
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-} // end namespace detail
+        /////////////////////////////////////////////////////////////////////////////////////////
+    } // end namespace detail
 } // end namespace rttr
 
 #endif // RTTR_VARIANT_ASSOCIATIVE_CREATOR_IMPL_H_
